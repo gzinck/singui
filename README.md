@@ -4,14 +4,14 @@ This is a sandbox to explore how we can use the voice---in particular,
 singing and humming---to control computers. Some of the interaction methods
 it investigates include:
 
-- How can we sing individual pitches and intervals to control computers?
-  This could potentially change tools in a painting application, modify
-  continuous variables like font size in a word document, or switch modes
-  in a text editor like vim.
-- How can we use melodies to control computers? For instance, consider the
-  toolbar at the top of an application. When clicking an option, the
-  computer could sing the melody. To perform the option down the road, the
-  user can simply sing that melody again.
+-   How can we sing individual pitches and intervals to control computers?
+    This could potentially change tools in a painting application, modify
+    continuous variables like font size in a word document, or switch modes
+    in a text editor like vim.
+-   How can we use melodies to control computers? For instance, consider the
+    toolbar at the top of an application. When clicking an option, the
+    computer could sing the melody. To perform the option down the road, the
+    user can simply sing that melody again.
 
 This sandbox is currently under development for a paper in CHI 2022.
 
