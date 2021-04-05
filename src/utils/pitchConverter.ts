@@ -15,11 +15,11 @@ const notes: Record<number, string> = {
     11: 'G#'
 };
 
-const convertNoteToString = (noteNum: number): string => {
+export const convertNoteToString = (noteNum: number, includeOctave: boolean = true): string => {
     const octave = Math.floor(noteNum / 12);
     while (noteNum < 0) noteNum += 12;
     const noteName = notes[noteNum % 12];
-    return `${noteName}${octave}`;
+    return `${noteName}${includeOctave ? octave : ''}`;
 };
 
 export interface ReadableVocalState {

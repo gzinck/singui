@@ -3,12 +3,16 @@ import './App.css';
 import VoiceDetector from './utils/VoiceDetector';
 import { map } from 'rxjs/operators';
 import { convertPitchToReadable } from './utils/pitchConverter';
+import PitchMeter from './components/pitchMeter/PitchMeter';
+import { ThemeProvider } from '@material-ui/core/styles';
+import { theme } from './components/theme';
 
 const detector = new VoiceDetector();
 
 function App() {
     const [note, setNote] = React.useState('Sing or hum to begin');
-    const [error, setError] = React.useState('0%');
+    const [noteNum, setNoteNum] = React.useState(44);
+    const [error, setError] = React.useState(0);
 
     // Get updates as the user sings
     React.useEffect(() => {
@@ -17,20 +21,26 @@ function App() {
             .pipe(map((state) => convertPitchToReadable(state)))
             .subscribe((state) => {
                 if (!state) return;
+                setNoteNum(state.noteNum);
                 setNote(state.note);
-                setError(`${Math.round(state.error * 100)}%`);
+                setError(state.error);
             });
 
         return () => subscription.unsubscribe();
     }, []);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>{note}</h1>
-                <p>Extent to which your singing is bad: {error}</p>
-            </header>
-        </div>
+        <ThemeProvider theme={theme}>
+            <div className="App">
+                <header className="App-header">
+                    <h1>{note}</h1>
+                    <p>
+                        Extent to which your singing is bad: {Math.round(error * 100)}% -- {noteNum}
+                    </p>
+                    <PitchMeter noteNum={noteNum} error={error} />
+                </header>
+            </div>
+        </ThemeProvider>
     );
 }
 

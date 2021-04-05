@@ -31,8 +31,8 @@ class VoiceDetector {
                     const input = new Float32Array(detector.inputLength);
                     audioContext.resume();
 
-                    // Do this every 100 ms
-                    interval(100).subscribe(() => {
+                    // Do this every 50 ms
+                    interval(50).subscribe(() => {
                         analyserNode.getFloatTimeDomainData(input);
                         const [pitch, clarity] = detector.findPitch(input, audioContext.sampleRate);
                         this.events$.next({ pitch, clarity });
