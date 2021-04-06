@@ -51,7 +51,7 @@ const useStyles = makeStyles<Theme, PitchMeterProps>((theme: Theme) => ({
 
 const allNotes = new Array<string>(88).fill('').map((_, id) => convertNoteToString(id, false));
 
-const PitchMeter = (props: PitchMeterProps): React.ReactElement<PitchMeterProps> => {
+const ScrollingPitchMeter = (props: PitchMeterProps): React.ReactElement<PitchMeterProps> => {
     const classes = useStyles(props);
     return (
         <div className={classes.root}>
@@ -67,4 +67,4 @@ const PitchMeter = (props: PitchMeterProps): React.ReactElement<PitchMeterProps>
     );
 };
 
-export default PitchMeter;
+export default ScrollingPitchMeter;

@@ -1,9 +1,10 @@
-import React from 'react';
-import { smoothPitch } from '../utils/smoothPitch';
-import PitchMeter from './pitchMeter/PitchMeter';
-import { voiceDetector } from './detector/shared';
+import { Theme } from '../theme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from './theme';
+import React from 'react';
+import StaticPitchMeter from '../pitchMeter/StaticPitchMeter';
+import { voiceDetector } from '../detector/shared';
+import { smoothPitch } from '../../utils/smoothPitch';
+import {convertNoteToString} from "../../utils/pitchConverter";
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -16,17 +17,14 @@ const useStyles = makeStyles<Theme>((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         color: theme.palette.text.primary
-    },
-    h1: {
-        marginTop: 0
     }
 }));
 
-const Tuner = (): React.ReactElement => {
+const PitchTasks = (): React.ReactElement => {
     const classes = useStyles();
-    const [note, setNote] = React.useState('Sing or hum to begin');
     const [noteNum, setNoteNum] = React.useState(0);
     const [error, setError] = React.useState(0);
+    const target = 6;
 
     // Get updates as the user sings
     React.useEffect(() => {
@@ -34,24 +32,20 @@ const Tuner = (): React.ReactElement => {
             .getState()
             .pipe(smoothPitch())
             .subscribe((state) => {
-                setNote(state.note);
                 setNoteNum(state.noteNum);
                 setError(state.error);
             });
 
-        return () => {
-            subscription.unsubscribe();
-        };
+        return () => subscription.unsubscribe();
     }, []);
 
     return (
         <div className={classes.root}>
-            <h1 className={classes.h1}>Tuner</h1>
-            <h2>{note}</h2>
-            <p>Error: {Math.round(error * 100)}%</p>
-            <PitchMeter noteNum={noteNum} error={error} />
+            <h1>Pitch Tasks</h1>
+            <h2>{convertNoteToString(target, false)}</h2>
+            <StaticPitchMeter noteNum={noteNum} error={error} target={target} />
         </div>
     );
 };
 
-export default Tuner;
+export default PitchTasks;
