@@ -26,29 +26,25 @@ export interface ReadableVocalState {
     error: number; // between -0.5 and +0.5
     note: string;
     noteNum: number;
+    hz: number; // frequency hz
+    volume: number;
     time: Date;
 }
 
-const memoryLength = 500;
 const a4Frequency = 440;
 const multiplier = Math.pow(2, 1 / 12);
 
-export const convertPitchToReadable = (state: VocalState, lastResult?: ReadableVocalState): ReadableVocalState | null => {
-    const rawNoteNum = Math.log(state.pitch / a4Frequency) / Math.log(multiplier) + 48;
-    // Use last result if this one is poor
-    if (state.clarity < 0.95 || rawNoteNum < 0) {
-        if (lastResult && new Date().getMilliseconds() - lastResult.time.getMilliseconds() < memoryLength) {
-            return lastResult;
-        }
-        return null;
-    }
+export const convertHzToNoteNum = (hz: number): number => Math.log(hz / a4Frequency) / Math.log(multiplier) + 48;
 
-    // Otherwise, get the note
+export const convertPitchToReadable = (state: VocalState): ReadableVocalState => {
+    const rawNoteNum = convertHzToNoteNum(state.pitch);
     const roundUp = rawNoteNum >= 0 && rawNoteNum % 1 >= 0.5;
     const noteNum = roundUp ? Math.ceil(rawNoteNum) : Math.floor(rawNoteNum);
     return {
         error: roundUp ? -1 + (rawNoteNum % 1) : rawNoteNum % 1,
         note: convertNoteToString(noteNum),
+        hz: state.pitch,
+        volume: state.volume,
         noteNum,
         time: new Date()
     };

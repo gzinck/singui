@@ -41,11 +41,12 @@ const useStyles = makeStyles<Theme, PitchMeterProps>((theme: Theme) => ({
         '& div': {
             width: `${containerWidth / 3}rem`,
             flexShrink: 0
-        }
+        },
+        color: theme.palette.text.secondary
     }),
-    left: {},
-    right: {},
-    center: {}
+    current: {
+        color: theme.palette.text.primary
+    }
 }));
 
 const allNotes = new Array<string>(88).fill('').map((_, id) => convertNoteToString(id, false));
@@ -56,8 +57,8 @@ const PitchMeter = (props: PitchMeterProps): React.ReactElement<PitchMeterProps>
         <div className={classes.root}>
             <div className={classes.focus} />
             <div className={classes.notes}>
-                {allNotes.map((note) => (
-                    <div key={note}>{note}</div>
+                {allNotes.map((note, idx) => (
+                    <div key={`${note}-${idx}`} className={(idx === props.noteNum ? classes.current : '')}>{note}</div>
                 ))}
             </div>
         </div>

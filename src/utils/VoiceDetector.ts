@@ -3,8 +3,9 @@ import { fromEvent, interval, Observable, Subject } from 'rxjs';
 import { shareReplay, startWith, take } from 'rxjs/operators';
 
 export interface VocalState {
-    pitch: number;
-    clarity: number;
+    pitch: number; // From 0 to 1000 (approx.)
+    clarity: number; // From 0 to 1
+    volume: number; // From 0 to 100
 }
 
 class VoiceDetector {
@@ -12,7 +13,7 @@ class VoiceDetector {
     private readonly state$: Observable<VocalState>;
     private audioContext: AudioContext | undefined;
     constructor() {
-        this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0 }), shareReplay(1));
+        this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
 
         fromEvent(document, 'DOMContentLoaded')
             .pipe(take(1))
@@ -23,22 +24,30 @@ class VoiceDetector {
                     // Build the graph
                     const sourceNode = audioContext.createMediaStreamSource(stream);
                     const analyserNode = audioContext.createAnalyser();
-                    analyserNode.fftSize = 4096; // Double the fftSize to smooth it out
+                    analyserNode.fftSize = 2048;
                     sourceNode.connect(analyserNode);
 
                     // For processing the pitch
                     const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
-                    const input = new Float32Array(detector.inputLength);
+                    const timeData = new Float32Array(detector.inputLength);
+                    const freqData = new Uint8Array(analyserNode.frequencyBinCount);
                     audioContext.resume();
 
-                    // Do this every 50 ms
-                    interval(50).subscribe(() => {
-                        analyserNode.getFloatTimeDomainData(input);
-                        const [pitch, clarity] = detector.findPitch(input, audioContext.sampleRate);
-                        this.events$.next({ pitch, clarity });
+                    // Do this every 100 ms
+                    interval(100).subscribe(() => {
+                        analyserNode.getFloatTimeDomainData(timeData);
+                        const [pitch, clarity] = detector.findPitch(timeData, audioContext.sampleRate);
+
+                        analyserNode.getByteFrequencyData(freqData);
+                        const volume = this.getVolume(freqData);
+                        this.events$.next({ pitch, clarity, volume });
                     });
                 });
             });
+    }
+
+    private getVolume(input: Uint8Array): number {
+        return input.reduce((acc, next) => acc + next / input.length, 0);
     }
 
     public resume(): void {

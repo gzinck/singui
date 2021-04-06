@@ -1,11 +1,10 @@
 import React from 'react';
 import './App.css';
 import VoiceDetector from './utils/VoiceDetector';
-import { map } from 'rxjs/operators';
-import { convertPitchToReadable } from './utils/pitchConverter';
 import PitchMeter from './components/pitchMeter/PitchMeter';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './components/theme';
+import {smoothPitch} from "./utils/smoothPitch";
 
 const detector = new VoiceDetector();
 
@@ -18,9 +17,8 @@ function App() {
     React.useEffect(() => {
         const subscription = detector
             .getState()
-            .pipe(map((state) => convertPitchToReadable(state)))
+            .pipe(smoothPitch())
             .subscribe((state) => {
-                if (!state) return;
                 setNoteNum(state.noteNum);
                 setNote(state.note);
                 setError(state.error);
