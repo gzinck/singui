@@ -1,7 +1,7 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
-import { Theme } from '@material-ui/core';
 import { convertNoteToString } from '../../utils/pitchConverter';
+import { Theme } from '../theme';
 
 interface PitchMeterProps {
     noteNum: number;
@@ -58,7 +58,9 @@ const PitchMeter = (props: PitchMeterProps): React.ReactElement<PitchMeterProps>
             <div className={classes.focus} />
             <div className={classes.notes}>
                 {allNotes.map((note, idx) => (
-                    <div key={`${note}-${idx}`} className={(idx === props.noteNum ? classes.current : '')}>{note}</div>
+                    <div key={`${note}-${idx}`} className={idx === props.noteNum ? classes.current : ''}>
+                        {note}
+                    </div>
                 ))}
             </div>
         </div>

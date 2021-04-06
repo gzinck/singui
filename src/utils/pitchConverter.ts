@@ -1,4 +1,4 @@
-import { VocalState } from './VoiceDetector';
+import { VocalState } from '../components/detector/VoiceDetector';
 
 const notes: Record<number, string> = {
     0: 'A',
