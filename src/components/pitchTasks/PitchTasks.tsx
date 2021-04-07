@@ -8,6 +8,11 @@ import { convertNoteToString } from '../../utils/pitchConverter';
 import NoteProgressIndicator from '../progress/NoteProgressIndicator';
 import useAudio from '../audio/useAudio';
 
+interface PitchTasksProps {
+    noteLabels?: string[];
+    keyNumber: number;
+}
+
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         backgroundColor: theme.palette.background.default,
@@ -19,25 +24,29 @@ const useStyles = makeStyles<Theme>((theme) => ({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        color: theme.palette.text.primary
+        color: theme.palette.text.primary,
+        overflow: 'hidden',
+        '& h1': {
+            textAlign: 'center'
+        }
     },
     indicators: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexShrink: 0
+        flexDirection: 'column-reverse',
+        [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row'
+        }
     },
     progressIndicator: {
-        display: 'flex'
+        display: 'flex',
+        flexShrink: 1,
+        overflow: 'hidden'
     }
 }));
 
-const key = 7;
-const possibleTargets = [0, 2, 4, 5, 7, 9, 11].map((n) => (n + key) % 12);
-const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map((n) => possibleTargets[n]);
-const sustainLength = 10;
-
-const PitchTasks = (): React.ReactElement => {
+const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps> => {
     const classes = useStyles();
     const [state, setState] = React.useState({
         noteNum: 0,
@@ -46,13 +55,19 @@ const PitchTasks = (): React.ReactElement => {
         targetIdx: 0
     });
     const [targetIdx, setTargetIdx] = React.useState(0);
-    const target = targets[targetIdx % targets.length];
 
-    // const pause$ = React.useRef(new Subject());
+    const possibleTargets = [0, 2, 4, 5, 7, 9, 11];
+    const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map((n) => possibleTargets[n]);
+    const sustainLength = 10;
+
+    const target = targets[targetIdx % targets.length] + props.keyNumber;
+    console.log(targets);
+    console.log(target);
 
     useAudio();
 
     React.useEffect(() => {
+        console.log(state);
         if (state.progress >= sustainLength && state.targetIdx === targetIdx) {
             setTargetIdx((idx) => idx + 1);
         }
@@ -77,20 +92,28 @@ const PitchTasks = (): React.ReactElement => {
     return (
         <div className={classes.root}>
             <h1>Pitch Tasks</h1>
-            <h2>{convertNoteToString(target, false)}</h2>
+            <h2>Pitch to sing: {convertNoteToString(target, false)}</h2>
             <div className={classes.indicators}>
-                <StaticPitchMeter noteNum={state.noteNum} error={state.error} target={target} />
+                <StaticPitchMeter
+                    noteLabels={props.noteLabels}
+                    noteNum={state.noteNum - props.keyNumber}
+                    error={state.error}
+                    target={(target + 12 - props.keyNumber) % 12}
+                />
                 <div className={classes.progressIndicator}>
                     <NoteProgressIndicator
                         noteNum={state.noteNum}
-                        isIncorrect={state.noteNum % 12 !== targets[state.targetIdx % targets.length]}
+                        isIncorrect={state.noteNum % 12 !== (targets[state.targetIdx] + props.keyNumber) % 12}
                         progress={Math.min(state.progress / sustainLength, 1)}
                     />
                 </div>
             </div>
-            {/*<AudioPlayerComponent/>*/}
         </div>
     );
+};
+
+PitchTasks.defaultProps = {
+    keyNumber: 0
 };
 
 export default PitchTasks;
