@@ -6,7 +6,7 @@ import { voiceDetector } from '../detector/shared';
 import { smoothPitch } from '../../utils/smoothPitch';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import NoteProgressIndicator from '../progress/NoteProgressIndicator';
-import useAudio from "../audio/useAudio";
+import useAudio from '../audio/useAudio';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -33,8 +33,8 @@ const useStyles = makeStyles<Theme>((theme) => ({
 }));
 
 const key = 7;
-const possibleTargets = [0, 2, 4, 5, 7, 9, 11].map(n => (n + key) % 12);
-const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map(n => possibleTargets[n]);
+const possibleTargets = [0, 2, 4, 5, 7, 9, 11].map((n) => (n + key) % 12);
+const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map((n) => possibleTargets[n]);
 const sustainLength = 10;
 
 const PitchTasks = (): React.ReactElement => {

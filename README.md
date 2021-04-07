@@ -15,6 +15,11 @@ it investigates include:
 
 This sandbox is currently under development for a paper in CHI 2022.
 
+## Getting started
+
+Run `yarn install` to install dependencies. If you want to get pre-commit
+hooks working, run `npx mrm lint-staged` afterwards.
+
 ## Available Scripts
 
 In the project directory, you can run:

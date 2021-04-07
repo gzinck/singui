@@ -33,7 +33,7 @@ const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
         transition: 'stroke-dashoffset 0.35s, fill 0.35s',
         transform: 'rotate(-90deg)',
         transformOrigin: '50% 50%',
-        stroke: (isIncorrect ? theme.palette.error.main : theme.palette.success.main),
+        stroke: isIncorrect ? theme.palette.error.main : theme.palette.success.main,
         fill: progress === 1 ? (isIncorrect ? theme.palette.error.main : theme.palette.success.main) : 'transparent',
         strokeWidth: strokeSize,
         strokeDasharray: `${circumference}vw ${circumference}vw`,
