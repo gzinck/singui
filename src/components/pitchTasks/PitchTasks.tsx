@@ -5,14 +5,15 @@ import StaticPitchMeter from '../pitchMeter/StaticPitchMeter';
 import { voiceDetector } from '../detector/shared';
 import { smoothPitch } from '../../utils/smoothPitch';
 import { convertNoteToString } from '../../utils/pitchConverter';
-import NoteProgressIndicator from "../progress/NoteProgressIndicator";
+import NoteProgressIndicator from '../progress/NoteProgressIndicator';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         backgroundColor: theme.palette.background.default,
         minHeight: '100vh',
+        boxSizing: 'border-box',
         margin: 0,
-        padding: 0,
+        padding: '2rem',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -22,7 +23,8 @@ const useStyles = makeStyles<Theme>((theme) => ({
     indicators: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexShrink: 0
     },
     progressIndicator: {
         display: 'flex'
@@ -44,9 +46,9 @@ const PitchTasks = (): React.ReactElement => {
             .getState()
             .pipe(smoothPitch())
             .subscribe((nextState) => {
-                setState(state => ({
+                setState((state) => ({
                     ...nextState,
-                    progress: (state.noteNum === nextState.noteNum) ? state.progress + 1 : 0
+                    progress: state.noteNum === nextState.noteNum ? state.progress + 1 : 0
                 }));
             });
 

@@ -56,12 +56,12 @@ const useStyles = makeStyles<Theme, StaticPitchMeterProps>((theme) => ({
         float: 'left',
         position: 'relative',
         '& div': {
-            width: '3rem',
-            height: '3rem',
+            width: '5vh',
+            height: '5vh',
             borderRadius: '3rem',
             position: 'absolute',
             backgroundColor: noteNum === target ? theme.palette.success.main : theme.palette.primary.main,
-            top: `calc(${(100 / 12) * (11 - noteNum - error)}% + 1.5rem)`,
+            top: `calc(${(100 / 12) * (11 - noteNum - error + 0.5)}% - 2.5vh)`,
             left: 0,
             transition: 'top 0.1s'
         }
