@@ -40,13 +40,13 @@ const useStyles = makeStyles<Theme, StaticPitchMeterProps>((theme) => ({
         }
     },
     target: ({ target, noteNum }) => ({
-        display: target ? 'block' : 'none',
+        display: target !== undefined ? 'block' : 'none',
         position: 'absolute',
         height: `${100 / 12}%`,
         width: '0.5rem',
         backgroundColor: noteNum === target ? theme.palette.success.main : theme.palette.primary.main,
         left: '4.3rem',
-        top: target ? `${(100 / 12) * (11 - target)}%` : 0
+        top: target !== undefined ? `${(100 / 12) * (11 - target)}%` : 0
     }),
     currentBox: ({ target, noteNum, error }) => ({
         height: '75vh',

@@ -6,6 +6,7 @@ import { voiceDetector } from '../detector/shared';
 import { smoothPitch } from '../../utils/smoothPitch';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import NoteProgressIndicator from '../progress/NoteProgressIndicator';
+import useAudio from "../audio/useAudio";
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -31,14 +32,31 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
+const key = 7;
+const possibleTargets = [0, 2, 4, 5, 7, 9, 11].map(n => (n + key) % 12);
+const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map(n => possibleTargets[n]);
+const sustainLength = 10;
+
 const PitchTasks = (): React.ReactElement => {
     const classes = useStyles();
     const [state, setState] = React.useState({
         noteNum: 0,
         progress: 0,
-        error: 0
+        error: 0,
+        targetIdx: 0
     });
-    const target = 6;
+    const [targetIdx, setTargetIdx] = React.useState(0);
+    const target = targets[targetIdx % targets.length];
+
+    // const pause$ = React.useRef(new Subject());
+
+    useAudio();
+
+    React.useEffect(() => {
+        if (state.progress >= sustainLength && state.targetIdx === targetIdx) {
+            setTargetIdx((idx) => idx + 1);
+        }
+    }, [state, targetIdx]);
 
     // Get updates as the user sings
     React.useEffect(() => {
@@ -48,7 +66,8 @@ const PitchTasks = (): React.ReactElement => {
             .subscribe((nextState) => {
                 setState((state) => ({
                     ...nextState,
-                    progress: state.noteNum === nextState.noteNum ? state.progress + 1 : 0
+                    progress: state.noteNum === nextState.noteNum ? state.progress + 1 : 0,
+                    targetIdx: state.noteNum === nextState.noteNum || state.progress < sustainLength ? state.targetIdx : state.targetIdx + 1
                 }));
             });
 
@@ -62,9 +81,14 @@ const PitchTasks = (): React.ReactElement => {
             <div className={classes.indicators}>
                 <StaticPitchMeter noteNum={state.noteNum} error={state.error} target={target} />
                 <div className={classes.progressIndicator}>
-                    <NoteProgressIndicator noteNum={state.noteNum} progress={Math.min(state.progress / 4, 1)} />
+                    <NoteProgressIndicator
+                        noteNum={state.noteNum}
+                        isIncorrect={state.noteNum % 12 !== targets[state.targetIdx % targets.length]}
+                        progress={Math.min(state.progress / sustainLength, 1)}
+                    />
                 </div>
             </div>
+            {/*<AudioPlayerComponent/>*/}
         </div>
     );
 };

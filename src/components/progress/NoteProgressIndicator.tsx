@@ -6,6 +6,7 @@ import { convertNoteToString } from '../../utils/pitchConverter';
 interface NoteProgressIndicatorProps {
     noteNum: number;
     progress: number; // Between 0 and 1
+    isIncorrect?: boolean; // Default to being "correct"
 }
 
 const strokeSize = 4;
@@ -28,12 +29,12 @@ const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
         height: '100%',
         zIndex: 0
     },
-    circle: ({ progress }) => ({
+    circle: ({ progress, isIncorrect }) => ({
         transition: 'stroke-dashoffset 0.35s, fill 0.35s',
         transform: 'rotate(-90deg)',
         transformOrigin: '50% 50%',
-        stroke: theme.palette.success.main,
-        fill: progress === 1 ? theme.palette.success.main : 'transparent',
+        stroke: (isIncorrect ? theme.palette.error.main : theme.palette.success.main),
+        fill: progress === 1 ? (isIncorrect ? theme.palette.error.main : theme.palette.success.main) : 'transparent',
         strokeWidth: strokeSize,
         strokeDasharray: `${circumference}vw ${circumference}vw`,
         strokeDashoffset: `${(1 - progress) * circumference}vw`,
