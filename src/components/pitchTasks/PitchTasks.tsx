@@ -7,6 +7,8 @@ import { smoothPitch } from '../../utils/smoothPitch';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import NoteProgressIndicator from '../progress/NoteProgressIndicator';
 import useAudio from '../audio/useAudio';
+import Slider from '@material-ui/core/Slider';
+import OptionsPopover from '../options/OptionsPopover';
 
 interface PitchTasksProps {
     noteLabels?: string[];
@@ -52,23 +54,23 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
         noteNum: 0,
         progress: 0,
         error: 0,
-        targetIdx: 0
+        targetIdx: 0,
+        sustainLength: 5
     });
     const [targetIdx, setTargetIdx] = React.useState(0);
 
     const possibleTargets = [0, 2, 4, 5, 7, 9, 11];
     const targets = [0, 3, 5, 4, 1, 2, 1, 6, 0, 6, 2, 4, 3, 5].map((n) => possibleTargets[n]);
-    const sustainLength = 10;
 
     const target = targets[targetIdx % targets.length] + props.keyNumber;
     console.log(targets);
     console.log(target);
 
-    useAudio();
+    const setGain = useAudio();
 
     React.useEffect(() => {
         console.log(state);
-        if (state.progress >= sustainLength && state.targetIdx === targetIdx) {
+        if (state.progress >= state.sustainLength && state.targetIdx === targetIdx) {
             setTargetIdx((idx) => idx + 1);
         }
     }, [state, targetIdx]);
@@ -81,8 +83,10 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
             .subscribe((nextState) => {
                 setState((state) => ({
                     ...nextState,
+                    sustainLength: state.sustainLength,
                     progress: state.noteNum === nextState.noteNum ? state.progress + 1 : 0,
-                    targetIdx: state.noteNum === nextState.noteNum || state.progress < sustainLength ? state.targetIdx : state.targetIdx + 1
+                    targetIdx:
+                        state.noteNum === nextState.noteNum || state.progress < state.sustainLength ? state.targetIdx : state.targetIdx + 1
                 }));
             });
 
@@ -91,7 +95,7 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
 
     return (
         <div className={classes.root}>
-            <h1>Pitch Tasks</h1>
+            <h1>Pitch tasks</h1>
             <h2>Pitch to sing: {convertNoteToString(target, false)}</h2>
             <div className={classes.indicators}>
                 <StaticPitchMeter
@@ -103,11 +107,32 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                 <div className={classes.progressIndicator}>
                     <NoteProgressIndicator
                         noteNum={state.noteNum}
-                        isIncorrect={state.noteNum % 12 !== (targets[state.targetIdx] + props.keyNumber) % 12}
-                        progress={Math.min(state.progress / sustainLength, 1)}
+                        isIncorrect={state.noteNum % 12 !== (targets[state.targetIdx % targets.length] + props.keyNumber) % 12}
+                        progress={Math.min(state.progress / state.sustainLength, 1)}
                     />
                 </div>
             </div>
+            <OptionsPopover>
+                <h4>Audio volume</h4>
+                <Slider
+                    onChange={(_, val) => setGain(typeof val === 'number' ? val : val[0])}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    defaultValue={1}
+                    valueLabelDisplay="auto"
+                />
+                <h4>Pitch selection time</h4>
+                <p>Shorter is faster, but more challenging</p>
+                <Slider
+                    value={state.sustainLength}
+                    onChange={(_, val) => setState((state) => ({ ...state, sustainLength: typeof val === 'number' ? val : val[0] }))}
+                    min={2}
+                    max={10}
+                    step={1}
+                    valueLabelDisplay="auto"
+                />
+            </OptionsPopover>
         </div>
     );
 };

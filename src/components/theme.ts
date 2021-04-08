@@ -10,7 +10,8 @@ export const theme = createMuiTheme({
             // default: '#0F0'
         },
         primary: {
-            main: '#17b7ff'
+            main: '#17b7ff',
+            contrastText: '#FFF'
         }
     }
 });
