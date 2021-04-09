@@ -69,7 +69,7 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                     target={(target + 12 - props.keyNumber) % 12}
                 />
                 <NoteProgressIndicator
-                    noteNum={state.noteNum}
+                    noteName={convertNoteToString(state.noteNum)}
                     isIncorrect={state.noteNum % 12 !== (targets[state.targetIdx % targets.length] + props.keyNumber) % 12}
                     progress={Math.min(state.progress / state.sustainLength, 1)}
                 />

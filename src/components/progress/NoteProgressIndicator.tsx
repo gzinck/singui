@@ -4,7 +4,7 @@ import { Theme } from '../theme';
 import { convertNoteToString } from '../../utils/pitchConverter';
 
 interface NoteProgressIndicatorProps {
-    noteNum: number;
+    noteName: string;
     progress: number; // Between 0 and 1
     isIncorrect?: boolean; // Default to being "correct"
 }
@@ -45,7 +45,9 @@ const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
     }),
     noteName: {
         fontSize: '3rem',
-        zIndex: 1
+        zIndex: 1,
+        width: `${normalizedRadius * 2}vw`,
+        textAlign: 'center'
     }
 }));
 
@@ -56,7 +58,7 @@ const NoteProgressIndicator = (props: NoteProgressIndicatorProps): React.ReactEl
             <svg className={classes.svg}>
                 <circle className={classes.circle} />
             </svg>
-            <h4 className={classes.noteName}>{convertNoteToString(props.noteNum)}</h4>
+            <h4 className={classes.noteName}>{props.noteName}</h4>
         </div>
     );
 };

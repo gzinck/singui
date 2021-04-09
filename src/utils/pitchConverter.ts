@@ -59,6 +59,8 @@ const multiplier = Math.pow(2, 1 / 12);
 
 export const convertHzToNoteNum = (hz: number): number => Math.log(hz / a4Frequency) / Math.log(multiplier) + 48;
 
+export const convertHzToInterval = (start: number, end: number): number => Math.log(end / start) / Math.log(multiplier);
+
 export const convertPitchToReadable = (state: VocalState): ReadableVocalState => {
     const rawNoteNum = convertHzToNoteNum(state.pitch);
     const roundUp = rawNoteNum >= 0 && rawNoteNum % 1 >= 0.5;

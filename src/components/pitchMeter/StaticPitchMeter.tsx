@@ -123,7 +123,7 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
         bottNum: props.startNum,
         bottError: props.startError,
         endNum: props.endNum || props.startNum,
-        ...(props.endNum && props.endError
+        ...(props.endNum !== undefined && props.endError !== undefined
             ? props.startNum > props.endNum
                 ? {
                       bottNum: props.endNum,
