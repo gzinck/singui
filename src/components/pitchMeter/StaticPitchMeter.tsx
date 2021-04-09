@@ -4,14 +4,26 @@ import { convertNoteToString } from '../../utils/pitchConverter';
 import React from 'react';
 
 interface StaticPitchMeterProps {
-    noteNum: number;
-    error: number;
+    startNum: number;
+    startError: number;
+    endNum?: number;
+    endError?: number;
+    noteLabels: string[];
+    target?: number;
+}
+
+interface StyleProps {
+    topNum: number;
+    topError: number;
+    bottNum: number;
+    bottError: number;
+    endNum: number;
     noteLabels: string[];
     target?: number;
 }
 
 const width = 9;
-const useStyles = makeStyles<Theme, StaticPitchMeterProps>((theme) => ({
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     root: {
         backgroundColor: theme.palette.background.default,
         position: 'relative',
@@ -42,16 +54,16 @@ const useStyles = makeStyles<Theme, StaticPitchMeterProps>((theme) => ({
             }
         }
     }),
-    target: ({ target, noteLabels, noteNum }) => ({
+    target: ({ target, noteLabels, endNum }) => ({
         display: target !== undefined ? 'block' : 'none',
         position: 'absolute',
-        height: `${100 / 12}%`,
+        height: `${100 / noteLabels.length}%`,
         width: '0.5rem',
-        backgroundColor: noteNum === target ? theme.palette.success.main : theme.palette.primary.main,
+        backgroundColor: endNum === target ? theme.palette.success.main : theme.palette.primary.main,
         left: `${width}rem`,
         top: target !== undefined ? `${(100 / noteLabels.length) * (noteLabels.length - 1 - target)}%` : 0
     }),
-    currentBox: ({ target, noteLabels, noteNum, error }) => ({
+    currentBox: ({ target, noteLabels, topNum, topError, bottNum, bottError }) => ({
         height: '75vh',
         boxSizing: 'border-box',
         width: '3rem',
@@ -59,11 +71,11 @@ const useStyles = makeStyles<Theme, StaticPitchMeterProps>((theme) => ({
         position: 'relative',
         '& div': {
             width: '5vh',
-            height: '5vh',
+            height: `calc(${(100 / noteLabels.length) * (topNum - bottNum + topError - bottError)}% + 5vh)`,
             borderRadius: '3rem',
             position: 'absolute',
-            backgroundColor: noteNum === target ? theme.palette.success.main : theme.palette.primary.main,
-            top: `calc(${(100 / noteLabels.length) * (noteLabels.length - 1 - noteNum - error + 0.5)}% - 2.5vh)`,
+            backgroundColor: topNum === target ? theme.palette.success.main : theme.palette.primary.main,
+            bottom: `calc(${(100 / noteLabels.length) * (bottNum + bottError + 0.5)}% - 2.5vh)`,
             left: 0,
             transition: 'top 0.1s'
         }
@@ -83,18 +95,51 @@ export const scale12Notes = [
     '',
     'Submediant',
     '',
-    'Leading Tone'
+    'Leading tone'
 ].reverse();
+export const intervalsAscendingNotes = [
+    '⬆',
+    'Perfect octave',
+    'Major seventh',
+    'Minor seventh',
+    'Major sixth',
+    'Minor sixth',
+    'Perfect fifth',
+    'Augmented fourth',
+    'Perfect fourth',
+    'Major third',
+    'Minor third',
+    'Major second',
+    'Minor second',
+    'Perfect unison',
+    '⬇'
+];
 
 const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<StaticPitchMeterProps> => {
-    const noteLabels = props.noteLabels;
-    const noteNum = props.noteNum % noteLabels.length;
-    const classes = useStyles({ ...props, noteNum });
+    const classes = useStyles({
+        ...props,
+        topNum: props.startNum,
+        topError: props.startError,
+        bottNum: props.startNum,
+        bottError: props.startError,
+        endNum: props.endNum || props.startNum,
+        ...(props.endNum && props.endError
+            ? props.startNum > props.endNum
+                ? {
+                      bottNum: props.endNum,
+                      bottError: props.endError
+                  }
+                : {
+                      topNum: props.endNum,
+                      topError: props.endError
+                  }
+            : {})
+    });
 
     return (
         <div className={classes.root}>
             <div className={classes.notes}>
-                {noteLabels.map((note, idx) => (
+                {props.noteLabels.map((note, idx) => (
                     <div key={`${note}-${idx}`}>{note}</div>
                 ))}
             </div>

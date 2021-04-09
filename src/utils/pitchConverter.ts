@@ -22,6 +22,29 @@ export const convertNoteToString = (noteNum: number, includeOctave: boolean = tr
     return `${noteName}${includeOctave ? octave : ''}`;
 };
 
+const intervals: Record<number, string> = {
+    '-1': '⬇',
+    0: 'Perfect unison',
+    1: 'Minor second',
+    2: 'Major second',
+    3: 'Minor third',
+    4: 'Major third',
+    5: 'Perfect fourth',
+    6: 'Augmented fourth',
+    7: 'Perfect fifth',
+    8: 'Minor sixth',
+    9: 'Major sixth',
+    10: 'Minor seventh',
+    11: 'Major seventh',
+    12: 'Perfect octave',
+    13: '⬆'
+};
+
+export const convertIntervalToString = (intervalSize: number): string => {
+    const interval = Math.max(-1, Math.min(13, intervalSize));
+    return intervals[interval];
+};
+
 export interface ReadableVocalState {
     error: number; // between -0.5 and +0.5
     note: string;
