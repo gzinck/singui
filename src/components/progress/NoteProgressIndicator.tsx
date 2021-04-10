@@ -1,7 +1,6 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
-import { convertNoteToString } from '../../utils/pitchConverter';
 
 interface NoteProgressIndicatorProps {
     noteName: string;
