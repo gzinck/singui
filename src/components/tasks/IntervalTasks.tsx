@@ -8,7 +8,7 @@ import StaticPitchMeter, { intervalsAscendingNotes } from '../pitchMeter/StaticP
 import NoteProgressIndicator from '../progress/NoteProgressIndicator';
 import { Subject, Subscription } from 'rxjs';
 import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
-import { intervalRecognizer, intervalRecognizerInitialState, IntervalRecognizerState } from '../../utils/intervalRecognizer';
+import { intervalRecognizer, intervalRecognizerInitialState, IntervalRecognizerState } from '../../utils/recognizers/intervalRecognizer';
 
 const defaultSustainLength = 2;
 const targets = [2, 7, 4, 12, 9, 11, 5];
@@ -25,9 +25,9 @@ const IntervalTasks = (): React.ReactElement => {
                 .pipe(
                     smoothPitch(),
                     intervalRecognizer({ sustainLength$: sustainLength$.current }),
-                    taskProgress<IntervalRecognizerState>({
+                    taskProgress<IntervalRecognizerState, number>({
                         targets,
-                        currKey: 'interval',
+                        checkCorrect: (state, target) => state.interval === target,
                         initialState: getTaskProgressInitialState(targets[0], intervalRecognizerInitialState)
                     })
                 )

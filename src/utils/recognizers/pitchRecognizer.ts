@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ReadableVocalState } from './pitchConverter';
+import { ReadableVocalState } from '../pitchConverter';
 import { scan, withLatestFrom } from 'rxjs/operators';
 
 interface Props {

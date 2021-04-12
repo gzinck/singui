@@ -1,31 +1,30 @@
 import { Observable } from 'rxjs';
 import { scan } from 'rxjs/operators';
 
-interface Props<RecognizerState> {
-    targets: number[];
-    currKey: keyof RecognizerState;
-    convertCurrent?: (n: any) => any;
-    initialState: TaskProgressState & RecognizerState;
+interface Props<RecognizerState, Target> {
+    targets: Target[];
+    checkCorrect: (state: RecognizerState, target: Target) => boolean;
+    initialState: TaskProgressState<Target> & RecognizerState;
 }
 
-interface Result {
-    target: number;
+interface Result<Target> {
+    target: Target;
     success?: boolean;
     start: Date;
     stop?: Date;
 }
 
-interface TaskProgressState {
+interface TaskProgressState<Target> {
     isCorrect: boolean; // If current note is correct
-    results: Result[];
-    currTarget: number;
-    nextTarget: number;
+    results: Result<Target>[];
+    currTarget: Target;
+    nextTarget: Target;
 }
 
-export function getTaskProgressInitialState<RecognizerState>(
-    initialTarget: number,
+export function getTaskProgressInitialState<RecognizerState, Target>(
+    initialTarget: Target,
     emptyState: RecognizerState
-): TaskProgressState & RecognizerState {
+): TaskProgressState<Target> & RecognizerState {
     return {
         ...emptyState,
         isCorrect: false,
@@ -40,20 +39,19 @@ export function getTaskProgressInitialState<RecognizerState>(
     };
 }
 
-export function taskProgress<RecognizerState extends { isDone: boolean }>({
+export function taskProgress<RecognizerState extends { isDone: boolean }, Target>({
     targets,
-    currKey,
-    convertCurrent,
+    checkCorrect,
     initialState
-}: Props<RecognizerState>) {
-    return (source$: Observable<RecognizerState>): Observable<TaskProgressState & RecognizerState> => {
+}: Props<RecognizerState, Target>) {
+    return (source$: Observable<RecognizerState>): Observable<TaskProgressState<Target> & RecognizerState> => {
         return source$.pipe(
-            scan<RecognizerState, TaskProgressState & RecognizerState>((state, curr) => {
+            scan<RecognizerState, TaskProgressState<Target> & RecognizerState>((state, curr) => {
                 const currTarget = curr.isDone && state.isDone ? state.currTarget : state.nextTarget;
                 let nextTarget = state.nextTarget;
-                const isCorrect = (convertCurrent ? convertCurrent(curr[currKey]) : curr[currKey]) === currTarget;
+                const isCorrect = checkCorrect(curr, currTarget);
 
-                const results: Result[] = [...state.results];
+                const results: Result<Target>[] = [...state.results];
                 if (curr.isDone && !state.isDone) {
                     nextTarget = targets[results.length % targets.length];
                     results[results.length - 1] = {

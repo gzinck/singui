@@ -9,7 +9,7 @@ import TaskPage from './TaskPage';
 import IndicatorsContainer from './IndicatorsContainer';
 import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
 import { Subject, Subscription } from 'rxjs';
-import { pitchRecognizer, pitchRecognizerInitialState, PitchRecognizerState } from '../../utils/pitchRecognizer';
+import { pitchRecognizer, pitchRecognizerInitialState, PitchRecognizerState } from '../../utils/recognizers/pitchRecognizer';
 
 interface PitchTasksProps {
     noteLabels?: string[];
@@ -36,10 +36,9 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                 .pipe(
                     smoothPitch(),
                     pitchRecognizer({ sustainLength$: sustainLength$.current }),
-                    taskProgress<PitchRecognizerState>({
+                    taskProgress<PitchRecognizerState, number>({
                         targets,
-                        convertCurrent: (n: number) => n % 12,
-                        currKey: 'noteNum',
+                        checkCorrect: (state, target) => state.noteNum % 12 === target,
                         initialState: getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState)
                     })
                 )

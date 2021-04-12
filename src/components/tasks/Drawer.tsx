@@ -6,7 +6,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import RadioIcon from '@material-ui/icons/Radio';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import { SwipeableDrawer } from '@material-ui/core';
-import { INTERVAL_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from '../../routes';
+import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from '../../routes';
 import List from '@material-ui/core/List';
 import LinkedListItem from '../common/LinkedListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -45,7 +45,7 @@ const Drawer = (): React.ReactElement => {
             <SwipeableDrawer onClose={() => setMenuOpen(false)} onOpen={() => setMenuOpen(true)} open={menuOpen}>
                 <div className={classes.drawer}>
                     <div className={classes.header}>
-                        <h2>Vox Soundboxx</h2>
+                        <h2>Vox Sandboxx</h2>
                         <p>
                             An experiment by{' '}
                             <a className={classes.link} href="https://graemezinck.ca">
@@ -73,6 +73,12 @@ const Drawer = (): React.ReactElement => {
                                 <MusicNoteIcon />
                             </ListItemIcon>
                             <ListItemText primary="Interval tasks" />
+                        </LinkedListItem>
+                        <LinkedListItem to={MELODY_TASKS_ROUTE}>
+                            <ListItemIcon>
+                                <MusicNoteIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Melody tasks" />
                         </LinkedListItem>
                     </List>
                 </div>
