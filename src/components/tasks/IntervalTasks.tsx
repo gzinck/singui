@@ -58,8 +58,8 @@ const IntervalTasks = (): React.ReactElement => {
                     target={1 + state.nextTarget}
                 />
                 <NoteProgressIndicator
-                    noteName={convertIntervalToString(state.interval)}
-                    isIncorrect={!state.isCorrect && state.interval !== 0 && (state.stage === 1 || state.isDone)}
+                    noteName={state.stage === 0 ? 'Start' : convertIntervalToString(state.interval)}
+                    isIncorrect={!state.isCorrect && state.stage === 1}
                     progress={Math.min(state.progress / sustainLength, 1)}
                 />
             </IndicatorsContainer>

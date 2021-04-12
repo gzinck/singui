@@ -43,7 +43,8 @@ export const intervalRecognizer = ({ sustainLength$ }: Props) => (
                 return {
                     ...state,
                     stage: 0, // Moving right along!
-                    isDone: true
+                    progress: 0,
+                    isDone: state.stage === 1 && state.interval !== 0
                 };
             } else {
                 const startHz = state.stage === 0 ? curr.hz : state.startHz;

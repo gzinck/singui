@@ -21,11 +21,18 @@ class VoiceDetector {
             context$.subscribe((audioContext) => {
                 this.audioContext = audioContext; // separate for type safety reasons
                 navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-                    // Build the graph
                     const sourceNode = audioContext.createMediaStreamSource(stream);
+
+                    // Throw in a band pass filter
+                    const bandPass = audioContext.createBiquadFilter();
+                    bandPass.type = 'bandpass';
+                    bandPass.frequency.value = 1850;
+                    bandPass.Q.value = 0.25;
+                    sourceNode.connect(bandPass);
+
                     const analyserNode = audioContext.createAnalyser();
                     analyserNode.fftSize = 2048;
-                    sourceNode.connect(analyserNode);
+                    bandPass.connect(analyserNode);
 
                     // For processing the pitch
                     const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
