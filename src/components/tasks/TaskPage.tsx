@@ -8,8 +8,8 @@ interface TaskPageProps {
     children?: React.ReactNode;
     header: string;
     subheader: string;
-    sustainLength: number;
-    setSustainLength: (n: number) => void;
+    sustainLength?: number;
+    setSustainLength?: (n: number) => void;
     setGain?: (n: number) => void;
 }
 
@@ -54,16 +54,20 @@ const TaskPage = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
                         />
                     </>
                 )}
-                <h4>Pitch selection time</h4>
-                <p>Shorter is faster, but more challenging</p>
-                <Slider
-                    value={props.sustainLength}
-                    onChange={(_, val) => props.setSustainLength(typeof val === 'number' ? val : val[0])}
-                    min={2}
-                    max={10}
-                    step={1}
-                    valueLabelDisplay="auto"
-                />
+                {props.setSustainLength && (
+                    <>
+                        <h4>Pitch selection time</h4>
+                        <p>Shorter is faster, but more challenging</p>
+                        <Slider
+                            value={props.sustainLength}
+                            onChange={(_, val) => props.setSustainLength && props.setSustainLength(typeof val === 'number' ? val : val[0])}
+                            min={2}
+                            max={10}
+                            step={1}
+                            valueLabelDisplay="auto"
+                        />
+                    </>
+                )}
             </OptionsPopover>
         </div>
     );

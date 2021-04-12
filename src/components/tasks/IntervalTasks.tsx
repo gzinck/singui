@@ -10,7 +10,7 @@ import { Subject, Subscription } from 'rxjs';
 import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
 import { intervalRecognizer, intervalRecognizerInitialState, IntervalRecognizerState } from '../../utils/intervalRecognizer';
 
-const defaultSustainLength = 5;
+const defaultSustainLength = 2;
 const targets = [2, 7, 4, 12, 9, 11, 5];
 
 const IntervalTasks = (): React.ReactElement => {
@@ -39,6 +39,8 @@ const IntervalTasks = (): React.ReactElement => {
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
     }, []);
 
+    const endNum = Math.max(0, Math.min(14, state.interval + 1));
+
     return (
         <TaskPage
             header="Interval tasks"
@@ -51,8 +53,8 @@ const IntervalTasks = (): React.ReactElement => {
                     noteLabels={intervalsAscendingNotes}
                     startNum={1}
                     startError={0}
-                    endNum={Math.max(0, Math.min(14, state.interval + 1))}
-                    endError={state.error}
+                    endNum={endNum}
+                    endError={endNum === 0 ? 0 : state.error}
                     target={1 + state.nextTarget}
                 />
                 <NoteProgressIndicator

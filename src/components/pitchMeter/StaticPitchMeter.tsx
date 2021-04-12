@@ -43,11 +43,12 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
             justifyContent: 'center',
             padding: theme.spacing(0, 3),
             borderRight: `0.2rem solid ${theme.palette.divider}`,
+            position: 'relative',
             '&:before': {
                 content: '""',
-                position: 'relative',
-                top: '0.65rem',
-                left: `${width - 2.5}rem`,
+                position: 'absolute',
+                top: 'calc(50% - 0.1rem)',
+                right: 0,
                 height: 0,
                 borderBottom: `0.2rem solid ${theme.palette.divider}`,
                 width: '1rem'
@@ -124,7 +125,7 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
         bottError: props.startError,
         endNum: props.endNum || props.startNum,
         ...(props.endNum !== undefined && props.endError !== undefined
-            ? props.startNum > props.endNum
+            ? props.startNum > props.endNum || (props.startNum === props.endNum && props.startError > props.endError)
                 ? {
                       bottNum: props.endNum,
                       bottError: props.endError

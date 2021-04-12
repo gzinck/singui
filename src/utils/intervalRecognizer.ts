@@ -27,6 +27,8 @@ export const intervalRecognizerInitialState: IntervalRecognizerState = {
     isDone: false
 };
 
+const mod = (n: number, m: number): number => ((n % m) + m) % m;
+
 export const intervalRecognizer = ({ sustainLength$ }: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<IntervalRecognizerState> => {
@@ -49,9 +51,11 @@ export const intervalRecognizer = ({ sustainLength$ }: Props) => (
 
                 // Calculate the interval
                 const intervalUnrounded = convertHzToInterval(startHz, endHz);
-                const roundUp = intervalUnrounded % 1 >= 0.5;
-                const interval = roundUp ? Math.ceil(intervalUnrounded) : Math.floor(intervalUnrounded);
-                const error = roundUp ? 1 - (intervalUnrounded % 1) : intervalUnrounded % 1;
+                const interval = Math.round(intervalUnrounded);
+                // Get the error. Note that if we're negative, we need to flip the sign.
+                const error =
+                    (interval > intervalUnrounded ? 1 - mod(intervalUnrounded, 1) : mod(intervalUnrounded, 1)) *
+                    (intervalUnrounded > 0 ? 1 : -1);
 
                 return {
                     startHz,
