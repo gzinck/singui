@@ -36,6 +36,7 @@ const MelodyDiagram = (props: MelodyDiagramProps) => {
                 {props.melody.map((note, idx) => (
                     <div
                         className={classes.note}
+                        key={`${note}-${idx}`}
                         style={{
                             bottom: `${4 * (note + 12)}%`,
                             left: `${(100 / props.melody.length) * idx}%`
