@@ -1,6 +1,6 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import Fab from '@material-ui/core/Fab';
 import Settings from '@material-ui/icons/Settings';
 import Popover from '@material-ui/core/Popover';

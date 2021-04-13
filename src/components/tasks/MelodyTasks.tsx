@@ -1,11 +1,10 @@
 import React from 'react';
-import TaskPage from './TaskPage';
-import MelodyDiagram from './MelodyDiagram';
-import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
-import { getMelodyRecognizerInitialState, melodyRecognizer, MelodyRecognizerState } from '../../utils/recognizers/melodyRecognizer';
-import { Subject } from 'rxjs';
-import { voiceDetector } from '../detector/shared';
-import { smoothPitch } from '../../utils/smoothPitch';
+import TaskPage from './taskPage/TaskPage';
+import MelodyDiagram from './progressIndicators/MelodyDiagram';
+import { getTaskProgressInitialState, taskProgress } from '../../utils/rxjs/taskProgress';
+import { getMelodyRecognizerInitialState, melodyRecognizer, MelodyRecognizerState } from '../../utils/rxjs/recognizers/melodyRecognizer';
+import { sustainLength$, voiceDetector } from '../detector/shared';
+import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 
 const melodies = [
     [0, 4, 2],
@@ -19,12 +18,9 @@ const melodies = [
     [0, -5, 2]
 ];
 
-const defaultSustainLength = 5;
-
 const MelodyTasks = (): React.ReactElement => {
     const [state, setState] = React.useState(getTaskProgressInitialState(melodies[0], getMelodyRecognizerInitialState(melodies)));
-    const sustainLength$ = React.useRef(new Subject<number>());
-    const [sustainLength, setSustainLength] = React.useState(defaultSustainLength);
+    const [sustainLength, setSustainLength] = React.useState(0);
 
     React.useEffect(() => {
         const subscriptions = [
@@ -32,7 +28,7 @@ const MelodyTasks = (): React.ReactElement => {
                 .getState()
                 .pipe(
                     smoothPitch(),
-                    melodyRecognizer({ sustainLength$: sustainLength$.current, melodies }),
+                    melodyRecognizer({ sustainLength$, melodies }),
                     taskProgress<MelodyRecognizerState, number[]>({
                         targets: melodies,
                         checkCorrect: (state, _, targetIdx) => state.orderedMelodies[0].targetIdx === targetIdx,
@@ -40,9 +36,8 @@ const MelodyTasks = (): React.ReactElement => {
                     })
                 )
                 .subscribe((nextState) => setState(nextState)),
-            sustainLength$.current.subscribe((len) => setSustainLength(len))
+            sustainLength$.subscribe((len) => setSustainLength(len))
         ];
-        sustainLength$.current.next(defaultSustainLength);
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
     }, []);
@@ -52,7 +47,7 @@ const MelodyTasks = (): React.ReactElement => {
             header="Melody tasks"
             subheader="Sing the melody below"
             sustainLength={sustainLength}
-            setSustainLength={(sustainLength) => sustainLength$.current.next(sustainLength)}
+            setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
         >
             <MelodyDiagram
                 melody={state.nextTarget}

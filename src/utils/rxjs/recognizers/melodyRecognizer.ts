@@ -1,5 +1,5 @@
 import { merge, Observable } from 'rxjs';
-import { convertHzToInterval, ReadableVocalState } from '../pitchConverter';
+import { convertHzToInterval, ReadableVocalState } from '../../pitchConverter';
 import { pitchRecognizer, PitchRecognizerState } from './pitchRecognizer';
 import { debounceTime, map, scan } from 'rxjs/operators';
 

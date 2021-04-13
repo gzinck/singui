@@ -1,22 +1,24 @@
 import React from 'react';
-import TaskPage from './TaskPage';
+import TaskPage from './taskPage/TaskPage';
 import { convertIntervalToString } from '../../utils/pitchConverter';
-import IndicatorsContainer from './IndicatorsContainer';
-import { voiceDetector } from '../detector/shared';
-import { smoothPitch } from '../../utils/smoothPitch';
-import StaticPitchMeter, { intervalsAscendingNotes } from '../pitchMeter/StaticPitchMeter';
-import NoteProgressIndicator from '../progress/NoteProgressIndicator';
-import { Subject, Subscription } from 'rxjs';
-import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
-import { intervalRecognizer, intervalRecognizerInitialState, IntervalRecognizerState } from '../../utils/recognizers/intervalRecognizer';
+import IndicatorsContainer from './progressIndicators/IndicatorsContainer';
+import { sustainLength$, voiceDetector } from '../detector/shared';
+import { smoothPitch } from '../../utils/rxjs/smoothPitch';
+import StaticPitchMeter, { intervalsAscendingNotes } from './progressIndicators/StaticPitchMeter';
+import NoteProgressIndicator from './progressIndicators/NoteProgressIndicator';
+import { Subscription } from 'rxjs';
+import { getTaskProgressInitialState, taskProgress } from '../../utils/rxjs/taskProgress';
+import {
+    intervalRecognizer,
+    intervalRecognizerInitialState,
+    IntervalRecognizerState
+} from '../../utils/rxjs/recognizers/intervalRecognizer';
 
-const defaultSustainLength = 5;
 const targets = [2, 7, 4, 12, 9, 11, 5];
 
 const IntervalTasks = (): React.ReactElement => {
     const [state, setState] = React.useState(getTaskProgressInitialState(targets[0], intervalRecognizerInitialState));
-    const sustainLength$ = React.useRef(new Subject<number>());
-    const [sustainLength, setSustainLength] = React.useState(defaultSustainLength);
+    const [sustainLength, setSustainLength] = React.useState(0);
 
     React.useEffect(() => {
         const subscriptions: Subscription[] = [
@@ -24,7 +26,7 @@ const IntervalTasks = (): React.ReactElement => {
                 .getState()
                 .pipe(
                     smoothPitch(),
-                    intervalRecognizer({ sustainLength$: sustainLength$.current }),
+                    intervalRecognizer({ sustainLength$ }),
                     taskProgress<IntervalRecognizerState, number>({
                         targets,
                         checkCorrect: (state, target) => state.interval === target,
@@ -32,9 +34,8 @@ const IntervalTasks = (): React.ReactElement => {
                     })
                 )
                 .subscribe((nextState) => setState(nextState)),
-            sustainLength$.current.subscribe((len) => setSustainLength(len))
+            sustainLength$.subscribe((len) => setSustainLength(len))
         ];
-        sustainLength$.current.next(defaultSustainLength);
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
     }, []);
@@ -46,7 +47,7 @@ const IntervalTasks = (): React.ReactElement => {
             header="Interval tasks"
             subheader={`Interval to sing: ${convertIntervalToString(state.nextTarget)}`}
             sustainLength={sustainLength}
-            setSustainLength={(sustainLength) => sustainLength$.current.next(sustainLength)}
+            setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
         >
             <IndicatorsContainer>
                 <StaticPitchMeter

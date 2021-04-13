@@ -1,6 +1,6 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 
 interface NoteProgressIndicatorProps {
     noteName: string;

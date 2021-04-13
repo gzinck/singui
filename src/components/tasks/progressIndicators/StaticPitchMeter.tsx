@@ -1,6 +1,6 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
-import { convertNoteToString } from '../../utils/pitchConverter';
+import { Theme } from '../../theme';
+import { convertNoteToString } from '../../../utils/pitchConverter';
 import React from 'react';
 
 interface StaticPitchMeterProps {

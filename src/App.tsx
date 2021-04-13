@@ -3,11 +3,12 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './components/theme';
 import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
 import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, PERFECT_PITCH_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from './routes';
-import Tuner from './components/tuner/Tuner';
+import Tuner from './components/tasks/Tuner';
 import PitchTasks from './components/tasks/PitchTasks';
-import { scale12Notes } from './components/pitchMeter/StaticPitchMeter';
+import { scale12Notes } from './components/tasks/progressIndicators/StaticPitchMeter';
 import IntervalTasks from './components/tasks/IntervalTasks';
 import MelodyTasks from './components/tasks/MelodyTasks';
+import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                     <Redirect to={TUNER_ROUTE} />
                 </Switch>
             </Router>
+            <UnsupportedBrowserAlert />
         </ThemeProvider>
     );
 }

@@ -1,13 +1,10 @@
 import { context$ } from './audioContext';
 import React from 'react';
 import { fromFetch } from 'rxjs/fetch';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-const useAudio = () => {
-    const gainNode = React.useRef<GainNode>();
-    const audioCtx = React.useRef<AudioContext>();
-
+const useAudio = (audioVolume$: Observable<number>) => {
     React.useEffect(() => {
         const getAudioFrom = (url: string) => {
             const startBuffer$ = fromFetch(url).pipe(mergeMap((res) => res.arrayBuffer()));
@@ -18,9 +15,8 @@ const useAudio = () => {
 
         const subscription = combineLatest(context$, getAudioFrom('/audio/start.wav'), getAudioFrom('/audio/loop.wav')).subscribe(
             ([context, startAudio, loopAudio]) => {
-                audioCtx.current = context;
                 const gain = context.createGain();
-                gainNode.current = gain;
+                audioVolume$.subscribe((volume) => gain.gain.setValueAtTime(volume, context.currentTime));
 
                 const startSource = context.createBufferSource();
                 startSource.buffer = startAudio;
@@ -49,13 +45,7 @@ const useAudio = () => {
             sources.forEach((node) => node.disconnect());
             subscription.unsubscribe();
         };
-    }, []);
-
-    return (gain: number) => {
-        if (gainNode.current && audioCtx.current) {
-            gainNode.current.gain.setValueAtTime(gain, audioCtx.current.currentTime);
-        }
-    };
+    }, [audioVolume$]);
 };
 
 export default useAudio;

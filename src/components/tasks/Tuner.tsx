@@ -1,8 +1,8 @@
 import React from 'react';
-import { smoothPitch } from '../../utils/smoothPitch';
-import ScrollingPitchMeter from '../pitchMeter/ScrollingPitchMeter';
+import { smoothPitch } from '../../utils/rxjs/smoothPitch';
+import ScrollingPitchMeter from './progressIndicators/ScrollingPitchMeter';
 import { voiceDetector } from '../detector/shared';
-import TaskPage from '../tasks/TaskPage';
+import TaskPage from './taskPage/TaskPage';
 
 const Tuner = (): React.ReactElement => {
     const [note, setNote] = React.useState('Sing or hum to begin');

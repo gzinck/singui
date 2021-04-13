@@ -1,9 +1,10 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import Slider from '@material-ui/core/Slider';
-import OptionsPopover from '../options/OptionsPopover';
+import OptionsPopover from './OptionsPopover';
 import Drawer from './Drawer';
+import NoVolumeAlert from './NoVolumeAlert';
 
 interface TaskPageProps {
     children?: React.ReactNode;
@@ -11,6 +12,7 @@ interface TaskPageProps {
     subheader: string;
     sustainLength?: number;
     setSustainLength?: (n: number) => void;
+    gain?: number;
     setGain?: (n: number) => void;
 }
 
@@ -48,6 +50,7 @@ const TaskPage = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
                         <>
                             <h4>Audio volume</h4>
                             <Slider
+                                value={props.gain}
                                 onChange={(_, val) => props.setGain && props.setGain(typeof val === 'number' ? val : val[0])}
                                 min={0}
                                 max={1}
@@ -75,6 +78,7 @@ const TaskPage = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
                     )}
                 </OptionsPopover>
             )}
+            {props.setGain && <NoVolumeAlert />}
         </div>
     );
 };

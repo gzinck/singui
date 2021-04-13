@@ -1,6 +1,6 @@
-import { VocalState } from '../components/detector/VoiceDetector';
+import { VocalState } from '../../components/detector/VoiceDetector';
 import { Observable } from 'rxjs';
-import { convertHzToNoteNum, convertPitchToReadable, ReadableVocalState } from './pitchConverter';
+import { convertHzToNoteNum, convertPitchToReadable, ReadableVocalState } from '../pitchConverter';
 import { filter, map, scan } from 'rxjs/operators';
 
 interface Options {

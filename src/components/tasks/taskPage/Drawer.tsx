@@ -1,14 +1,14 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import RadioIcon from '@material-ui/icons/Radio';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import { SwipeableDrawer } from '@material-ui/core';
-import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from '../../routes';
+import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from '../../../routes';
 import List from '@material-ui/core/List';
-import LinkedListItem from '../common/LinkedListItem';
+import LinkedListItem from '../../common/LinkedListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';

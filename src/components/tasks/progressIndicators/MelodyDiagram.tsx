@@ -1,7 +1,7 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Card from '@material-ui/core/Card';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import useTheme from '@material-ui/core/styles/useTheme';
 import clsx from 'clsx';
 

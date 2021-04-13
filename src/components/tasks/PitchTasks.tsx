@@ -1,29 +1,31 @@
 import React from 'react';
-import StaticPitchMeter from '../pitchMeter/StaticPitchMeter';
-import { voiceDetector } from '../detector/shared';
-import { smoothPitch } from '../../utils/smoothPitch';
+import StaticPitchMeter from './progressIndicators/StaticPitchMeter';
+import { audioVolume$, sustainLength$, voiceDetector } from '../detector/shared';
+import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import { convertNoteToString } from '../../utils/pitchConverter';
-import NoteProgressIndicator from '../progress/NoteProgressIndicator';
+import NoteProgressIndicator from './progressIndicators/NoteProgressIndicator';
 import useAudio from '../audio/useAudio';
-import TaskPage from './TaskPage';
-import IndicatorsContainer from './IndicatorsContainer';
-import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
-import { Subject, Subscription } from 'rxjs';
-import { pitchRecognizer, pitchRecognizerInitialState, PitchRecognizerState } from '../../utils/recognizers/pitchRecognizer';
+import TaskPage from './taskPage/TaskPage';
+import IndicatorsContainer from './progressIndicators/IndicatorsContainer';
+import { getTaskProgressInitialState, taskProgress } from '../../utils/rxjs/taskProgress';
+import { Subscription } from 'rxjs';
+import { pitchRecognizer, pitchRecognizerInitialState, PitchRecognizerState } from '../../utils/rxjs/recognizers/pitchRecognizer';
 
 interface PitchTasksProps {
     noteLabels?: string[];
     keyNumber: number;
 }
 
-const defaultSustainLength = 5;
-
 const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps> => {
     const [state, setState] = React.useState(getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState));
-    const sustainLength$ = React.useRef(new Subject<number>());
-    const [sustainLength, setSustainLength] = React.useState(defaultSustainLength);
+    const [sustainLength, setSustainLength] = React.useState(0);
+    const [gain, setGain] = React.useState(0);
 
-    const setGain = useAudio();
+    useAudio(audioVolume$);
+    React.useEffect(() => {
+        const sub = audioVolume$.subscribe((volume) => setGain(volume));
+        return () => sub.unsubscribe();
+    }, []);
 
     // Get updates as the user sings
     React.useEffect(() => {
@@ -35,7 +37,7 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                 .getState()
                 .pipe(
                     smoothPitch(),
-                    pitchRecognizer({ sustainLength$: sustainLength$.current }),
+                    pitchRecognizer({ sustainLength$ }),
                     taskProgress<PitchRecognizerState, number>({
                         targets,
                         checkCorrect: (state, target) => state.noteNum % 12 === target,
@@ -43,9 +45,8 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                     })
                 )
                 .subscribe((nextState) => setState(nextState)),
-            sustainLength$.current.subscribe((len) => setSustainLength(len))
+            sustainLength$.subscribe((len) => setSustainLength(len))
         ];
-        sustainLength$.current.next(defaultSustainLength);
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
     }, [props.keyNumber]);
@@ -55,8 +56,9 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
             header="Pitch tasks"
             subheader={`Pitch to sing: ${convertNoteToString(state.nextTarget, false)}`}
             sustainLength={sustainLength}
-            setSustainLength={(sustainLength) => sustainLength$.current.next(sustainLength)}
-            setGain={setGain}
+            setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
+            gain={gain}
+            setGain={(volume) => audioVolume$.next(volume)}
         >
             <IndicatorsContainer>
                 <StaticPitchMeter

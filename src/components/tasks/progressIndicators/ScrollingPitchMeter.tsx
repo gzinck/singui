@@ -1,7 +1,7 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
-import { convertNoteToString } from '../../utils/pitchConverter';
-import { Theme } from '../theme';
+import { convertNoteToString } from '../../../utils/pitchConverter';
+import { Theme } from '../../theme';
 
 interface PitchMeterProps {
     noteNum: number;
