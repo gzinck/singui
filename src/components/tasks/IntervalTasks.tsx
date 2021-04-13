@@ -10,7 +10,7 @@ import { Subject, Subscription } from 'rxjs';
 import { getTaskProgressInitialState, taskProgress } from '../../utils/taskProgress';
 import { intervalRecognizer, intervalRecognizerInitialState, IntervalRecognizerState } from '../../utils/recognizers/intervalRecognizer';
 
-const defaultSustainLength = 2;
+const defaultSustainLength = 5;
 const targets = [2, 7, 4, 12, 9, 11, 5];
 
 const IntervalTasks = (): React.ReactElement => {

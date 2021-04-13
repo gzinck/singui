@@ -8,11 +8,18 @@ import { voiceDetector } from '../detector/shared';
 import { smoothPitch } from '../../utils/smoothPitch';
 
 const melodies = [
-    [0, 3, 12],
-    [0, 3, -3]
+    [0, 4, 2],
+    [0, 4, 5],
+    [0, -1, -3],
+    [0, 4, 7],
+    [0, 7, 4],
+    [0, -5, 0],
+    [0, -5, -7],
+    [0, -5, -3],
+    [0, -5, 2]
 ];
 
-const defaultSustainLength = 2;
+const defaultSustainLength = 5;
 
 const MelodyTasks = (): React.ReactElement => {
     const [state, setState] = React.useState(getTaskProgressInitialState(melodies[0], getMelodyRecognizerInitialState(melodies)));
@@ -28,11 +35,7 @@ const MelodyTasks = (): React.ReactElement => {
                     melodyRecognizer({ sustainLength$: sustainLength$.current, melodies }),
                     taskProgress<MelodyRecognizerState, number[]>({
                         targets: melodies,
-                        checkCorrect: (state, target) =>
-                            state.melodies[0].intervals.reduce<boolean>(
-                                (correct, curr, idx) => correct && target[idx] === curr.interval,
-                                true
-                            ),
+                        checkCorrect: (state, _, targetIdx) => state.orderedMelodies[0].targetIdx === targetIdx,
                         initialState: getTaskProgressInitialState(melodies[0], getMelodyRecognizerInitialState(melodies))
                     })
                 )
@@ -53,11 +56,29 @@ const MelodyTasks = (): React.ReactElement => {
         >
             <MelodyDiagram
                 melody={state.nextTarget}
-                done={state.melodies[(state.results.length - 1) % melodies.length].intervals.map(
-                    (interval) => interval.duration !== 0 && !state.isDone
+                done={state.melodies[state.nextTargetIdx].intervals.map((interval, idx) =>
+                    idx === 0 ? interval.duration > sustainLength && !state.isDone : interval.duration !== 0 && !state.isDone
                 )}
                 current={state.interval}
             />
+            <h3>Matching melodies</h3>
+            {state.orderedMelodies.map((melody, idx) => (
+                <MelodyDiagram
+                    key={melody.targetIdx}
+                    melody={melody.intervals.map((i) => i.interval)}
+                    done={melody.intervals.map((interval, idx) =>
+                        idx === 0 ? interval.duration > sustainLength && !state.isDone : interval.duration !== 0 && !state.isDone
+                    )}
+                    current={state.interval}
+                    variant={
+                        idx === 0 && melody.intervals[melody.intervals.length - 1].duration !== 0
+                            ? melody.targetIdx === state.currTargetIdx
+                                ? 'success'
+                                : 'failure'
+                            : ''
+                    }
+                />
+            ))}
         </TaskPage>
     );
 };
