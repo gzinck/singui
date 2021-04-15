@@ -10,6 +10,7 @@ import {
     INTERVAL_TASKS_ROUTE,
     INTERVAL_TASKS_ROUTE_V1,
     MELODY_TASKS_ROUTE,
+    MELODY_TASKS_ROUTE_V1,
     PERFECT_PITCH_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
     TUNER_ROUTE
@@ -79,6 +80,12 @@ const Drawer = (): React.ReactElement => {
                             </ListItemIcon>
                             <ListItemText primary="Interval tasks" />
                         </LinkedListItem>
+                        <LinkedListItem to={MELODY_TASKS_ROUTE}>
+                            <ListItemIcon>
+                                <MusicNoteIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Melody tasks" />
+                        </LinkedListItem>
                     </List>
                     <Divider />
                     <h3 className={classes.h3}>Advanced tasks</h3>
@@ -95,11 +102,11 @@ const Drawer = (): React.ReactElement => {
                             </ListItemIcon>
                             <ListItemText primary="Interval tasks v1" />
                         </LinkedListItem>
-                        <LinkedListItem to={MELODY_TASKS_ROUTE}>
+                        <LinkedListItem to={MELODY_TASKS_ROUTE_V1}>
                             <ListItemIcon>
                                 <MusicNoteIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Melody tasks" />
+                            <ListItemText primary="Melody tasks v1" />
                         </LinkedListItem>
                     </List>
                     <Divider />

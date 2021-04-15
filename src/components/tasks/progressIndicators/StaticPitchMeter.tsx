@@ -2,6 +2,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
 import { convertNoteToString } from '../../../utils/pitchConverter';
 import React from 'react';
+import Circle from './Circle';
 
 interface StaticPitchMeterProps {
     startNum: number;
@@ -10,6 +11,8 @@ interface StaticPitchMeterProps {
     endError?: number;
     noteLabels: string[];
     target?: number;
+    progress?: number; // Between 0 and 1
+    isCorrect?: boolean;
 }
 
 interface StyleProps {
@@ -18,8 +21,10 @@ interface StyleProps {
     bottNum: number;
     bottError: number;
     endNum: number;
+    endError: number;
     noteLabels: string[];
     target?: number;
+    isCorrect?: boolean;
 }
 
 const width = 9;
@@ -64,22 +69,30 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
         left: `${width}rem`,
         top: target !== undefined ? `${(100 / noteLabels.length) * (noteLabels.length - 1 - target)}%` : 0
     }),
-    currentBox: ({ target, noteLabels, topNum, topError, bottNum, bottError }) => ({
+    currentBox: {
         height: '75vh',
         boxSizing: 'border-box',
         width: '3rem',
         marginLeft: '1rem',
-        position: 'relative',
-        '& div': {
-            width: '5vh',
-            height: `calc(${(100 / noteLabels.length) * (topNum - bottNum + topError - bottError)}% + 5vh)`,
-            borderRadius: '3rem',
-            position: 'absolute',
-            backgroundColor: topNum === target ? theme.palette.success.main : theme.palette.primary.main,
-            bottom: `calc(${(100 / noteLabels.length) * (bottNum + bottError + 0.5)}% - 2.5vh)`,
-            left: 0,
-            transition: 'top 0.1s'
-        }
+        position: 'relative'
+    },
+    currentIndicator: ({ isCorrect, noteLabels, topNum, topError, bottNum, bottError }) => ({
+        width: '5vh',
+        height: `calc(${(100 / noteLabels.length) * (topNum - bottNum + topError - bottError)}% + 5vh)`,
+        borderRadius: '3rem',
+        position: 'absolute',
+        backgroundColor:
+            isCorrect === undefined ? theme.palette.primary.main : isCorrect ? theme.palette.success.main : theme.palette.error.main,
+        bottom: `calc(${(100 / noteLabels.length) * (bottNum + bottError + 0.5)}% - 2.5vh)`,
+        left: 0,
+        transition: 'top 0.1s'
+    }),
+    circle: ({ noteLabels, endError, endNum }) => ({
+        left: 0,
+        position: 'absolute',
+        width: '5vh',
+        height: '5vh',
+        bottom: `calc(${(100 / noteLabels.length) * (endNum + endError + 0.5)}% - 2.5vh)`
     })
 }));
 
@@ -124,6 +137,7 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
         bottNum: props.startNum,
         bottError: props.startError,
         endNum: props.endNum || props.startNum,
+        endError: props.endError || props.startError,
         ...(props.endNum !== undefined && props.endError !== undefined
             ? props.startNum > props.endNum || (props.startNum === props.endNum && props.startError > props.endError)
                 ? {
@@ -146,7 +160,13 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
             </div>
             <div className={classes.target} />
             <div className={classes.currentBox}>
-                <div />
+                {props.progress !== undefined ? (
+                    <div className={classes.circle}>
+                        <Circle progress={props.progress} variant={props.isCorrect ? 'success' : 'error'} size="5vh" />
+                    </div>
+                ) : (
+                    <div className={classes.currentIndicator} />
+                )}
             </div>
         </div>
     );

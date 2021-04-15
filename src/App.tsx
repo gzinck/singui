@@ -6,6 +6,7 @@ import {
     INTERVAL_TASKS_ROUTE,
     INTERVAL_TASKS_ROUTE_V1,
     MELODY_TASKS_ROUTE,
+    MELODY_TASKS_ROUTE_V1,
     PERFECT_PITCH_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
     TUNER_ROUTE
@@ -17,6 +18,7 @@ import IntervalTasks from './components/tasks/IntervalTasks';
 import MelodyTasks from './components/tasks/MelodyTasks';
 import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
 import IntervalTasksTonic from './components/tasks/IntervalTasksTonic';
+import MelodyTasksMediant from './components/tasks/MelodyTasksMediant';
 
 function App() {
     return (
@@ -32,7 +34,10 @@ function App() {
                     <Route path={INTERVAL_TASKS_ROUTE}>
                         <IntervalTasksTonic keyNumber={7} />
                     </Route>
-                    <Route path={MELODY_TASKS_ROUTE} component={MelodyTasks} />
+                    <Route path={MELODY_TASKS_ROUTE_V1} component={MelodyTasks} />
+                    <Route path={MELODY_TASKS_ROUTE}>
+                        <MelodyTasksMediant keyNumber={7} />
+                    </Route>
                     <Redirect to={TUNER_ROUTE} />
                 </Switch>
             </Router>

@@ -1,6 +1,7 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
+import Circle from './Circle';
 
 interface NoteProgressIndicatorProps {
     noteName: string;
@@ -8,41 +9,11 @@ interface NoteProgressIndicatorProps {
     isIncorrect?: boolean; // Default to being "correct"
 }
 
-const strokeSize = 4;
-const radius = 50;
-const normalizedRadius = radius - strokeSize * 2;
-const circumference = normalizedRadius * 2 * Math.PI;
-
 const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
-    root: {
-        width: '50vw',
-        height: '50vw',
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    svg: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        zIndex: 0
-    },
-    circle: ({ progress, isIncorrect }) => ({
-        transition: 'stroke-dashoffset 0.35s, fill 0.35s',
-        transform: 'rotate(-90deg)',
-        transformOrigin: '50% 50%',
-        stroke: isIncorrect ? theme.palette.error.main : theme.palette.success.main,
-        fill: progress === 1 ? (isIncorrect ? theme.palette.error.main : theme.palette.success.main) : 'transparent',
-        strokeWidth: strokeSize,
-        strokeDasharray: `${circumference}% ${circumference}%`,
-        strokeDashoffset: `${(1 - progress) * circumference}%`,
-        zIndex: 0
-    }),
     noteName: {
         fontSize: '3rem',
         zIndex: 1,
-        width: `${normalizedRadius * 2}vw`,
+        width: '100%',
         textAlign: 'center'
     }
 }));
@@ -50,12 +21,9 @@ const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
 const NoteProgressIndicator = (props: NoteProgressIndicatorProps): React.ReactElement<NoteProgressIndicatorProps> => {
     const classes = useStyles(props);
     return (
-        <div className={classes.root}>
-            <svg className={classes.svg}>
-                <circle className={classes.circle} cx={`${radius}%`} cy={`${radius}%`} r={`${normalizedRadius}%`} />
-            </svg>
+        <Circle progress={props.progress} variant={props.isIncorrect ? 'error' : 'success'}>
             <h4 className={classes.noteName}>{props.noteName}</h4>
-        </div>
+        </Circle>
     );
 };
 

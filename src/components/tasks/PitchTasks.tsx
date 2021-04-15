@@ -66,6 +66,8 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                     startNum={(state.noteNum - props.keyNumber + 12) % 12}
                     startError={state.error}
                     target={(state.nextTarget - props.keyNumber + 12) % 12}
+                    progress={Math.min(state.progress / sustainLength, 1)}
+                    isCorrect={state.isCorrect}
                 />
                 <NoteProgressIndicator
                     noteName={convertNoteToString(state.noteNum)}

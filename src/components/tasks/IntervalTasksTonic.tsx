@@ -76,6 +76,8 @@ const IntervalTasks = ({ keyNumber }: IntervalTasksTonicProps): React.ReactEleme
                     endNum={clampInterval(startNum + state.interval)}
                     endError={state.endError}
                     target={1 + (state.stage === 0 ? 0 : state.nextTarget)}
+                    progress={Math.min(state.progress / sustainLength, 1)}
+                    isCorrect={state.isCorrect}
                 />
                 <NoteProgressIndicator
                     noteName={state.stage === 0 ? 'Start' : convertIntervalToString(state.interval)}
