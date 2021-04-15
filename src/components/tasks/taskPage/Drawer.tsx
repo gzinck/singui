@@ -6,7 +6,14 @@ import MenuIcon from '@material-ui/icons/Menu';
 import RadioIcon from '@material-ui/icons/Radio';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import { SwipeableDrawer } from '@material-ui/core';
-import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE } from '../../../routes';
+import {
+    INTERVAL_TASKS_ROUTE,
+    INTERVAL_TASKS_ROUTE_V1,
+    MELODY_TASKS_ROUTE,
+    PERFECT_PITCH_TASKS_ROUTE,
+    RELATIVE_PITCH_TASKS_ROUTE,
+    TUNER_ROUTE
+} from '../../../routes';
 import List from '@material-ui/core/List';
 import LinkedListItem from '../../common/LinkedListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -15,7 +22,7 @@ import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     menuBtn: {
-        position: 'absolute',
+        position: 'fixed',
         left: theme.spacing(3),
         top: theme.spacing(3)
     },
@@ -24,6 +31,9 @@ const useStyles = makeStyles<Theme>((theme) => ({
     },
     header: {
         padding: theme.spacing(2)
+    },
+    h3: {
+        padding: theme.spacing(2, 2, 0, 2)
     },
     link: {
         color: theme.palette.primary.main,
@@ -55,13 +65,8 @@ const Drawer = (): React.ReactElement => {
                         </p>
                     </div>
                     <Divider />
+                    <h3 className={classes.h3}>Official tasks</h3>
                     <List>
-                        <LinkedListItem to={TUNER_ROUTE}>
-                            <ListItemIcon>
-                                <RadioIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Tuner" />
-                        </LinkedListItem>
                         <LinkedListItem to={RELATIVE_PITCH_TASKS_ROUTE}>
                             <ListItemIcon>
                                 <MusicNoteIcon />
@@ -74,11 +79,37 @@ const Drawer = (): React.ReactElement => {
                             </ListItemIcon>
                             <ListItemText primary="Interval tasks" />
                         </LinkedListItem>
+                    </List>
+                    <Divider />
+                    <h3 className={classes.h3}>Advanced tasks</h3>
+                    <List>
+                        <LinkedListItem to={PERFECT_PITCH_TASKS_ROUTE}>
+                            <ListItemIcon>
+                                <MusicNoteIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Perfect pitch tasks" />
+                        </LinkedListItem>
+                        <LinkedListItem to={INTERVAL_TASKS_ROUTE_V1}>
+                            <ListItemIcon>
+                                <MusicNoteIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Interval tasks v1" />
+                        </LinkedListItem>
                         <LinkedListItem to={MELODY_TASKS_ROUTE}>
                             <ListItemIcon>
                                 <MusicNoteIcon />
                             </ListItemIcon>
                             <ListItemText primary="Melody tasks" />
+                        </LinkedListItem>
+                    </List>
+                    <Divider />
+                    <h3 className={classes.h3}>For fun</h3>
+                    <List>
+                        <LinkedListItem to={TUNER_ROUTE}>
+                            <ListItemIcon>
+                                <RadioIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Tuner" />
                         </LinkedListItem>
                     </List>
                 </div>

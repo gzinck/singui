@@ -9,7 +9,7 @@ interface NoteProgressIndicatorProps {
 }
 
 const strokeSize = 4;
-const radius = 25;
+const radius = 50;
 const normalizedRadius = radius - strokeSize * 2;
 const circumference = normalizedRadius * 2 * Math.PI;
 
@@ -35,11 +35,8 @@ const useStyles = makeStyles<Theme, NoteProgressIndicatorProps>((theme) => ({
         stroke: isIncorrect ? theme.palette.error.main : theme.palette.success.main,
         fill: progress === 1 ? (isIncorrect ? theme.palette.error.main : theme.palette.success.main) : 'transparent',
         strokeWidth: strokeSize,
-        strokeDasharray: `${circumference}vw ${circumference}vw`,
-        strokeDashoffset: `${(1 - progress) * circumference}vw`,
-        r: `${normalizedRadius}vw`,
-        cx: `${radius}vw`,
-        cy: `${radius}vw`,
+        strokeDasharray: `${circumference}% ${circumference}%`,
+        strokeDashoffset: `${(1 - progress) * circumference}%`,
         zIndex: 0
     }),
     noteName: {
@@ -55,7 +52,7 @@ const NoteProgressIndicator = (props: NoteProgressIndicatorProps): React.ReactEl
     return (
         <div className={classes.root}>
             <svg className={classes.svg}>
-                <circle className={classes.circle} />
+                <circle className={classes.circle} cx={`${radius}%`} cy={`${radius}%`} r={`${normalizedRadius}%`} />
             </svg>
             <h4 className={classes.noteName}>{props.noteName}</h4>
         </div>

@@ -40,6 +40,7 @@ const useStyles = makeStyles<Theme, PitchMeterProps>((theme: Theme) => ({
         display: 'flex',
         '& div': {
             width: `${containerWidth / 3}rem`,
+            textAlign: 'center',
             flexShrink: 0
         },
         color: theme.palette.text.secondary

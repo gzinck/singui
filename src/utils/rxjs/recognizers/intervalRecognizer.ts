@@ -29,6 +29,11 @@ export const intervalRecognizerInitialState: IntervalRecognizerState = {
 
 const mod = (n: number, m: number): number => ((n % m) + m) % m;
 
+/**
+ * Recognizes intervals with any start position (even one that's not
+ * a perfectly-in-tune note).
+ * @param sustainLength$
+ */
 export const intervalRecognizer = ({ sustainLength$ }: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<IntervalRecognizerState> => {

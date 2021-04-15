@@ -1,4 +1,4 @@
-import { context$ } from './audioContext';
+import { audioContext } from './audioContext';
 import React from 'react';
 import { fromFetch } from 'rxjs/fetch';
 import { combineLatest, Observable } from 'rxjs';
@@ -6,29 +6,30 @@ import { mergeMap } from 'rxjs/operators';
 
 const useAudio = (audioVolume$: Observable<number>) => {
     React.useEffect(() => {
-        const getAudioFrom = (url: string) => {
-            const startBuffer$ = fromFetch(url).pipe(mergeMap((res) => res.arrayBuffer()));
-            return combineLatest(context$, startBuffer$).pipe(mergeMap(([context, buffer]) => context.decodeAudioData(buffer)));
-        };
+        const getAudioFrom = (url: string) =>
+            fromFetch(url).pipe(
+                mergeMap((res) => res.arrayBuffer()),
+                mergeMap((buffer) => audioContext.decodeAudioData(buffer))
+            );
 
-        const sources: AudioNode[] = [];
+        const sources: { disconnect: () => void }[] = [];
 
-        const subscription = combineLatest(context$, getAudioFrom('/audio/start.wav'), getAudioFrom('/audio/loop.wav')).subscribe(
-            ([context, startAudio, loopAudio]) => {
-                const gain = context.createGain();
-                audioVolume$.subscribe((volume) => gain.gain.setValueAtTime(volume, context.currentTime));
+        const subscription = combineLatest(getAudioFrom('/audio/start.wav'), getAudioFrom('/audio/loop.wav')).subscribe(
+            ([startAudio, loopAudio]) => {
+                const gain = audioContext.createGain();
+                audioVolume$.subscribe((volume) => gain.gain.setValueAtTime(volume, audioContext.currentTime));
 
-                const startSource = context.createBufferSource();
+                const startSource = audioContext.createBufferSource();
                 startSource.buffer = startAudio;
                 startSource.connect(gain);
 
-                const loopSource = context.createBufferSource();
+                const loopSource = audioContext.createBufferSource();
                 loopSource.buffer = loopAudio;
                 loopSource.loop = true;
                 loopSource.connect(gain);
 
                 // Connect everything to the output
-                gain.connect(context.destination);
+                gain.connect(audioContext.destination);
 
                 // Hold onto the sources to do cleanup later
                 sources.push(startSource, loopSource, gain);
