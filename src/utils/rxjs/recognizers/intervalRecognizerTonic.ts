@@ -5,6 +5,7 @@ import { debounceTime, map, scan } from 'rxjs/operators';
 
 interface Props {
     sustainLength$: Observable<number>;
+    startNote: number;
 }
 
 export interface IntervalRecognizerTonicState {
@@ -29,9 +30,10 @@ export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState =
     isDone: false
 };
 
-export const intervalRecognizerTonic = ({ sustainLength$ }: Props) => (
+export const intervalRecognizerTonic = (props: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<IntervalRecognizerTonicState> => {
+    const { sustainLength$ } = props;
     const pitches$ = source$.pipe(pitchRecognizer({ sustainLength$ }));
     const done$ = source$.pipe(
         debounceTime(500),
@@ -50,7 +52,7 @@ export const intervalRecognizerTonic = ({ sustainLength$ }: Props) => (
                 };
             }
 
-            const stage = state.stage === 0 && !curr.isDone ? 0 : 1;
+            const stage = state.stage === 0 && (!curr.isDone || curr.noteNum % 12 !== props.startNote) ? 0 : 1;
             const endNote = curr.noteNum;
             const endError = curr.error;
             const startNote = stage === 0 ? endNote : state.startNote;

@@ -42,7 +42,7 @@ const IntervalTasks = ({ keyNumber }: IntervalTasksTonicProps): React.ReactEleme
                 .getState()
                 .pipe(
                     smoothPitch(),
-                    intervalRecognizerTonic({ sustainLength$ }),
+                    intervalRecognizerTonic({ sustainLength$, startNote: keyNumber }),
                     taskProgress<IntervalRecognizerTonicState, number>({
                         targets,
                         checkCorrect: (state, target) =>

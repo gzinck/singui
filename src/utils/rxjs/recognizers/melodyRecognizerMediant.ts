@@ -130,7 +130,7 @@ export const melodyRecognizerMediant = (props: Props) => (
             const melodyProgress = getMelodiesWithProgress(melodies, intervals);
 
             // We're in stage 0 iff we finished at the last update OR we were previously in stage 0 and we're not done
-            let stage = state.isDone || (state.stage === 0 && (!curr.isDone || startNote % 12 !== props.startNote)) ? 0 : 1;
+            const stage = state.stage === 0 && (!curr.isDone || startNote % 12 !== props.startNote) ? 0 : 1;
 
             return {
                 startNote,
