@@ -113,39 +113,40 @@ export const scale12Notes = [
 ].reverse();
 export const intervalsAscendingNotes = [
     '⬆',
-    'Perfect octave',
-    'Major seventh',
-    'Minor seventh',
-    'Major sixth',
-    'Minor sixth',
-    'Perfect fifth',
-    'Augmented fourth',
-    'Perfect fourth',
-    'Major third',
-    'Minor third',
-    'Major second',
-    'Minor second',
-    'Perfect unison',
+    'Perfect 8ve',
+    'Major 7th',
+    'Minor 7th',
+    'Major 6th',
+    'Minor 6th',
+    'Perfect 5th',
+    'Aug. 4th',
+    'Perfect 4th',
+    'Major 3rd',
+    'Minor 3rd',
+    'Major 2nd',
+    'Minor 2nd',
+    'Perf. unison',
     '⬇'
 ];
 
 const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<StaticPitchMeterProps> => {
+    const clamp = (n: number) => Math.max(0, Math.min(n, props.noteLabels.length));
     const classes = useStyles({
         ...props,
-        topNum: props.startNum,
+        topNum: clamp(props.startNum),
         topError: props.startError,
-        bottNum: props.startNum,
+        bottNum: clamp(props.startNum),
         bottError: props.startError,
-        endNum: props.endNum || props.startNum,
+        endNum: clamp(props.endNum || props.startNum),
         endError: props.endError || props.startError,
         ...(props.endNum !== undefined && props.endError !== undefined
             ? props.startNum > props.endNum || (props.startNum === props.endNum && props.startError > props.endError)
                 ? {
-                      bottNum: props.endNum,
+                      bottNum: clamp(props.endNum),
                       bottError: props.endError
                   }
                 : {
-                      topNum: props.endNum,
+                      topNum: clamp(props.endNum),
                       topError: props.endError
                   }
             : {})
@@ -162,7 +163,11 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
             <div className={classes.currentBox}>
                 {props.progress !== undefined ? (
                     <div className={classes.circle}>
-                        <Circle progress={props.progress} variant={props.isCorrect ? 'success' : 'error'} size="5vh" />
+                        <Circle
+                            progress={props.progress}
+                            variant={props.isCorrect === undefined ? '' : props.isCorrect ? 'success' : 'error'}
+                            size="5vh"
+                        />
                     </div>
                 ) : (
                     <div className={classes.currentIndicator} />

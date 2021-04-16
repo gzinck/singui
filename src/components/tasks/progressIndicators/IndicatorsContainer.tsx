@@ -12,6 +12,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'column-reverse',
+        width: '100%',
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'row'
         }

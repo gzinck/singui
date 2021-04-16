@@ -27,6 +27,7 @@ export interface MelodyRecognizerMediantState {
     interval: number;
     intervals: Interval[];
     stage: number; // 0 is for getting the startHz, 1 is for all others
+    progress: number;
     isDone: boolean; // when we narrowed things down
     melodies: Melody[]; // in the same order as input
     orderedMelodies: Melody[]; // ordered from highest to lowest score
@@ -39,6 +40,7 @@ export const getMelodyRecognizerMediantInitialState = (melodies: number[][]): Me
     interval: 0,
     intervals: [],
     stage: 0,
+    progress: 0,
     isDone: false,
     melodies: melodies.map((arr, targetIdx) => ({
         intervals: arr.map((interval) => ({ interval, duration: 0 })),
@@ -96,6 +98,7 @@ export const melodyRecognizerMediant = (props: Props) => (
                     ...state,
                     interval: 0,
                     stage: 0,
+                    progress: 0,
                     intervals,
                     isDone: state.stage === 1 && finishedMelody,
                     melodies: melodyProgress,
@@ -139,6 +142,7 @@ export const melodyRecognizerMediant = (props: Props) => (
                 interval,
                 intervals,
                 stage,
+                progress: state.stage === 0 ? curr.progress : state.progress,
                 isDone: false,
                 melodies: melodyProgress,
                 orderedMelodies: sortMelodies(melodyProgress)
