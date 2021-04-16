@@ -12,7 +12,7 @@ import {
     intervalRecognizer,
     intervalRecognizerInitialState,
     IntervalRecognizerState
-} from '../../utils/rxjs/recognizers/intervalRecognizer';
+} from '../../utils/rxjs/legacyRecognizers/intervalRecognizer';
 
 const targets = [2, 7, 4, 12, 9, 11, 5];
 

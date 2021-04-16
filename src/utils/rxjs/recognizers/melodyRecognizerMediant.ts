@@ -8,7 +8,7 @@ interface Interval {
     duration: number;
 }
 
-interface Melody {
+export interface Melody {
     intervals: Interval[];
     score: number; // Higher score when good
     targetIdx: number; // Index of the melody
@@ -76,6 +76,7 @@ const getMelodiesWithProgress = (melodies: number[][], intervals: Interval[]): M
 
 const sortMelodies = (melodies: Melody[]) => [...melodies].sort((melody1, melody2) => melody2.score - melody1.score);
 
+// TODO: rename this to be just a "melodyRecognizer" (doesn't matter what start note, it's a parameter)
 export const melodyRecognizerMediant = (props: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<MelodyRecognizerMediantState> => {
@@ -132,8 +133,8 @@ export const melodyRecognizerMediant = (props: Props) => (
 
             const melodyProgress = getMelodiesWithProgress(melodies, intervals);
 
-            // We're in stage 0 iff we finished at the last update OR we were previously in stage 0 and we're not done
-            const stage = state.stage === 0 && (!curr.isDone || startNote % 12 !== props.startNote) ? 0 : 1;
+            // We're in stage 0 iff we were previously in stage 0 and [we're on the wrong note|we're not done]
+            const stage = state.stage === 0 && (startNote % 12 !== props.startNote || !curr.isDone) ? 0 : 1;
 
             return {
                 startNote,

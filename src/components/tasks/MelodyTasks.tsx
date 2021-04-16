@@ -2,7 +2,11 @@ import React from 'react';
 import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
 import { getTaskProgressInitialState, taskProgress } from '../../utils/rxjs/taskProgress';
-import { getMelodyRecognizerInitialState, melodyRecognizer, MelodyRecognizerState } from '../../utils/rxjs/recognizers/melodyRecognizer';
+import {
+    getMelodyRecognizerInitialState,
+    melodyRecognizer,
+    MelodyRecognizerState
+} from '../../utils/rxjs/legacyRecognizers/melodyRecognizer';
 import { sustainLength$, voiceDetector } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 

@@ -1,7 +1,7 @@
 import { convertHzToInterval, ReadableVocalState } from '../../pitchConverter';
 import { merge, Observable } from 'rxjs';
 import { debounceTime, map, scan } from 'rxjs/operators';
-import { pitchRecognizer, PitchRecognizerState } from './pitchRecognizer';
+import { pitchRecognizer, PitchRecognizerState } from '../recognizers/pitchRecognizer';
 
 interface Props {
     sustainLength$: Observable<number>;

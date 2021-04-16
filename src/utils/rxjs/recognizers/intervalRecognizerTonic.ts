@@ -30,6 +30,7 @@ export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState =
     isDone: false
 };
 
+// TODO: rename this to intervalRecognizer (doesn't matter what start note is)
 export const intervalRecognizerTonic = (props: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<IntervalRecognizerTonicState> => {
