@@ -17,7 +17,7 @@ interface PitchTasksProps {
 }
 
 const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps> => {
-    const [state, setState] = React.useState(getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState));
+    const [state, setState] = React.useState(getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState, props.keyNumber));
     const [sustainLength, setSustainLength] = React.useState(0);
     const [gain, setGain] = React.useState(0);
 
@@ -41,7 +41,8 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                     taskProgress<PitchRecognizerState, number>({
                         targets,
                         checkCorrect: (state, target) => state.noteAbs % 12 === target,
-                        initialState: getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState)
+                        initialState: getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState, targets[0]),
+                        getNextNote: (state) => state.nextTarget
                     })
                 )
                 .subscribe((nextState) => setState(nextState)),

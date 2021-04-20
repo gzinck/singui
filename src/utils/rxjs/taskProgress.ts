@@ -1,10 +1,11 @@
 import { Observable } from 'rxjs';
-import { scan } from 'rxjs/operators';
+import { map, scan } from 'rxjs/operators';
 
 interface Props<RecognizerState, Target> {
     targets: Target[];
     checkCorrect: (state: RecognizerState, target: Target, targetIdx: number) => boolean;
-    initialState: TaskProgressState<Target> & RecognizerState;
+    initialState: TaskProgressState<Target, RecognizerState>;
+    getNextNote: (state: TaskProgressState<Target, RecognizerState>) => number | undefined;
 }
 
 interface Result<Target> {
@@ -14,19 +15,23 @@ interface Result<Target> {
     stop?: Date;
 }
 
-export interface TaskProgressState<Target> {
+export interface State<Target> {
     isCorrect: boolean; // If current note is correct
     results: Result<Target>[];
     currTargetIdx: number;
     currTarget: Target;
     nextTargetIdx: number;
     nextTarget: Target;
+    nextNote: number | undefined;
 }
+
+export type TaskProgressState<Target, RecognizerState> = State<Target> & RecognizerState;
 
 export function getTaskProgressInitialState<RecognizerState, Target>(
     initialTarget: Target,
-    emptyState: RecognizerState
-): TaskProgressState<Target> & RecognizerState {
+    emptyState: RecognizerState,
+    initialNote: number
+): TaskProgressState<Target, RecognizerState> {
     return {
         ...emptyState,
         isCorrect: false,
@@ -39,18 +44,20 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
         currTargetIdx: 0,
         currTarget: initialTarget,
         nextTargetIdx: 0,
-        nextTarget: initialTarget
+        nextTarget: initialTarget,
+        nextNote: initialNote
     };
 }
 
 export function taskProgress<RecognizerState extends { isDone: boolean }, Target>({
     targets,
     checkCorrect,
-    initialState
+    initialState,
+    getNextNote
 }: Props<RecognizerState, Target>) {
-    return (source$: Observable<RecognizerState>): Observable<TaskProgressState<Target> & RecognizerState> => {
+    return (source$: Observable<RecognizerState>): Observable<TaskProgressState<Target, RecognizerState>> => {
         return source$.pipe(
-            scan<RecognizerState, TaskProgressState<Target> & RecognizerState>((state, curr) => {
+            scan<RecognizerState, TaskProgressState<Target, RecognizerState>>((state, curr) => {
                 const currTargetIdx = curr.isDone && state.isDone ? state.currTargetIdx : state.nextTargetIdx;
                 const currTarget = curr.isDone && state.isDone ? state.currTarget : state.nextTarget;
                 let nextTargetIdx = state.nextTargetIdx;
@@ -79,9 +86,14 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
                     currTargetIdx,
                     currTarget,
                     nextTargetIdx,
-                    nextTarget
+                    nextTarget,
+                    nextNote: 0
                 };
-            }, initialState)
+            }, initialState),
+            map((state) => ({
+                ...state,
+                nextNote: getNextNote(state)
+            }))
         );
     };
 }
