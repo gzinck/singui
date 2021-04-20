@@ -25,7 +25,7 @@ export const smoothPitch: (options?: Options) => (source: Observable<VocalState>
             (state, curr) => {
                 return {
                     ...curr,
-                    pitch: curr.pitch * options.pitchWeight + state.pitch * (1 - options.pitchWeight),
+                    pitch: state.pitch === 0 ? curr.pitch : curr.pitch * options.pitchWeight + state.pitch * (1 - options.pitchWeight),
                     time: new Date()
                 };
             },

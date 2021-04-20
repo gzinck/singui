@@ -5,3 +5,4 @@ export const INTERVAL_TASKS_ROUTE_V1 = '/interval-v1';
 export const INTERVAL_TASKS_ROUTE = '/interval';
 export const MELODY_TASKS_ROUTE_V1 = '/melody-v1';
 export const MELODY_TASKS_ROUTE = '/melody';
+export const UNIVERSAL_TASKS_ROUTE = '/universal';

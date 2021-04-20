@@ -14,7 +14,7 @@ interface Result<Target> {
     stop?: Date;
 }
 
-interface TaskProgressState<Target> {
+export interface TaskProgressState<Target> {
     isCorrect: boolean; // If current note is correct
     results: Result<Target>[];
     currTargetIdx: number;

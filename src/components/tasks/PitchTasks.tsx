@@ -37,10 +37,10 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
                 .getState()
                 .pipe(
                     smoothPitch(),
-                    pitchRecognizer({ sustainLength$ }),
+                    pitchRecognizer({ sustainLength$, keyNumber: props.keyNumber }),
                     taskProgress<PitchRecognizerState, number>({
                         targets,
-                        checkCorrect: (state, target) => state.noteNum % 12 === target,
+                        checkCorrect: (state, target) => state.noteAbs % 12 === target,
                         initialState: getTaskProgressInitialState(props.keyNumber, pitchRecognizerInitialState)
                     })
                 )
@@ -63,14 +63,14 @@ const PitchTasks = (props: PitchTasksProps): React.ReactElement<PitchTasksProps>
             <IndicatorsContainer>
                 <StaticPitchMeter
                     noteLabels={props.noteLabels}
-                    startNum={(state.noteNum - props.keyNumber + 12) % 12}
+                    startNum={(state.noteAbs - props.keyNumber + 12) % 12}
                     startError={state.error}
                     target={(state.nextTarget - props.keyNumber + 12) % 12}
                     progress={Math.min(state.progress / sustainLength, 1)}
                     isCorrect={state.isCorrect}
                 />
                 <NoteProgressIndicator
-                    noteName={convertNoteToString(state.noteNum)}
+                    noteName={convertNoteToString(state.noteAbs)}
                     isIncorrect={!state.isCorrect}
                     progress={Math.min(state.progress / sustainLength, 1)}
                 />
