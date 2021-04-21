@@ -16,6 +16,7 @@ interface Result<Target> {
 }
 
 export interface State<Target> {
+    isDone: boolean;
     isCorrect: boolean; // If current note is correct
     results: Result<Target>[];
     currTargetIdx: number;
@@ -34,6 +35,7 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
 ): TaskProgressState<Target, RecognizerState> {
     return {
         ...emptyState,
+        isDone: false,
         isCorrect: false,
         results: [
             {

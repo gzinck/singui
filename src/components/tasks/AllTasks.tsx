@@ -6,15 +6,15 @@ import { audioVolume$, sustainLength$, voiceDetector } from '../detector/shared'
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import useGain from '../audio/useGain';
 import useAudio from '../audio/useAudio';
-import IndicatorsContainer from './progressIndicators/IndicatorsContainer';
-import StaticPitchMeter, { intervalsAscendingNotes } from './progressIndicators/StaticPitchMeter';
+import StaticPitchMeter, { intervalsAscendingNotes, scale15Notes } from './progressIndicators/StaticPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
-import { pitchRecognizer, pitchRecognizerInitialState } from '../../utils/rxjs/recognizers/pitchRecognizer';
 import { RecognizerMap, TaskType, universalRecognizer, UniversalRecognizerState } from '../../utils/rxjs/recognizers/universalRecognizer';
 import { MelodyRecognizerState, MelodyState } from '../../utils/rxjs/recognizers/melodyRecognizer';
 import { MelodyTaskTarget, TaskTarget } from './target';
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../utils/rxjs/universalTaskProgress';
+import { convertIntervalToString, convertScalePitchToString } from '../../utils/pitchConverter';
+import TargetBox from './progressIndicators/TargetBox';
 
 interface Props {
     keyNumber: number;
@@ -22,15 +22,31 @@ interface Props {
     recognizers: RecognizerMap;
 }
 
-const useStyles = makeStyles<Theme>((theme) => ({
-    melodyBox: {
-        marginLeft: theme.spacing(3),
-        flexBasis: '50rem',
-        flexShrink: 1,
-        maxHeight: '75vh'
+const leftWidth = '16rem';
+const useStyles = makeStyles<Theme>(() => ({
+    root: {
+        width: '100%',
+        height: '100%',
+        '& > div': {
+            clear: 'none',
+            float: 'left'
+        }
+    },
+    left: {
+        height: '100%',
+        width: leftWidth
+    },
+    right: {
+        height: '100%',
+        width: `calc(100% - ${leftWidth})`
+    },
+    pitchBox: {
+        width: '10rem',
+        height: '10rem',
+        position: 'relative'
     },
     matchesBox: {
-        maxHeight: 'calc(75vh - 14rem)',
+        maxHeight: 'calc(100% - 14rem)',
         overflowY: 'scroll'
     }
 }));
@@ -46,7 +62,6 @@ const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElemen
     }
 
     const classes = useStyles();
-    const [currPitch, setCurrPitch] = React.useState(pitchRecognizerInitialState);
     const [state, setState] = React.useState<TaskProgressState<TaskTarget, UniversalRecognizerState>>(
         getUniversalTaskProgressInitialState(targets[0])
     );
@@ -55,11 +70,15 @@ const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElemen
     useAudio(audioVolume$);
 
     React.useEffect(() => {
-        const pitch$ = voiceDetector.getState().pipe(smoothPitch(), pitchRecognizer({ sustainLength$, keyNumber }));
+        setState(getUniversalTaskProgressInitialState(targets[0]));
         const subscriptions = [
-            pitch$.subscribe((state) => setCurrPitch(state)),
-            pitch$
-                .pipe(universalRecognizer({ recognizers, keyNumber }), universalTaskProgress({ targets, keyNumber }))
+            voiceDetector
+                .getState()
+                .pipe(
+                    smoothPitch(),
+                    universalRecognizer({ sustainLength$, recognizers, keyNumber }),
+                    universalTaskProgress({ targets, keyNumber })
+                )
                 .subscribe((nextState) => setState(nextState)),
             sustainLength$.subscribe((len) => setSustainLength(len))
         ];
@@ -69,64 +88,70 @@ const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElemen
 
     return (
         <TaskPage
-            header="Melody tasks"
-            subheader="Sing the melody below"
+            header="All tasks"
+            // subheader={`Sing the ${state.nextTarget.type.toLowerCase()} below`}
             sustainLength={sustainLength}
             setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
             gain={gain}
             setGain={setGain}
         >
-            <IndicatorsContainer>
-                <StaticPitchMeter
-                    noteLabels={intervalsAscendingNotes}
-                    startNum={fitToMeter(state.inProgress ? state.note : currPitch.note)}
-                    startError={currPitch.error}
-                    target={fitToMeter(state.nextNote)}
-                    progress={state.inProgress ? 1 : Math.min(currPitch.progress / sustainLength, 1)}
-                    isCorrect={state.inProgress ? state.nextNote === state.note : state.nextNote === currPitch.note}
-                />
-                <div className={classes.melodyBox}>
-                    <div>
+            <div className={classes.root}>
+                <div className={classes.left}>
+                    <StaticPitchMeter
+                        noteLabels={state.type === TaskType.INTERVAL ? intervalsAscendingNotes : scale15Notes}
+                        startNum={fitToMeter(state.note)}
+                        startError={state.error}
+                        target={fitToMeter(state.nextNote)}
+                        progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
+                        isCorrect={state.nextNote === state.note}
+                    />
+                </div>
+                <div className={classes.right}>
+                    <TargetBox height="7rem">
+                        {state.nextTarget.type === TaskType.PITCH && <h2>Pitch: {convertScalePitchToString(state.nextTarget.value)}</h2>}
+                        {state.nextTarget.type === TaskType.INTERVAL && (
+                            <h2>Interval: {convertIntervalToString(state.nextTarget.value)}</h2>
+                        )}
                         {state.nextTarget.type === TaskType.MELODY && (
                             <MelodyDiagram
                                 melody={state.nextTarget.value}
                                 done={
-                                    state.type === TaskType.MELODY && state.inProgress
+                                    state.type === TaskType.MELODY
                                         ? getTargetMelody(state, (state.currTarget as MelodyTaskTarget).id).intervals.map(
                                               (interval) => interval.duration !== 0
                                           )
                                         : Array(state.nextTarget.value.length).fill(false)
                                 }
-                                current={
-                                    state.inProgress && state.type === TaskType.MELODY
-                                        ? state.interval
-                                        : currPitch.note - state.nextTarget.startNote
-                                }
+                                current={state.type === TaskType.MELODY ? state.interval : state.note - state.nextTarget.startNote}
                             />
                         )}
-                    </div>
+                    </TargetBox>
                     {state.type === TaskType.MELODY && (
                         <div className={classes.matchesBox}>
                             <h3>Matching melodies</h3>
                             {state.melodies.map((melody: MelodyState, idx: number) => (
-                                <MelodyDiagram
+                                <TargetBox
                                     key={melody.id}
-                                    melody={melody.intervals.map((i) => i.interval)}
-                                    done={melody.intervals.map((interval) => interval.duration !== 0)}
-                                    current={state.interval}
+                                    height="5rem"
                                     variant={
-                                        idx === 0 && melody.intervals[melody.intervals.length - 1].duration !== 0
+                                        idx === 0 && state.isValid
                                             ? state.currTarget.type === TaskType.MELODY && melody.id === state.currTarget.id
                                                 ? 'success'
                                                 : 'failure'
                                             : ''
                                     }
-                                />
+                                >
+                                    <MelodyDiagram
+                                        melody={melody.intervals.map((i) => i.interval)}
+                                        done={melody.intervals.map((interval) => interval.duration !== 0)}
+                                        current={state.interval}
+                                    />
+                                </TargetBox>
                             ))}
                         </div>
                     )}
                 </div>
-            </IndicatorsContainer>
+            </div>
         </TaskPage>
     );
 };

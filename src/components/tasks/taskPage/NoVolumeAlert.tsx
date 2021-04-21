@@ -18,11 +18,12 @@ const NoVolumeAlert = (): React.ReactElement => {
             onClose={() => setOpen(false)}
             anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left'
+                horizontal: 'center'
             }}
         >
             <MuiAlert variant="filled" severity="info" elevation={6} onClose={() => setOpen(false)}>
-                You previously turned your volume down to zero. Increase the volume by closing this alert and clicking on "Options".
+                You previously turned your volume down to zero. Increase the volume by clicking the settings button at the top of the
+                screen.
             </MuiAlert>
         </Snackbar>
     );

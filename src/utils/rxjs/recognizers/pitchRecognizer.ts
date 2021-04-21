@@ -14,7 +14,7 @@ export interface PitchRecognizerState {
     note: number; // Note, adjusted for the key and mod 12
     hz: number;
     progress: number;
-    isDone: boolean;
+    isValid: boolean;
 }
 
 export const pitchRecognizerInitialState: PitchRecognizerState = {
@@ -23,7 +23,7 @@ export const pitchRecognizerInitialState: PitchRecognizerState = {
     note: 0,
     hz: 0,
     progress: 0,
-    isDone: false
+    isValid: false
 };
 
 export const pitchRecognizer = ({ sustainLength$, keyNumber }: Props) => (
@@ -38,7 +38,7 @@ export const pitchRecognizer = ({ sustainLength$, keyNumber }: Props) => (
                 noteAbs: curr.noteNum,
                 note: mod12(curr.noteNum - keyNumber),
                 hz: curr.hz,
-                isDone: progress >= sustainLength,
+                isValid: progress >= sustainLength,
                 progress
             };
         }, pitchRecognizerInitialState)

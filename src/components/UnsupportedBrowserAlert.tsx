@@ -14,7 +14,7 @@ const UnsupportedBrowserAlert = (): React.ReactElement => {
             onClose={() => setOpen(false)}
             anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left'
+                horizontal: 'center'
             }}
         >
             <MuiAlert variant="filled" severity="error" elevation={6} onClose={() => setOpen(false)}>

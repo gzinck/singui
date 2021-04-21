@@ -24,25 +24,48 @@ export const convertNoteToString = (noteNum: number, includeOctave: boolean = tr
 
 const intervals: Record<number, string> = {
     '-1': '⬇',
-    0: 'Perfect unison',
-    1: 'Minor second',
-    2: 'Major second',
-    3: 'Minor third',
-    4: 'Major third',
-    5: 'Perfect fourth',
-    6: 'Augmented fourth',
-    7: 'Perfect fifth',
-    8: 'Minor sixth',
-    9: 'Major sixth',
-    10: 'Minor seventh',
-    11: 'Major seventh',
-    12: 'Perfect octave',
+    0: 'Perf. unison',
+    1: '', // 'Minor 2nd',
+    2: 'Major 2nd',
+    3: '', // 'Minor 3rd',
+    4: 'Major 3rd',
+    5: 'Perfect 4th',
+    6: '', // 'Aug. 4th',
+    7: 'Perfect 5th',
+    8: '', // 'Minor 6th',
+    9: 'Major 6th',
+    10: '', // 'Minor 7th',
+    11: 'Major 7th',
+    12: 'Perfect 8ve',
     13: '⬆'
 };
 
 export const convertIntervalToString = (intervalSize: number): string => {
     const interval = Math.max(-1, Math.min(13, intervalSize));
     return intervals[interval];
+};
+
+const scalePitches: Record<number, string> = {
+    '-1': '⬇',
+    0: 'Tonic',
+    1: '',
+    2: 'Supertonic',
+    3: '',
+    4: 'Mediant',
+    5: 'Subdominant',
+    6: '',
+    7: 'Dominant',
+    8: '',
+    9: 'Submediant',
+    10: '',
+    11: 'Leading Tone',
+    12: 'Tonic',
+    13: '⬆'
+};
+
+export const convertScalePitchToString = (intervalSize: number): string => {
+    const interval = Math.max(-1, Math.min(13, intervalSize));
+    return scalePitches[interval];
 };
 
 export interface ReadableVocalState {

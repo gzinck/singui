@@ -12,7 +12,7 @@ export interface IntervalRecognizerTonicState {
     note: number; // This is the interval (relative pitch compared to the start note).
     interval: number;
     error: number;
-    isDone: boolean;
+    isValid: boolean;
 }
 
 export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState = {
@@ -20,19 +20,22 @@ export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState =
     note: 0,
     interval: 0,
     error: 0,
-    isDone: false
+    isValid: false
 };
 
 export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
     source$: Observable<PitchRecognizerState>
 ): Observable<IntervalRecognizerTonicState> => {
     return source$.pipe(
-        map((state) => ({
-            startNote,
-            note: state.noteAbs - startNote + startNoteIdx,
-            interval: state.noteAbs - startNote,
-            error: state.error,
-            isDone: false // It never finishes; it finishes in the universalRecognizer
-        }))
+        map((state) => {
+            const interval = state.noteAbs - startNote;
+            return {
+                startNote,
+                note: interval + startNoteIdx,
+                interval,
+                error: state.error,
+                isValid: interval !== 0 // Everything is fair game EXCEPT singing one note
+            };
+        })
     );
 };

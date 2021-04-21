@@ -69,7 +69,7 @@ const Circle = (props: Props): React.ReactElement<Props> => {
 };
 
 Circle.defaultProps = {
-    size: '50vw',
+    size: '100%',
     progress: 1,
     variant: ''
 };

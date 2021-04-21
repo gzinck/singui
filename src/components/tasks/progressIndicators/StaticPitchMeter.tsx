@@ -1,17 +1,17 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
-import { convertNoteToString } from '../../../utils/pitchConverter';
+import { convertIntervalToString, convertNoteToString, convertScalePitchToString } from '../../../utils/pitchConverter';
 import React from 'react';
 import Circle from './Circle';
 
 interface StaticPitchMeterProps {
-    startNum: number;
+    startNum: number; // The note number. For an elongating current number, use start and end (but not progress)
     startError: number;
     endNum?: number;
     endError?: number;
     noteLabels: string[];
     target?: number;
-    progress?: number; // Between 0 and 1
+    progress?: number; // Between 0 and 1, showing the task progress. Only one position is shown if this is set.
     isCorrect?: boolean;
 }
 
@@ -28,15 +28,17 @@ interface StyleProps {
 }
 
 const width = 9;
+const circleSize = 4;
 const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     root: {
         backgroundColor: theme.palette.background.default,
+        height: '100%',
         position: 'relative',
         display: 'flex',
         flexWrap: 'nowrap'
     },
     notes: ({ noteLabels }) => ({
-        height: '75vh',
+        height: '100%',
         width: `${width}rem`,
         '& div': {
             height: `${100 / noteLabels.length}%`,
@@ -70,7 +72,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
         top: target !== undefined ? `${(100 / noteLabels.length) * (noteLabels.length - 1 - target)}%` : 0
     }),
     currentBox: {
-        height: '75vh',
+        height: '100%',
         boxSizing: 'border-box',
         width: '3rem',
         marginLeft: '1rem',
@@ -90,44 +92,16 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
     circle: ({ noteLabels, endError, endNum }) => ({
         left: 0,
         position: 'absolute',
-        width: '5vh',
-        height: '5vh',
-        bottom: `calc(${(100 / noteLabels.length) * (endNum + endError + 0.5)}% - 2.5vh)`
+        width: `${circleSize}rem`,
+        height: `${circleSize}rem`,
+        bottom: `calc(${(100 / noteLabels.length) * (endNum + endError + 0.5)}% - ${circleSize / 2}rem)`
     })
 }));
 
 export const named12Notes = new Array<string>(12).fill('').map((_, id) => convertNoteToString(11 - id, false));
-export const scale12Notes = [
-    'Tonic',
-    '',
-    'Supertonic',
-    '',
-    'Mediant',
-    'Subdominant',
-    '',
-    'Dominant',
-    '',
-    'Submediant',
-    '',
-    'Leading tone'
-].reverse();
-export const intervalsAscendingNotes = [
-    '⬆',
-    'Perfect 8ve',
-    'Major 7th',
-    'Minor 7th',
-    'Major 6th',
-    'Minor 6th',
-    'Perfect 5th',
-    'Aug. 4th',
-    'Perfect 4th',
-    'Major 3rd',
-    'Minor 3rd',
-    'Major 2nd',
-    'Minor 2nd',
-    'Perf. unison',
-    '⬇'
-];
+export const scale12Notes = new Array<string>(12).fill('').map((_, id) => convertScalePitchToString(id));
+export const scale15Notes = new Array<string>(15).fill('').map((_, id) => convertScalePitchToString(13 - id));
+export const intervalsAscendingNotes = new Array<string>(15).fill('').map((_, id) => convertIntervalToString(13 - id));
 
 const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<StaticPitchMeterProps> => {
     const clamp = (n: number) => Math.max(0, Math.min(n, props.noteLabels.length));
@@ -166,7 +140,7 @@ const StaticPitchMeter = (props: StaticPitchMeterProps): React.ReactElement<Stat
                         <Circle
                             progress={props.progress}
                             variant={props.isCorrect === undefined ? '' : props.isCorrect ? 'success' : 'error'}
-                            size="5vh"
+                            size={`${circleSize}rem`}
                         />
                     </div>
                 ) : (

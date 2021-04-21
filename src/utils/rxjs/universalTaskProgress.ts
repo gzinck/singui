@@ -17,7 +17,7 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
 };
 
 const getNextNote = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>, keyNumber: number): number | undefined => {
-    if (!state.inProgress) {
+    if (state.type === TaskType.PITCH || state.nextTarget !== state.currTarget) {
         // It should be the first item of the nextTarget
         switch (state.nextTarget.type) {
             case TaskType.PITCH:

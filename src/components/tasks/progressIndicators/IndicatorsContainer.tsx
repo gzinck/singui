@@ -9,10 +9,11 @@ interface IndicatorsContainerProps {
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'stretch',
         justifyContent: 'center',
         flexDirection: 'column-reverse',
         width: '100%',
+        height: '75vh',
         [theme.breakpoints.up('sm')]: {
             flexDirection: 'row'
         }

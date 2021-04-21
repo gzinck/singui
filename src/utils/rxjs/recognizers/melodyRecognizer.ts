@@ -30,7 +30,7 @@ export interface MelodyRecognizerState {
     error: number;
     interval: number;
     intervals: Interval[];
-    isDone: boolean;
+    isValid: boolean;
     melodies: MelodyState[]; // ordered from highest to lowest score
 }
 
@@ -45,7 +45,7 @@ const getMelodyRecognizerInitialState = (melodies: Melody[]): MelodyRecognizerSt
             duration: 1
         }
     ],
-    isDone: false,
+    isValid: false,
     melodies: melodies.map((melody) => ({
         intervals: melody.intervals.map((interval) => ({ interval, duration: 0 })),
         score: 0,
@@ -96,14 +96,16 @@ export const melodyRecognizer = ({ melodies, startNote, startNoteIdx }: Props) =
                 });
             }
 
+            const sortedMelodies = sortMelodies(getMelodiesWithProgress(melodies, intervals));
+
             return {
                 startNote,
                 note: interval + startNoteIdx,
                 error: curr.error,
                 interval,
                 intervals,
-                isDone: false, // It never finishes; it finishes in the universalRecognizer
-                melodies: sortMelodies(getMelodiesWithProgress(melodies, intervals))
+                isValid: sortedMelodies[0].intervals[sortedMelodies[0].intervals.length - 1].duration !== 0,
+                melodies: sortedMelodies
             };
         }, getMelodyRecognizerInitialState(melodies))
     );

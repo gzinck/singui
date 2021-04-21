@@ -1,9 +1,9 @@
 import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
-import Fab from '@material-ui/core/Fab';
-import Settings from '@material-ui/icons/Settings';
 import Popover from '@material-ui/core/Popover';
+import SettingsIcon from '@material-ui/icons/Settings';
+import IconButton from '@material-ui/core/IconButton';
 
 interface OptionsPopoverProps {
     children?: React.ReactNode;
@@ -33,28 +33,20 @@ const OptionsPopover = ({ children }: OptionsPopoverProps): React.ReactElement =
 
     return (
         <>
-            <Fab
-                variant="extended"
-                color="primary"
-                aria-label="options"
-                className={classes.fab}
-                ref={anchor}
-                onClick={() => setOpen(!open)}
-            >
-                <Settings className={classes.icon} />
-                Options
-            </Fab>
+            <IconButton ref={anchor} aria-label="settings" onClick={() => setOpen((o) => !o)}>
+                <SettingsIcon />
+            </IconButton>
             <Popover
                 open={open}
                 anchorEl={anchor.current}
                 onClose={() => setOpen(false)}
                 anchorOrigin={{
-                    vertical: 'top',
+                    vertical: 'bottom',
                     horizontal: 'right'
                 }}
                 transformOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
+                    vertical: -15,
+                    horizontal: 0
                 }}
             >
                 <div className={classes.children}>{children}</div>
