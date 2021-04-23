@@ -67,7 +67,7 @@ const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElemen
     );
     const [sustainLength, setSustainLength] = React.useState(0);
     const [gain, setGain] = useGain(audioVolume$);
-    useAudio(audioVolume$);
+    useAudio(audioVolume$, keyNumber);
 
     React.useEffect(() => {
         setState(getUniversalTaskProgressInitialState(targets[0]));
