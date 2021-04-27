@@ -1,7 +1,7 @@
 import { PitchDetector } from 'pitchy';
 import { interval, Observable, Subject, Subscription } from 'rxjs';
 import { shareReplay, startWith } from 'rxjs/operators';
-import { audioContext } from '../audio/audioContext';
+import { IAudioContext, IAudioNode } from 'standardized-audio-context';
 
 export interface VocalState {
     pitch: number; // From 0 to 1000 (approx.)
@@ -11,12 +11,16 @@ export interface VocalState {
 
 class VoiceDetector {
     private readonly subscriptions: Subscription[] = [];
+    private readonly nodes: IAudioNode<any>[] = [];
     private readonly events$: Subject<VocalState> = new Subject();
     private readonly state$: Observable<VocalState>;
-    constructor() {
+    private readonly audioContext: IAudioContext;
+    constructor(audioContext: IAudioContext) {
+        this.audioContext = audioContext;
         this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
         navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
             const sourceNode = audioContext.createMediaStreamSource(stream);
+            this.nodes.push(sourceNode);
 
             // Throw in a band pass filter
             const bandPass = audioContext.createBiquadFilter();
@@ -24,10 +28,12 @@ class VoiceDetector {
             bandPass.frequency.value = 1850;
             bandPass.Q.value = 0.25;
             sourceNode.connect(bandPass);
+            this.nodes.push(bandPass);
 
             const analyserNode = audioContext.createAnalyser();
             analyserNode.fftSize = 2048;
             bandPass.connect(analyserNode);
+            this.nodes.push(analyserNode);
 
             // For processing the pitch
             const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
@@ -54,7 +60,7 @@ class VoiceDetector {
     }
 
     public resume(): void {
-        audioContext.resume();
+        this.audioContext.resume();
     }
 
     public getState(): Observable<VocalState> {
@@ -63,6 +69,7 @@ class VoiceDetector {
 
     public cleanup(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
+        this.nodes.forEach((node) => node.disconnect());
     }
 }
 

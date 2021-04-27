@@ -5,10 +5,13 @@ import { getTaskProgressInitialState, taskProgress, TaskProgressState } from './
 import { pitchRecognizerInitialState } from './recognizers/pitchRecognizer';
 import { mod12 } from '../math';
 import { MelodyRecognizerState, MelodyState } from './recognizers/melodyRecognizer';
+import { getAudioURL } from '../../components/audio/getAudioURL';
 
 interface Props {
     targets: TaskTarget[];
     keyNumber: number;
+    octave: number;
+    play?: (url: string) => void;
 }
 
 const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState => {
@@ -73,9 +76,14 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
     );
 };
 
-export const universalTaskProgress = ({ targets, keyNumber }: Props) => (
+export const universalTaskProgress = ({ targets, keyNumber, octave, play }: Props) => (
     source$: Observable<UniversalRecognizerState>
 ): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
+    // Before starting, the tasks, play the first sound right away.
+    if (play) {
+        play(getAudioURL({ target: targets[0], keyNumber, octave }));
+    }
+
     return source$.pipe(
         taskProgress<UniversalRecognizerState, TaskTarget>({
             targets,
@@ -91,7 +99,12 @@ export const universalTaskProgress = ({ targets, keyNumber }: Props) => (
                 }
             },
             initialState: getUniversalTaskProgressInitialState(targets[0]),
-            getNextNote: (state) => getNextNote(state, keyNumber)
+            getNextNote: (state) => getNextNote(state, keyNumber),
+            onComplete: (_, target) => {
+                if (play) {
+                    play(getAudioURL({ target, keyNumber, octave }));
+                }
+            }
         })
     );
 };

@@ -5,8 +5,16 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import RadioIcon from '@material-ui/icons/Radio';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { INTERVAL_TASKS_ROUTE, MELODY_TASKS_ROUTE, RELATIVE_PITCH_TASKS_ROUTE, TUNER_ROUTE, UNIVERSAL_TASKS_ROUTE } from '../../../routes';
+import {
+    CALIBRATE_ROUTE,
+    INTERVAL_TASKS_ROUTE,
+    MELODY_TASKS_ROUTE,
+    RELATIVE_PITCH_TASKS_ROUTE,
+    TUNER_ROUTE,
+    UNIVERSAL_TASKS_ROUTE
+} from '../../../routes';
 import List from '@material-ui/core/List';
 import LinkedListItem from '../../common/LinkedListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -53,6 +61,16 @@ const Drawer = (): React.ReactElement => {
                             .
                         </p>
                     </div>
+                    <Divider />
+                    <h3 className={classes.h3}>Setup</h3>
+                    <List>
+                        <LinkedListItem to={CALIBRATE_ROUTE}>
+                            <ListItemIcon>
+                                <AssignmentTurnedInIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Calibration" />
+                        </LinkedListItem>
+                    </List>
                     <Divider />
                     <h3 className={classes.h3}>Official tasks</h3>
                     <List>

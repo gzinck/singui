@@ -1,10 +1,13 @@
-import VoiceDetector from './VoiceDetector';
 import { BehaviorSubject } from 'rxjs';
 import { CookieStorage } from 'cookie-storage';
 
-export const voiceDetector = new VoiceDetector();
-
 export const cookieStorage = new CookieStorage();
+
+const defaultTonic = 44;
+export const tonic$ = new BehaviorSubject<number>(defaultTonic);
+const initialTonic = cookieStorage.getItem('tonic');
+if (initialTonic) tonic$.next(parseInt(initialTonic));
+tonic$.subscribe((tonic) => cookieStorage.setItem('tonic', `${tonic}`));
 
 const defaultSustainLength = 5;
 export const sustainLength$ = new BehaviorSubject<number>(defaultSustainLength);

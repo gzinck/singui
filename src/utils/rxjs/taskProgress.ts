@@ -6,6 +6,7 @@ interface Props<RecognizerState, Target> {
     checkCorrect: (state: RecognizerState, target: Target, targetIdx: number) => boolean;
     initialState: TaskProgressState<Target, RecognizerState>;
     getNextNote: (state: TaskProgressState<Target, RecognizerState>) => number | undefined;
+    onComplete?: (completed: Target, next: Target) => void;
 }
 
 interface Result<Target> {
@@ -55,7 +56,8 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
     targets,
     checkCorrect,
     initialState,
-    getNextNote
+    getNextNote,
+    onComplete
 }: Props<RecognizerState, Target>) {
     return (source$: Observable<RecognizerState>): Observable<TaskProgressState<Target, RecognizerState>> => {
         return source$.pipe(
@@ -79,6 +81,9 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
                         target: targets[results.length % targets.length],
                         start: new Date()
                     });
+
+                    // Notify completion if needed
+                    if (onComplete) onComplete(currTarget, nextTarget);
                 }
 
                 return {

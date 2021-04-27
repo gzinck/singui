@@ -2,7 +2,7 @@ import React from 'react';
 import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
 import { TaskProgressState } from '../../utils/rxjs/taskProgress';
-import { audioVolume$, sustainLength$, voiceDetector } from '../detector/shared';
+import { audioVolume$, sustainLength$, tonic$ } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import useGain from '../audio/useGain';
 import useAudio from '../audio/useAudio';
@@ -15,9 +15,12 @@ import { MelodyTaskTarget, TaskTarget } from './target';
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../utils/rxjs/universalTaskProgress';
 import { convertIntervalToString, convertScalePitchToString } from '../../utils/pitchConverter';
 import TargetBox from './progressIndicators/TargetBox';
+import VoiceDetector from '../detector/VoiceDetector';
+import { audioContext } from '../audio/audioContext';
 
 interface Props {
-    keyNumber: number;
+    title: string;
+    withPrompts: boolean;
     targets: TaskTarget[];
     recognizers: RecognizerMap;
 }
@@ -56,39 +59,49 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
     return state.melodies.find((melody) => melody.id === id) as MelodyState;
 };
 
-const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElement<Props> => {
+const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.ReactElement<Props> => {
     function fitToMeter<T extends number | undefined>(note: T): T | number {
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
 
+    const [tonic, setTonic] = React.useState(0);
+    const octave = Math.min(tonic / 12);
+    const keyNumber = tonic % 12;
+    React.useEffect(() => {
+        const sub = tonic$.subscribe((n) => setTonic(n));
+        return () => sub.unsubscribe();
+    }, []);
+
     const classes = useStyles();
+    const ctx = React.useContext(audioContext);
     const [state, setState] = React.useState<TaskProgressState<TaskTarget, UniversalRecognizerState>>(
         getUniversalTaskProgressInitialState(targets[0])
     );
     const [sustainLength, setSustainLength] = React.useState(0);
     const [gain, setGain] = useGain(audioVolume$);
-    useAudio(audioVolume$, keyNumber);
+    const { play } = useAudio({ keyNumber, hasBackground: true });
 
     React.useEffect(() => {
         setState(getUniversalTaskProgressInitialState(targets[0]));
+        const voiceDetector = new VoiceDetector(ctx.audioContext);
         const subscriptions = [
             voiceDetector
                 .getState()
                 .pipe(
                     smoothPitch(),
                     universalRecognizer({ sustainLength$, recognizers, keyNumber }),
-                    universalTaskProgress({ targets, keyNumber })
+                    universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined })
                 )
                 .subscribe((nextState) => setState(nextState)),
             sustainLength$.subscribe((len) => setSustainLength(len))
         ];
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
-    }, [keyNumber, recognizers, targets]);
+    }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play]);
 
     return (
         <TaskPage
-            header="All tasks"
+            header={title}
             // subheader={`Sing the ${state.nextTarget.type.toLowerCase()} below`}
             sustainLength={sustainLength}
             setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
@@ -154,6 +167,10 @@ const AllTasks = ({ keyNumber, targets, recognizers }: Props): React.ReactElemen
             </div>
         </TaskPage>
     );
+};
+
+AllTasks.defaultProps = {
+    withPrompts: false
 };
 
 export default AllTasks;

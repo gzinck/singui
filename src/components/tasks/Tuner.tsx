@@ -1,10 +1,11 @@
 import React from 'react';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import ScrollingPitchMeter from './progressIndicators/ScrollingPitchMeter';
-import { voiceDetector } from '../detector/shared';
 import TaskPage from './taskPage/TaskPage';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
+import VoiceDetector from '../detector/VoiceDetector';
+import { audioContext } from '../audio/audioContext';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -19,12 +20,14 @@ const useStyles = makeStyles<Theme>((theme) => ({
 
 const Tuner = (): React.ReactElement => {
     const classes = useStyles();
+    const ctx = React.useContext(audioContext);
     const [note, setNote] = React.useState('Sing or hum to begin');
     const [noteNum, setNoteNum] = React.useState(0);
     const [error, setError] = React.useState(0);
 
     // Get updates as the user sings
     React.useEffect(() => {
+        const voiceDetector = new VoiceDetector(ctx.audioContext);
         const subscription = voiceDetector
             .getState()
             .pipe(smoothPitch())
@@ -34,8 +37,11 @@ const Tuner = (): React.ReactElement => {
                 setError(state.error);
             });
 
-        return () => subscription.unsubscribe();
-    }, []);
+        return () => {
+            voiceDetector.cleanup();
+            subscription.unsubscribe();
+        };
+    }, [ctx.audioContext]);
 
     return (
         <TaskPage header="Tuner">
