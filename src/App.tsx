@@ -11,7 +11,8 @@ import {
     SIGNUP_ROUTE,
     TEST_FORM_ROUTE,
     TUNER_ROUTE,
-    UNIVERSAL_TASKS_ROUTE
+    UNIVERSAL_TASKS_ROUTE,
+    DASHBOARD_ROUTE
 } from './routes';
 import Tuner from './components/tasks/Tuner';
 import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
@@ -23,6 +24,7 @@ import Form from './components/form/Form';
 import { firebaseConfig } from './firebaseConfig';
 import { getApps, initializeApp } from 'firebase/app';
 import LoginPage from './components/auth/LoginPage';
+import Dashboard from './components/dashboard/Dashboard';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -56,6 +58,9 @@ function App() {
                         </Route>
                         <Route path={SIGNIN_ROUTE}>
                             <LoginPage />
+                        </Route>
+                        <Route path={DASHBOARD_ROUTE}>
+                            <Dashboard />
                         </Route>
                         <Redirect to={TUNER_ROUTE} />
                     </Switch>
