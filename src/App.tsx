@@ -7,6 +7,7 @@ import {
     INTERVAL_TASKS_ROUTE,
     MELODY_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
+    TEST_FORM,
     TUNER_ROUTE,
     UNIVERSAL_TASKS_ROUTE
 } from './routes';
@@ -16,6 +17,7 @@ import AllTasks from './components/tasks/AllTasks';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Calibration from './components/tasks/calibration/Calibration';
+import Form from './components/form/Form';
 
 function App() {
     return (
@@ -38,6 +40,9 @@ function App() {
                         </Route>
                         <Route path={CALIBRATE_ROUTE}>
                             <Calibration />
+                        </Route>
+                        <Route path={TEST_FORM}>
+                            <Form header="Test form" />
                         </Route>
                         <Redirect to={TUNER_ROUTE} />
                     </Switch>

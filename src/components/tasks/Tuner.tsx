@@ -1,13 +1,13 @@
 import React from 'react';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import ScrollingPitchMeter from './progressIndicators/ScrollingPitchMeter';
-import TaskPage from './taskPage/TaskPage';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import VoiceDetector from '../detector/VoiceDetector';
 import { audioContext } from '../audio/audioContext';
+import Page from '../page/Page';
 
-const useStyles = makeStyles<Theme>((theme) => ({
+const useStyles = makeStyles<Theme>(() => ({
     root: {
         width: '100%',
         height: '100%',
@@ -44,13 +44,13 @@ const Tuner = (): React.ReactElement => {
     }, [ctx.audioContext]);
 
     return (
-        <TaskPage header="Tuner">
+        <Page header="Tuner">
             <div className={classes.root}>
                 <h2>{note}</h2>
                 <p>Error: {Math.round(error * 100)}%</p>
                 <ScrollingPitchMeter noteNum={noteNum} error={error} />
             </div>
-        </TaskPage>
+        </Page>
     );
 };
 

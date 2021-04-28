@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Drawer from './Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../../theme';
+import { Theme } from '../theme';
 
 interface Props {
     title: string;

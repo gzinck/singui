@@ -2,9 +2,8 @@ import React from 'react';
 import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
 import { TaskProgressState } from '../../utils/rxjs/taskProgress';
-import { audioVolume$, sustainLength$, tonic$ } from '../detector/shared';
+import { sustainLength$, tonic$ } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
-import useGain from '../audio/useGain';
 import useAudio from '../audio/useAudio';
 import StaticPitchMeter, { intervalsAscendingNotes, scale15Notes } from './progressIndicators/StaticPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -17,6 +16,7 @@ import { convertIntervalToString, convertScalePitchToString } from '../../utils/
 import TargetBox from './progressIndicators/TargetBox';
 import VoiceDetector from '../detector/VoiceDetector';
 import { audioContext } from '../audio/audioContext';
+import useSustainLength from '../audio/useSustainLength';
 
 interface Props {
     title: string;
@@ -74,11 +74,10 @@ const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.Re
 
     const classes = useStyles();
     const ctx = React.useContext(audioContext);
+    const [sustainLength] = useSustainLength();
     const [state, setState] = React.useState<TaskProgressState<TaskTarget, UniversalRecognizerState>>(
         getUniversalTaskProgressInitialState(targets[0])
     );
-    const [sustainLength, setSustainLength] = React.useState(0);
-    const [gain, setGain] = useGain(audioVolume$);
     const { play } = useAudio({ keyNumber, hasBackground: true });
 
     React.useEffect(() => {
@@ -92,22 +91,14 @@ const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.Re
                     universalRecognizer({ sustainLength$, recognizers, keyNumber }),
                     universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined })
                 )
-                .subscribe((nextState) => setState(nextState)),
-            sustainLength$.subscribe((len) => setSustainLength(len))
+                .subscribe((nextState) => setState(nextState))
         ];
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
     }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play]);
 
     return (
-        <TaskPage
-            header={title}
-            // subheader={`Sing the ${state.nextTarget.type.toLowerCase()} below`}
-            sustainLength={sustainLength}
-            setSustainLength={(sustainLength) => sustainLength$.next(sustainLength)}
-            gain={gain}
-            setGain={setGain}
-        >
+        <TaskPage header={title}>
             <div className={classes.root}>
                 <div className={classes.left}>
                     <StaticPitchMeter

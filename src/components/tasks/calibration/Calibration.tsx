@@ -1,4 +1,3 @@
-import TaskPage from '../taskPage/TaskPage';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import useAudio from '../../audio/useAudio';
@@ -11,6 +10,7 @@ import { Theme } from '../../theme';
 import Slider from '@material-ui/core/Slider';
 import Card from '@material-ui/core/Card';
 import { tonic$ } from '../../detector/shared';
+import Page from '../../page/Page';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -18,7 +18,8 @@ const useStyles = makeStyles<Theme>((theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100%'
+        height: '100%',
+        margin: theme.spacing(2)
     },
     buttonBox: {
         margin: theme.spacing(2, 0, 0),
@@ -74,7 +75,7 @@ const Calibration = (): React.ReactElement => {
     };
 
     return (
-        <TaskPage header="Calibration">
+        <Page header="Calibration">
             <div className={classes.root}>
                 <Typography variant="h4" align="center" gutterBottom>
                     {isDone ? 'All done!' : 'Sing the two notes being played.'}
@@ -114,7 +115,7 @@ const Calibration = (): React.ReactElement => {
                     </Card>
                 )}
             </div>
-        </TaskPage>
+        </Page>
     );
 };
 
