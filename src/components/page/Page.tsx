@@ -26,8 +26,9 @@ const useStyles = makeStyles<Theme>((theme) => ({
         width: '100%',
         position: 'relative',
         display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center'
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 }));
 

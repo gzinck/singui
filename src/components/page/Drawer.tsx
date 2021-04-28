@@ -6,12 +6,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import RadioIcon from '@material-ui/icons/Radio';
 import MusicNoteIcon from '@material-ui/icons/MusicNote';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import {
     CALIBRATE_ROUTE,
     INTERVAL_TASKS_ROUTE,
     MELODY_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
+    SIGNIN_ROUTE,
+    SIGNUP_ROUTE,
     TUNER_ROUTE,
     UNIVERSAL_TASKS_ROUTE
 } from '../../routes';
@@ -20,6 +23,9 @@ import LinkedListItem from '../common/LinkedListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import { getAuth } from 'firebase/auth';
+import { ListItem } from '@material-ui/core';
+import useAuth from '../auth/useAuth';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     menuBtn: {},
@@ -43,6 +49,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
 const Drawer = (): React.ReactElement => {
     const classes = useStyles();
     const [menuOpen, setMenuOpen] = React.useState(false);
+    const user = useAuth();
 
     return (
         <>
@@ -61,6 +68,33 @@ const Drawer = (): React.ReactElement => {
                             .
                         </p>
                     </div>
+                    <Divider />
+                    <h3 className={classes.h3}>Account</h3>
+                    <List>
+                        {user !== null ? (
+                            <ListItem button onClick={() => getAuth().signOut()}>
+                                <ListItemIcon>
+                                    <AccountCircleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Sign out" />
+                            </ListItem>
+                        ) : (
+                            <>
+                                <LinkedListItem to={SIGNIN_ROUTE}>
+                                    <ListItemIcon>
+                                        <AccountCircleIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Sign in" />
+                                </LinkedListItem>
+                                <LinkedListItem to={SIGNUP_ROUTE}>
+                                    <ListItemIcon>
+                                        <AccountCircleIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Sign up" />
+                                </LinkedListItem>
+                            </>
+                        )}
+                    </List>
                     <Divider />
                     <h3 className={classes.h3}>Setup</h3>
                     <List>

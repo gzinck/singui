@@ -24,7 +24,6 @@ const FormTextField = ({
     return (
         <FormItemBox header={header} text={text} error={error}>
             <TextField
-                id="outlined-basic"
                 label={label}
                 variant="outlined"
                 fullWidth={true}

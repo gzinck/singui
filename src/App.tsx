@@ -5,9 +5,11 @@ import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-d
 import {
     CALIBRATE_ROUTE,
     INTERVAL_TASKS_ROUTE,
+    SIGNIN_ROUTE,
     MELODY_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
-    TEST_FORM,
+    SIGNUP_ROUTE,
+    TEST_FORM_ROUTE,
     TUNER_ROUTE,
     UNIVERSAL_TASKS_ROUTE
 } from './routes';
@@ -18,6 +20,11 @@ import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } fro
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Calibration from './components/tasks/calibration/Calibration';
 import Form from './components/form/Form';
+import { firebaseConfig } from './firebaseConfig';
+import { getApps, initializeApp } from 'firebase/app';
+import LoginPage from './components/auth/LoginPage';
+
+if (getApps().length === 0) initializeApp(firebaseConfig);
 
 function App() {
     return (
@@ -41,8 +48,14 @@ function App() {
                         <Route path={CALIBRATE_ROUTE}>
                             <Calibration />
                         </Route>
-                        <Route path={TEST_FORM}>
+                        <Route path={TEST_FORM_ROUTE}>
                             <Form header="Test form" />
+                        </Route>
+                        <Route path={SIGNUP_ROUTE}>
+                            <LoginPage />
+                        </Route>
+                        <Route path={SIGNIN_ROUTE}>
+                            <LoginPage />
                         </Route>
                         <Redirect to={TUNER_ROUTE} />
                     </Switch>
