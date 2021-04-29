@@ -26,12 +26,16 @@ const mediantMelodies: Melody[] = [
     [0, 3, 0] // 3 - 5 - 3
 ].map((intervals, id) => ({ intervals, id: `${id}` }));
 
-interface TaskProps {
+export interface SingTaskProps {
     targets: TaskTarget[];
     recognizers: RecognizerMap;
+    header: string;
+    maxAttempts?: number;
+    withPrompts?: boolean;
 }
 
-export const allTasksProps: TaskProps = {
+export const allTasksProps: SingTaskProps = {
+    header: 'All tasks',
     targets: shuffle([
         ...mediantMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,
@@ -58,7 +62,8 @@ export const allTasksProps: TaskProps = {
     }
 };
 
-export const pitchTaskProps: TaskProps = {
+export const pitchTaskProps: SingTaskProps = {
+    header: 'Pitch tasks',
     targets: shuffle([...[0, 2, 4, 5, 7, 9, 11].map<PitchTaskTarget>((value) => ({ type: TaskType.PITCH, value }))]),
     recognizers: {
         0: { type: TaskType.PITCH },
@@ -76,7 +81,8 @@ export const pitchTaskProps: TaskProps = {
     }
 };
 
-export const intervalTaskProps: TaskProps = {
+export const intervalTaskProps: SingTaskProps = {
+    header: 'Interval tasks',
     targets: shuffle([...[2, 4, 5, 7, 9, 11, 12].map<IntervalTaskTarget>((value) => ({ type: TaskType.INTERVAL, value, startNote: 0 }))]),
     recognizers: {
         0: { type: TaskType.INTERVAL },
@@ -105,7 +111,8 @@ const tonicMelodies: Melody[] = [
     [0, 12, 7]
 ].map((intervals, id) => ({ intervals, id: `${id}` }));
 
-export const melodyTaskProps: TaskProps = {
+export const melodyTaskProps: SingTaskProps = {
+    header: 'Melody tasks',
     targets: shuffle([
         ...tonicMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,

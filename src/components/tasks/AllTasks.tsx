@@ -1,7 +1,7 @@
 import React from 'react';
 import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
-import { TaskProgressState } from '../../utils/rxjs/taskProgress';
+import { SingTaskResult, TaskProgressState } from '../../utils/rxjs/taskProgress';
 import { sustainLength$, tonic$ } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import useAudio from '../audio/useAudio';
@@ -19,11 +19,12 @@ import { audioContext } from '../audio/audioContext';
 import useSustainLength from '../audio/useSustainLength';
 
 interface Props {
-    title: string;
+    header: string;
     targets: TaskTarget[];
     recognizers: RecognizerMap;
     withPrompts?: boolean;
     maxAttempts: number;
+    onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
 const leftWidth = '16rem';
@@ -60,7 +61,7 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
     return state.melodies.find((melody) => melody.id === id) as MelodyState;
 };
 
-const AllTasks = ({ title, targets, recognizers, withPrompts, maxAttempts }: Props): React.ReactElement<Props> => {
+const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
     function fitToMeter<T extends number | undefined>(note: T): T | number {
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
@@ -92,14 +93,17 @@ const AllTasks = ({ title, targets, recognizers, withPrompts, maxAttempts }: Pro
                     universalRecognizer({ sustainLength$, recognizers, keyNumber }),
                     universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
                 )
-                .subscribe((nextState) => setState(nextState))
+                .subscribe((nextState) => {
+                    if (nextState.results.length === targets.length && onComplete) onComplete(nextState.results);
+                    setState(nextState);
+                })
         ];
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
-    }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts]);
+    }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts, onComplete]);
 
     return (
-        <TaskPage header={title}>
+        <TaskPage header={header}>
             <div className={classes.root}>
                 <div className={classes.left}>
                     <StaticPitchMeter

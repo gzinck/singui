@@ -10,7 +10,7 @@ interface Props<RecognizerState, Target> {
     maxAttempts: number;
 }
 
-interface Result<Target> {
+export interface SingTaskResult<Target> {
     target: Target;
     success?: boolean;
     attempts: number;
@@ -21,7 +21,7 @@ interface Result<Target> {
 export interface State<Target> {
     isDone: boolean;
     isCorrect: boolean; // If current note is correct
-    results: Result<Target>[];
+    results: SingTaskResult<Target>[];
     currTargetIdx: number;
     currTarget: Target;
     nextTargetIdx: number;
@@ -72,7 +72,7 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
                 let nextTarget = state.nextTarget;
                 const isCorrect = checkCorrect(curr, currTarget, currTargetIdx);
 
-                const results: Result<Target>[] = [...state.results];
+                const results: SingTaskResult<Target>[] = [...state.results];
                 if (curr.isDone && !state.isDone) {
                     // If we're done and it's right (or we maxed out our attempts), more forward
                     const attempts = results[results.length - 1].attempts;

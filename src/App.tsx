@@ -12,7 +12,8 @@ import {
     TEST_FORM_ROUTE,
     TUNER_ROUTE,
     UNIVERSAL_TASKS_ROUTE,
-    DASHBOARD_ROUTE
+    DASHBOARD_ROUTE,
+    STUDY1_ROUTE
 } from './routes';
 import Tuner from './components/tasks/Tuner';
 import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
@@ -25,6 +26,9 @@ import { firebaseConfig } from './firebaseConfig';
 import { getApps, initializeApp } from 'firebase/app';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
+import { testForm } from './components/form/testForm';
+import Study from './components/study/Study';
+import { study1Props } from './components/study/study1';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -36,22 +40,22 @@ function App() {
                     <Switch>
                         <Route path={TUNER_ROUTE} component={Tuner} />
                         <Route path={RELATIVE_PITCH_TASKS_ROUTE}>
-                            <AllTasks title="Pitch tasks" {...pitchTaskProps} />
+                            <AllTasks {...pitchTaskProps} />
                         </Route>
                         <Route path={INTERVAL_TASKS_ROUTE}>
-                            <AllTasks title="Interval tasks" {...intervalTaskProps} />
+                            <AllTasks {...intervalTaskProps} />
                         </Route>
                         <Route path={MELODY_TASKS_ROUTE}>
-                            <AllTasks title="Melody tasks" {...melodyTaskProps} />
+                            <AllTasks {...melodyTaskProps} />
                         </Route>
                         <Route path={UNIVERSAL_TASKS_ROUTE}>
-                            <AllTasks title="All tasks" {...allTasksProps} />
+                            <AllTasks {...allTasksProps} />
                         </Route>
                         <Route path={CALIBRATE_ROUTE}>
                             <Calibration />
                         </Route>
                         <Route path={TEST_FORM_ROUTE}>
-                            <Form header="Test form" />
+                            <Form header="Test form" form={testForm} />
                         </Route>
                         <Route path={SIGNUP_ROUTE}>
                             <LoginPage />
@@ -61,6 +65,9 @@ function App() {
                         </Route>
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />
+                        </Route>
+                        <Route path={STUDY1_ROUTE}>
+                            <Study {...study1Props} />
                         </Route>
                         <Redirect to={TUNER_ROUTE} />
                     </Switch>

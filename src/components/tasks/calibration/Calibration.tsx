@@ -12,6 +12,10 @@ import Card from '@material-ui/core/Card';
 import { tonic$ } from '../../detector/shared';
 import Page from '../../page/Page';
 
+interface CalibrationProps {
+    onComplete?: (startNote: number) => void;
+}
+
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         display: 'flex',
@@ -52,7 +56,7 @@ const defaultNoteNum = 44;
 
 const clamp = (n: number): number => Math.max(minNoteNum, Math.min(maxNoteNum, n));
 
-const Calibration = (): React.ReactElement => {
+const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<CalibrationProps> => {
     const classes = useStyles();
     const [startNote, setStartNote] = React.useState(defaultNoteNum);
     const [sliderVal, setSliderVal] = React.useState(0);
@@ -70,6 +74,7 @@ const Calibration = (): React.ReactElement => {
             setSliderVal(0);
         } else {
             tonic$.next(startNote);
+            onComplete && onComplete(startNote);
             setIsDone(true);
         }
     };

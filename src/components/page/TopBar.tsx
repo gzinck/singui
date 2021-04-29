@@ -7,7 +7,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 
 interface Props {
-    title: string;
+    header: string;
     children: React.ReactNode;
 }
 
@@ -21,14 +21,14 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
-const TopBar = ({ title, children }: Props): React.ReactElement<Props> => {
+const TopBar = ({ header, children }: Props): React.ReactElement<Props> => {
     const classes = useStyles();
     return (
         <AppBar position="fixed" className={classes.root}>
             <Toolbar>
                 <Drawer />
                 <Typography variant="h6" className={classes.title}>
-                    {title}
+                    {header}
                 </Typography>
                 {children}
             </Toolbar>

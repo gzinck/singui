@@ -37,7 +37,7 @@ const Page = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
 
     return (
         <div className={classes.root}>
-            <TopBar title={props.header}>{props.topBar}</TopBar>
+            <TopBar header={props.header}>{props.topBar}</TopBar>
             <div className={classes.main}>{props.children}</div>
         </div>
     );
