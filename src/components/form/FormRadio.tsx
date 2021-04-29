@@ -22,6 +22,10 @@ const useStyles = makeStyles<Theme>((theme) => ({
         flexDirection: 'row',
         flexWrap: 'nowrap',
         overflowX: 'auto',
+        '& > *': {
+            // Evenly space out children
+            flex: '1 1 0px'
+        },
         '& span': {
             textAlign: 'center'
         }
@@ -33,7 +37,7 @@ const FormRadio = ({ header, text, options, value, setValue, error, variant }: F
     const labelPlacement = variant === 'horizontal' ? 'bottom' : 'end';
     return (
         <FormItemBox header={header} text={text} error={error}>
-            <RadioGroup className={classes[variant]} aria-label={header} value={value} onChange={(e) => setValue(e.target.value)}>
+            <RadioGroup className={classes[variant]} aria-label={header} value={value || ''} onChange={(e) => setValue(e.target.value)}>
                 {options.map((opt) => (
                     <FormControlLabel labelPlacement={labelPlacement} control={<Radio />} label={opt} value={opt} key={opt} />
                 ))}

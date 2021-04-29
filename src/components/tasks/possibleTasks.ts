@@ -2,7 +2,7 @@ import { Melody } from '../../utils/rxjs/recognizers/melodyRecognizer';
 import { RecognizerMap, TaskType } from '../../utils/rxjs/recognizers/universalRecognizer';
 import { IntervalTaskTarget, MelodyTaskTarget, PitchTaskTarget, TaskTarget } from './target';
 
-function shuffle<T>(inArr: T[]): T[] {
+export function shuffleArray<T>(inArr: T[]): T[] {
     const arr = [...inArr];
     let currIdx = arr.length;
     while (--currIdx > 0) {
@@ -36,7 +36,7 @@ export interface SingTaskProps {
 
 export const allTasksProps: SingTaskProps = {
     header: 'All tasks',
-    targets: shuffle([
+    targets: shuffleArray([
         ...mediantMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,
             value: melody.intervals,
@@ -64,7 +64,7 @@ export const allTasksProps: SingTaskProps = {
 
 export const pitchTaskProps: SingTaskProps = {
     header: 'Pitch tasks',
-    targets: shuffle([...[0, 2, 4, 5, 7, 9, 11].map<PitchTaskTarget>((value) => ({ type: TaskType.PITCH, value }))]),
+    targets: shuffleArray([...[0, 2, 4, 5, 7, 9, 11].map<PitchTaskTarget>((value) => ({ type: TaskType.PITCH, value }))]),
     recognizers: {
         0: { type: TaskType.PITCH },
         1: { type: TaskType.PITCH },
@@ -83,7 +83,9 @@ export const pitchTaskProps: SingTaskProps = {
 
 export const intervalTaskProps: SingTaskProps = {
     header: 'Interval tasks',
-    targets: shuffle([...[2, 4, 5, 7, 9, 11, 12].map<IntervalTaskTarget>((value) => ({ type: TaskType.INTERVAL, value, startNote: 0 }))]),
+    targets: shuffleArray([
+        ...[2, 4, 5, 7, 9, 11, 12].map<IntervalTaskTarget>((value) => ({ type: TaskType.INTERVAL, value, startNote: 0 }))
+    ]),
     recognizers: {
         0: { type: TaskType.INTERVAL },
         1: { type: undefined },
@@ -113,7 +115,7 @@ const tonicMelodies: Melody[] = [
 
 export const melodyTaskProps: SingTaskProps = {
     header: 'Melody tasks',
-    targets: shuffle([
+    targets: shuffleArray([
         ...tonicMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,
             value: melody.intervals,

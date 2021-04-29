@@ -15,10 +15,11 @@ interface Props {
 
 const useStyles = makeStyles<Theme, Props>((theme) => ({
     root: {
-        margin: theme.spacing(5, 0),
+        margin: theme.spacing(12, 0),
         position: 'relative'
     },
     header: ({ error }) => ({
+        paddingRight: error ? theme.spacing(2) : 0,
         color: error ? theme.palette.error.light : theme.palette.text.primary
     }),
     errorIcon: {
@@ -27,9 +28,10 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
         top: '0.15rem',
         right: '0.25rem'
     },
-    text: {
+    text: ({ error }) => ({
+        color: error ? theme.palette.error.light : theme.palette.text.primary,
         marginTop: theme.spacing(1.5)
-    },
+    }),
     children: {
         margin: theme.spacing(2, 0.5)
     }
@@ -56,12 +58,8 @@ const FormItemBox = (props: Props): React.ReactElement<Props> => {
                         </Typography>
                     ))
                 ))}
-            {children && (
-                <div className={classes.children}>
-                    {children}
-                    {error && <FormHelperText error>{error}</FormHelperText>}
-                </div>
-            )}
+            {error && <FormHelperText error>{error}</FormHelperText>}
+            {children && <div className={classes.children}>{children}</div>}
         </div>
     );
 };

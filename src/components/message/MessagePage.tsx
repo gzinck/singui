@@ -20,6 +20,8 @@ const useStyles = makeStyles<Theme>((theme) => ({
         justifyContent: 'center',
         alignItems: 'center',
         height: '100%',
+        width: '90%',
+        maxWidth: '40rem',
         margin: theme.spacing(2)
     },
     buttonBox: {

@@ -59,7 +59,7 @@ const Study = ({ tasks, studyName, studyID }: StudyProps): React.ReactElement<St
         return (
             <MessagePage
                 header="All done!"
-                text={`You've completed the study! Click "Next" to return to the dasboard`}
+                text={`You've completed the study! Click "Next" to return to the dashboard`}
                 isLoading={isLoading}
                 onComplete={() => history.push(DASHBOARD_ROUTE)}
             />
@@ -69,7 +69,7 @@ const Study = ({ tasks, studyName, studyID }: StudyProps): React.ReactElement<St
     const task = tasks[taskIdx];
     switch (task.type) {
         case StudyTaskType.SING:
-            return <AllTasks {...task.props} />;
+            return <AllTasks {...task.props} onComplete={onComplete} />;
         case StudyTaskType.CALIBRATE:
             return <Calibration onComplete={onComplete} />;
         case StudyTaskType.MESSAGE:
