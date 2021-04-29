@@ -7,11 +7,13 @@ interface Props<RecognizerState, Target> {
     initialState: TaskProgressState<Target, RecognizerState>;
     getNextNote: (state: TaskProgressState<Target, RecognizerState>) => number | undefined;
     onComplete?: (completed: Target, next: Target) => void;
+    maxAttempts: number;
 }
 
 interface Result<Target> {
     target: Target;
     success?: boolean;
+    attempts: number;
     start: Date;
     stop?: Date;
 }
@@ -41,7 +43,8 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
         results: [
             {
                 target: initialTarget,
-                start: new Date()
+                start: new Date(),
+                attempts: 1
             }
         ],
         currTargetIdx: 0,
@@ -57,7 +60,8 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
     checkCorrect,
     initialState,
     getNextNote,
-    onComplete
+    onComplete,
+    maxAttempts
 }: Props<RecognizerState, Target>) {
     return (source$: Observable<RecognizerState>): Observable<TaskProgressState<Target, RecognizerState>> => {
         return source$.pipe(
@@ -70,17 +74,27 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
 
                 const results: Result<Target>[] = [...state.results];
                 if (curr.isDone && !state.isDone) {
-                    nextTargetIdx = results.length % targets.length;
-                    nextTarget = targets[nextTargetIdx];
-                    results[results.length - 1] = {
-                        ...results[results.length - 1],
-                        stop: new Date(),
-                        success: isCorrect
-                    };
-                    results.push({
-                        target: targets[results.length % targets.length],
-                        start: new Date()
-                    });
+                    // If we're done and it's right (or we maxed out our attempts), more forward
+                    const attempts = results[results.length - 1].attempts;
+                    if (isCorrect || attempts >= maxAttempts) {
+                        nextTargetIdx = results.length % targets.length;
+                        nextTarget = targets[nextTargetIdx];
+                        results[results.length - 1] = {
+                            ...results[results.length - 1],
+                            stop: new Date(),
+                            success: isCorrect
+                        };
+                        results.push({
+                            target: targets[results.length % targets.length],
+                            start: new Date(),
+                            attempts: 1
+                        });
+                    } else {
+                        results[results.length - 1] = {
+                            ...results[results.length - 1],
+                            attempts: attempts + 1
+                        };
+                    }
 
                     // Notify completion if needed
                     if (onComplete) onComplete(currTarget, nextTarget);

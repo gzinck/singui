@@ -20,16 +20,17 @@ import useSustainLength from '../audio/useSustainLength';
 
 interface Props {
     title: string;
-    withPrompts: boolean;
     targets: TaskTarget[];
     recognizers: RecognizerMap;
+    withPrompts?: boolean;
+    maxAttempts: number;
 }
 
 const leftWidth = '16rem';
 const useStyles = makeStyles<Theme>(() => ({
     root: {
         width: '100%',
-        height: '100%',
+        height: 'calc(100vh - 8rem)',
         '& > div': {
             clear: 'none',
             float: 'left'
@@ -49,7 +50,7 @@ const useStyles = makeStyles<Theme>(() => ({
         position: 'relative'
     },
     matchesBox: {
-        maxHeight: 'calc(100% - 14rem)',
+        maxHeight: 'calc(100% - 11rem)',
         overflowY: 'scroll'
     }
 }));
@@ -59,13 +60,13 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
     return state.melodies.find((melody) => melody.id === id) as MelodyState;
 };
 
-const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.ReactElement<Props> => {
+const AllTasks = ({ title, targets, recognizers, withPrompts, maxAttempts }: Props): React.ReactElement<Props> => {
     function fitToMeter<T extends number | undefined>(note: T): T | number {
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
 
     const [tonic, setTonic] = React.useState(0);
-    const octave = Math.min(tonic / 12);
+    const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
     React.useEffect(() => {
         const sub = tonic$.subscribe((n) => setTonic(n));
@@ -89,13 +90,13 @@ const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.Re
                 .pipe(
                     smoothPitch(),
                     universalRecognizer({ sustainLength$, recognizers, keyNumber }),
-                    universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined })
+                    universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
                 )
                 .subscribe((nextState) => setState(nextState))
         ];
 
         return () => subscriptions.forEach((sub) => sub.unsubscribe());
-    }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play]);
+    }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts]);
 
     return (
         <TaskPage header={title}>
@@ -161,6 +162,7 @@ const AllTasks = ({ title, targets, recognizers, withPrompts }: Props): React.Re
 };
 
 AllTasks.defaultProps = {
+    maxAttempts: 1,
     withPrompts: false
 };
 

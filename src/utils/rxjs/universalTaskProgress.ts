@@ -12,6 +12,7 @@ interface Props {
     keyNumber: number;
     octave: number;
     play?: (url: string) => void;
+    maxAttempts: number;
 }
 
 const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState => {
@@ -76,7 +77,7 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
     );
 };
 
-export const universalTaskProgress = ({ targets, keyNumber, octave, play }: Props) => (
+export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAttempts }: Props) => (
     source$: Observable<UniversalRecognizerState>
 ): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
     // Before starting, the tasks, play the first sound right away.
@@ -104,7 +105,8 @@ export const universalTaskProgress = ({ targets, keyNumber, octave, play }: Prop
                 if (play) {
                     play(getAudioURL({ target, keyNumber, octave }));
                 }
-            }
+            },
+            maxAttempts
         })
     );
 };
