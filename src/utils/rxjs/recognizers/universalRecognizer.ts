@@ -1,6 +1,6 @@
 import { Observable, Subject } from 'rxjs';
 import { intervalRecognizer, IntervalRecognizerTonicState } from './intervalRecognizer';
-import { pitchRecognizer, pitchRecognizerInitialState, PitchRecognizerState } from './pitchRecognizer';
+import { pitchRecognizer, PitchRecognizerState } from './pitchRecognizer';
 import { Melody, melodyRecognizer, MelodyRecognizerState } from './melodyRecognizer';
 import { concatMap, debounceTime, map, shareReplay, startWith, takeUntil, withLatestFrom } from 'rxjs/operators';
 import { finallyDone } from '../finallyDone';
@@ -38,29 +38,26 @@ type PitchState = PitchRecognizerState & CommonState & { type: TaskType.PITCH };
 type MelodyState = MelodyRecognizerState & CommonState & { type: TaskType.MELODY };
 export type UniversalRecognizerState = IntervalState | PitchState | MelodyState;
 
-/**
- *
- * @param sustainLength$
- * @param recognizers
- * @param keyNumber
- */
+interface Mode {
+    type: TaskType;
+    noteAbs: number;
+    note: number;
+}
+
+const initialMode: Mode = { type: TaskType.PITCH, noteAbs: 0, note: 0 };
+
 export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<UniversalRecognizerState> => {
-    const mode$ = new Subject<TaskType>();
+    const mode$ = new Subject<Mode>();
     const sourceWithReplay$ = source$.pipe(shareReplay(1));
     // Switch
     const state$ = mode$.pipe(
         // Must start with something to allow the processing to occur
-        startWith(TaskType.PITCH),
-        withLatestFrom(
-            source$.pipe(pitchRecognizer({ sustainLength$, keyNumber }), startWith(pitchRecognizerInitialState)),
-            (mode, currPitch) => ({ mode, currPitch })
-        ),
-        concatMap(({ mode, currPitch }) => {
-            const recognizer = recognizers[currPitch.note];
-            const startNote = currPitch.noteAbs;
-            switch (mode) {
+        startWith(initialMode),
+        concatMap(({ type, noteAbs, note }) => {
+            const recognizer = recognizers[note];
+            switch (type) {
                 case TaskType.PITCH:
                     return sourceWithReplay$.pipe(
                         pitchRecognizer({ sustainLength$, keyNumber }),
@@ -72,15 +69,19 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                         takeUntil(mode$), // Continue until mode switches
                         // If we had a valid pitch AND we have NOT switched to a new mode AND we're supposed
                         // to be able to recognize pitch, signal done
-                        withLatestFrom(mode$.pipe(startWith(TaskType.PITCH)), (state, mode) => ({ ...state, mode })),
+                        withLatestFrom(mode$.pipe(startWith(initialMode)), (state, mode: Mode) => ({ ...state, mode })),
                         finallyDone({
-                            checkDone: (state) => state.isValid && state.mode === TaskType.PITCH && recognizer.type === TaskType.PITCH
+                            checkDone: (state) => {
+                                return (
+                                    state.isValid && state.mode.type === TaskType.PITCH && recognizers[state.note].type === TaskType.PITCH
+                                );
+                            }
                         })
                     );
                 case TaskType.INTERVAL:
                     return source$.pipe(
                         pitchRecognizer({ sustainLength$, keyNumber }),
-                        intervalRecognizer({ startNote, startNoteIdx: currPitch.note }),
+                        intervalRecognizer({ startNote: noteAbs, startNoteIdx: note }),
                         map<IntervalRecognizerTonicState, IntervalState>((state) => ({
                             ...state,
                             type: TaskType.INTERVAL,
@@ -92,7 +93,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                 case TaskType.MELODY:
                     return source$.pipe(
                         pitchRecognizer({ sustainLength$, keyNumber }),
-                        melodyRecognizer({ startNote, startNoteIdx: currPitch.note, melodies: (recognizer as MelodyRecognizer).melodies }),
+                        melodyRecognizer({ startNote: noteAbs, startNoteIdx: note, melodies: (recognizer as MelodyRecognizer).melodies }),
                         map<MelodyRecognizerState, MelodyState>((state) => ({
                             ...state,
                             type: TaskType.MELODY,
@@ -106,7 +107,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
     );
 
     // After 500 ms, stop and switch to pitch again
-    source$.pipe(debounceTime(500)).subscribe(() => mode$.next(TaskType.PITCH));
+    source$.pipe(debounceTime(500)).subscribe(() => mode$.next(initialMode));
 
     // If we have a valid pitch task, if this note is mapped to interval/melody, switch modes
     state$.subscribe((state: UniversalRecognizerState) => {
@@ -114,10 +115,10 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
             const recognizer = recognizers[state.note];
             switch (recognizer.type) {
                 case TaskType.INTERVAL:
-                    mode$.next(TaskType.INTERVAL);
+                    mode$.next({ type: TaskType.INTERVAL, noteAbs: state.noteAbs, note: state.note });
                     break;
                 case TaskType.MELODY:
-                    mode$.next(TaskType.MELODY);
+                    mode$.next({ type: TaskType.MELODY, noteAbs: state.noteAbs, note: state.note });
                     break;
             }
         }
