@@ -5,7 +5,7 @@ import { TaskProgressState } from '../../utils/rxjs/taskProgress';
 import { sustainLength$, tonic$ } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import useAudio from '../audio/useAudio';
-import StaticPitchMeter, { intervalsAscendingNotes, scale15Notes } from './progressIndicators/StaticPitchMeter';
+import StaticPitchMeter, { numeric15Notes } from './progressIndicators/StaticPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import { RecognizerMap, TaskType, universalRecognizer, UniversalRecognizerState } from '../../utils/rxjs/recognizers/universalRecognizer';
@@ -103,7 +103,9 @@ const AllTasks = ({ title, targets, recognizers, withPrompts, maxAttempts }: Pro
             <div className={classes.root}>
                 <div className={classes.left}>
                     <StaticPitchMeter
-                        noteLabels={state.type === TaskType.INTERVAL ? intervalsAscendingNotes : scale15Notes}
+                        // Uncomment below for precise musical language instead of numbers
+                        // noteLabels={state.type === TaskType.INTERVAL ? intervalsAscendingNotes : scale15Notes}
+                        noteLabels={numeric15Notes}
                         startNum={fitToMeter(state.note)}
                         startError={state.error}
                         target={fitToMeter(state.nextNote)}

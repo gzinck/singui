@@ -1,4 +1,5 @@
 import { VocalState } from '../components/detector/VoiceDetector';
+import { mod12 } from './math';
 
 const notes: Record<number, string> = {
     0: 'A',
@@ -17,9 +18,31 @@ const notes: Record<number, string> = {
 
 export const convertNoteToString = (noteNum: number, includeOctave: boolean = true): string => {
     const octave = Math.floor(noteNum / 12);
-    while (noteNum < 0) noteNum += 12;
-    const noteName = notes[noteNum % 12];
+    const noteName = notes[mod12(noteNum)];
     return `${noteName}${includeOctave ? octave : ''}`;
+};
+
+const numericNote: Record<number, string> = {
+    '-1': '⬇',
+    0: '1',
+    1: '', // 'Minor 2nd',
+    2: '2',
+    3: '', // 'Minor 3rd',
+    4: '3',
+    5: '4',
+    6: '', // 'Aug. 4th',
+    7: '5',
+    8: '', // 'Minor 6th',
+    9: '6',
+    10: '', // 'Minor 7th',
+    11: '7',
+    12: '8',
+    13: '⬆'
+};
+
+export const convertNumericNoteToString = (intervalSize: number): string => {
+    const interval = Math.max(-1, Math.min(13, intervalSize));
+    return numericNote[interval];
 };
 
 const intervals: Record<number, string> = {

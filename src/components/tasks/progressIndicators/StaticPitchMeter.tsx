@@ -1,6 +1,11 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
-import { convertIntervalToString, convertNoteToString, convertScalePitchToString } from '../../../utils/pitchConverter';
+import {
+    convertIntervalToString,
+    convertNoteToString,
+    convertNumericNoteToString,
+    convertScalePitchToString
+} from '../../../utils/pitchConverter';
 import React from 'react';
 import Circle from './Circle';
 
@@ -100,6 +105,7 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
 
 export const named12Notes = new Array<string>(12).fill('').map((_, id) => convertNoteToString(11 - id, false));
 export const scale12Notes = new Array<string>(12).fill('').map((_, id) => convertScalePitchToString(id));
+export const numeric15Notes = new Array<string>(15).fill('').map((_, id) => convertNumericNoteToString(13 - id));
 export const scale15Notes = new Array<string>(15).fill('').map((_, id) => convertScalePitchToString(13 - id));
 export const intervalsAscendingNotes = new Array<string>(15).fill('').map((_, id) => convertIntervalToString(13 - id));
 
