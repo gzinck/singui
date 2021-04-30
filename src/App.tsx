@@ -17,7 +17,6 @@ import {
 } from './routes';
 import Tuner from './components/tasks/Tuner';
 import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
-import SingTasks from './components/tasks/SingTasks';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Calibration from './components/tasks/calibration/Calibration';
@@ -28,6 +27,7 @@ import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
 import { testForm } from './components/form/testForm';
 import RoutedStudy from './components/study/RoutedStudy';
+import RoutedSingTasks from './components/tasks/RoutedSingTasks';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -39,16 +39,16 @@ function App() {
                     <Switch>
                         <Route path={TUNER_ROUTE} component={Tuner} />
                         <Route path={RELATIVE_PITCH_TASKS_ROUTE}>
-                            <SingTasks {...pitchTaskProps} />
+                            <RoutedSingTasks {...pitchTaskProps} />
                         </Route>
                         <Route path={INTERVAL_TASKS_ROUTE}>
-                            <SingTasks {...intervalTaskProps} />
+                            <RoutedSingTasks {...intervalTaskProps} />
                         </Route>
                         <Route path={MELODY_TASKS_ROUTE}>
-                            <SingTasks {...melodyTaskProps} />
+                            <RoutedSingTasks {...melodyTaskProps} />
                         </Route>
                         <Route path={UNIVERSAL_TASKS_ROUTE}>
-                            <SingTasks {...allTasksProps} />
+                            <RoutedSingTasks {...allTasksProps} />
                         </Route>
                         <Route path={CALIBRATE_ROUTE}>
                             <Calibration />
