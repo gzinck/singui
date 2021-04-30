@@ -120,7 +120,7 @@ export const study1Props: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task post-evaluation',
-                targets: shuffleArray(toTargets([0])),
+                targets: shuffleArray(toTargets([...pitches])),
                 // targets: shuffleArray(toTargets([...pitches, ...pitches, ...pitches])),
                 recognizers,
                 withPrompts: false,
