@@ -29,7 +29,7 @@ const FormTextField = ({
                 fullWidth={true}
                 multiline={multiline}
                 rows={3}
-                value={value}
+                value={value || ''}
                 onChange={(e) => setValue(e.target.value)}
             />
         </FormItemBox>

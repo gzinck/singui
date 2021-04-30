@@ -3,6 +3,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormItemBox from './FormItemBox';
+import FormControl from '@material-ui/core/FormControl';
 
 interface FormRadioProps {
     header: string;
@@ -25,15 +26,17 @@ const FormRadio = ({ header, text, options, value, setValue, error }: FormRadioP
 
     return (
         <FormItemBox header={header} text={text} error={error}>
-            <FormGroup>
-                {options.map((opt) => (
-                    <FormControlLabel
-                        control={<Checkbox checked={value && value.includes(opt)} onChange={() => toggle(opt)} />}
-                        label={opt}
-                        key={opt}
-                    />
-                ))}
-            </FormGroup>
+            <FormControl component="fieldset" name={header}>
+                <FormGroup>
+                    {options.map((opt) => (
+                        <FormControlLabel
+                            control={<Checkbox checked={!!(value && value.includes(opt))} onChange={() => toggle(opt)} />}
+                            label={opt}
+                            key={opt}
+                        />
+                    ))}
+                </FormGroup>
+            </FormControl>
         </FormItemBox>
     );
 };

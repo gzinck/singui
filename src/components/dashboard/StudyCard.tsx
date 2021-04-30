@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 
 export enum StudyStatus {
     AVAILABLE = 'AVAILABLE',
+    IN_PROGRESS = 'IN_PROGRESS',
     COMPLETED = 'COMPLETED',
     LOCKED = 'LOCKED'
 }
@@ -37,10 +38,12 @@ const useStyles = makeStyles<Theme>((theme) => ({
 
 const convertTime = (n: number) => {
     if (n <= 1) return '1 min';
-    if (n < 5) return '<5 mins';
-    if (n < 10) return '<10 mins';
-    if (n < 20) return '<20 mins';
-    if (n < 30) return '<30 mins';
+    if (n <= 5) return '<5 mins';
+    if (n <= 10) return '<10 mins';
+    if (n <= 15) return '<15 mins';
+    if (n <= 20) return '<20 mins';
+    if (n <= 25) return '<25 mins';
+    if (n <= 30) return '<30 mins';
 };
 
 const getButton = (status: StudyStatus, onClick: () => void) => {
@@ -49,6 +52,12 @@ const getButton = (status: StudyStatus, onClick: () => void) => {
             return (
                 <Button variant="contained" color="primary" onClick={onClick}>
                     Start
+                </Button>
+            );
+        case StudyStatus.IN_PROGRESS:
+            return (
+                <Button variant="contained" color="primary" onClick={onClick}>
+                    Resume
                 </Button>
             );
         case StudyStatus.LOCKED:

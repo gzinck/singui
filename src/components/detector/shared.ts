@@ -9,7 +9,7 @@ const initialTonic = cookieStorage.getItem('tonic');
 if (initialTonic) tonic$.next(parseInt(initialTonic));
 tonic$.subscribe((tonic) => cookieStorage.setItem('tonic', `${tonic}`));
 
-const defaultSustainLength = 5;
+const defaultSustainLength = 3;
 export const sustainLength$ = new BehaviorSubject<number>(defaultSustainLength);
 const initialSustainLength = cookieStorage.getItem('sustainLength');
 if (initialSustainLength) sustainLength$.next(parseInt(initialSustainLength));

@@ -8,5 +8,4 @@ export const TEST_FORM_ROUTE = '/test-form';
 export const SIGNIN_ROUTE = '/signin';
 export const SIGNUP_ROUTE = '/signup';
 export const DASHBOARD_ROUTE = '/dashboard';
-
-export const STUDY1_ROUTE = '/study1';
+export const STUDY_ROUTE = '/study/:studyId';

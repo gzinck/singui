@@ -4,6 +4,14 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import StudyCard, { StudyStatus } from './StudyCard';
+import { StudyProps } from '../study/Study';
+import { currUser$ } from '../auth/observableUser';
+import { mergeMap, timeout } from 'rxjs/operators';
+import { collection, getDocs, getFirestore, QueryDocumentSnapshot } from 'firebase/firestore';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { generatePath, useHistory } from 'react-router-dom';
+import { SIGNIN_ROUTE, STUDY_ROUTE } from '../../routes';
+import { allStudies } from '../study/studyProps/allStudies';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -13,53 +21,70 @@ const useStyles = makeStyles<Theme>((theme) => ({
     },
     desc: {
         marginBottom: theme.spacing(5)
+    },
+    skeleton: {
+        width: '100%',
+        height: '9rem',
+        margin: theme.spacing(2, 0)
     }
 }));
 
-interface Study {
-    id: string;
-    name: string;
-    description: string;
-    time: number;
-}
-
-const studies: Study[] = [
-    {
-        id: 'consent',
-        name: 'Consent & demographics',
-        description: 'A preliminary study',
-        time: 4
-    },
-    {
-        id: 'study1',
-        name: 'Study 1',
-        description: 'Some study goes here',
-        time: 9
-    },
-    {
-        id: 'study2',
-        name: 'Study 2',
-        description: 'Some study goes here',
-        time: 14
-    }
-];
-
-const getStatus = (id: string): StudyStatus => {
-    // TODO: add logic that queries the database for what's been done and determine status using that
-    if (id === 'consent') return StudyStatus.AVAILABLE;
-    else if (id === 'study1') return StudyStatus.COMPLETED;
-    else return StudyStatus.LOCKED;
-};
+const defaultStatus = allStudies.reduce((acc, study) => ({ ...acc, [study.id]: StudyStatus.AVAILABLE }), {});
 
 const Dashboard = (): React.ReactElement => {
     const classes = useStyles();
+    const history = useHistory();
+    const [loading, setLoading] = React.useState(true);
+    const [status, setStatus] = React.useState<Record<string, StudyStatus>>(defaultStatus);
 
-    const startStudy = (id: string) => {
-        console.log(id);
+    React.useEffect(() => {
+        const db = getFirestore();
+        const sub = currUser$
+            .pipe(
+                timeout(1000),
+                mergeMap((user) => getDocs(collection(db, 'users', user.uid, 'studies')))
+            )
+            .subscribe({
+                next: (results) => {
+                    const newStatus: Record<string, StudyStatus> = { ...defaultStatus };
+                    results.forEach((doc: QueryDocumentSnapshot<unknown>) => {
+                        newStatus[doc.id] = (doc.data() as { isDone: boolean }).isDone ? StudyStatus.COMPLETED : StudyStatus.IN_PROGRESS;
+                    });
+
+                    // Deal with dependencies. We assume allStudies has already been top-sorted.
+                    allStudies.forEach((study) => {
+                        if (newStatus[study.id] === StudyStatus.COMPLETED) return;
+                        study.dependencies.forEach((depId) => {
+                            if (newStatus[depId] !== StudyStatus.COMPLETED) {
+                                newStatus[study.id] = StudyStatus.LOCKED;
+                            }
+                        });
+                    });
+
+                    setStatus(newStatus);
+                    setLoading(false);
+                },
+                error: (err) => {
+                    if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
+                    else console.error('Critical error retrieving data from database:', err);
+                }
+            });
+
+        return () => sub.unsubscribe();
+    }, [history]);
+
+    const startStudy = (studyId: string) => {
+        const path = generatePath(STUDY_ROUTE, { studyId });
+        history.push(path);
     };
 
-    const renderStudies = (studies: Study[]) =>
-        studies.map((study) => <StudyCard key={study.id} {...study} status={getStatus(study.id)} onStart={() => startStudy(study.id)} />);
+    const renderStudies = (studies: StudyProps[]) =>
+        studies.map((study) => <StudyCard key={study.id} {...study} status={status[study.id]} onStart={() => startStudy(study.id)} />);
+
+    const inProgressStudies = allStudies.filter((s) => status[s.id] === StudyStatus.IN_PROGRESS);
+    const availableStudies = allStudies.filter((s) => status[s.id] === StudyStatus.AVAILABLE);
+    const lockedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.LOCKED);
+    const completedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.COMPLETED);
 
     return (
         <Page header="Dashboard">
@@ -67,19 +92,47 @@ const Dashboard = (): React.ReactElement => {
                 <Typography variant="h3" gutterBottom>
                     Dashboard
                 </Typography>
-                <Typography className={classes.desc}>To continue participating in this study, click "Start" on the next task.</Typography>
-                <Typography variant="h5" gutterBottom>
-                    Up next
-                </Typography>
-                {renderStudies(studies.filter((s) => getStatus(s.id) === StudyStatus.AVAILABLE))}
-                <Typography variant="h5" gutterBottom>
-                    Locked
-                </Typography>
-                {renderStudies(studies.filter((s) => getStatus(s.id) === StudyStatus.LOCKED))}
-                <Typography variant="h5" gutterBottom>
-                    Completed
-                </Typography>
-                {renderStudies(studies.filter((s) => getStatus(s.id) === StudyStatus.COMPLETED))}
+                <Typography className={classes.desc}>Pick a study to continue.</Typography>
+                {loading ? (
+                    <>
+                        <Typography variant="h5" gutterBottom>
+                            Loading...
+                        </Typography>
+                        {allStudies.map((study) => (
+                            <Skeleton key={study.id} variant="rect" className={classes.skeleton} />
+                        ))}
+                    </>
+                ) : (
+                    <>
+                        <Typography variant="h5" gutterBottom>
+                            Up next
+                        </Typography>
+                        {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
+                            <>
+                                {renderStudies(inProgressStudies)}
+                                {renderStudies(availableStudies)}
+                            </>
+                        ) : (
+                            <Typography className={classes.desc}>Woohoo! You have completed all the studies you have access to.</Typography>
+                        )}
+                        {lockedStudies.length > 0 && (
+                            <>
+                                <Typography variant="h5" gutterBottom>
+                                    Locked
+                                </Typography>
+                                {renderStudies(lockedStudies)}
+                            </>
+                        )}
+                        {completedStudies.length > 0 && (
+                            <>
+                                <Typography variant="h5" gutterBottom>
+                                    Completed
+                                </Typography>
+                                {renderStudies(completedStudies)}
+                            </>
+                        )}
+                    </>
+                )}
             </div>
         </Page>
     );

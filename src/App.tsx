@@ -13,11 +13,11 @@ import {
     TUNER_ROUTE,
     UNIVERSAL_TASKS_ROUTE,
     DASHBOARD_ROUTE,
-    STUDY1_ROUTE
+    STUDY_ROUTE
 } from './routes';
 import Tuner from './components/tasks/Tuner';
 import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
-import AllTasks from './components/tasks/AllTasks';
+import SingTasks from './components/tasks/SingTasks';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Calibration from './components/tasks/calibration/Calibration';
@@ -27,8 +27,7 @@ import { getApps, initializeApp } from 'firebase/app';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
 import { testForm } from './components/form/testForm';
-import Study from './components/study/Study';
-import { study1Props } from './components/study/study1';
+import RoutedStudy from './components/study/RoutedStudy';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -40,16 +39,16 @@ function App() {
                     <Switch>
                         <Route path={TUNER_ROUTE} component={Tuner} />
                         <Route path={RELATIVE_PITCH_TASKS_ROUTE}>
-                            <AllTasks {...pitchTaskProps} />
+                            <SingTasks {...pitchTaskProps} />
                         </Route>
                         <Route path={INTERVAL_TASKS_ROUTE}>
-                            <AllTasks {...intervalTaskProps} />
+                            <SingTasks {...intervalTaskProps} />
                         </Route>
                         <Route path={MELODY_TASKS_ROUTE}>
-                            <AllTasks {...melodyTaskProps} />
+                            <SingTasks {...melodyTaskProps} />
                         </Route>
                         <Route path={UNIVERSAL_TASKS_ROUTE}>
-                            <AllTasks {...allTasksProps} />
+                            <SingTasks {...allTasksProps} />
                         </Route>
                         <Route path={CALIBRATE_ROUTE}>
                             <Calibration />
@@ -66,10 +65,8 @@ function App() {
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />
                         </Route>
-                        <Route path={STUDY1_ROUTE}>
-                            <Study {...study1Props} />
-                        </Route>
-                        <Redirect to={TUNER_ROUTE} />
+                        <Route path={STUDY_ROUTE} component={RoutedStudy} />
+                        <Redirect to={SIGNIN_ROUTE} />
                     </Switch>
                 </Router>
                 <UnsupportedBrowserAlert />

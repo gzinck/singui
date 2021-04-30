@@ -12,7 +12,7 @@ import { RecognizerMap, TaskType, universalRecognizer, UniversalRecognizerState 
 import { MelodyRecognizerState, MelodyState } from '../../utils/rxjs/recognizers/melodyRecognizer';
 import { MelodyTaskTarget, TaskTarget } from './target';
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../utils/rxjs/universalTaskProgress';
-import { convertIntervalToString, convertScalePitchToString } from '../../utils/pitchConverter';
+import { convertNumericNoteToString } from '../../utils/pitchConverter';
 import TargetBox from './progressIndicators/TargetBox';
 import VoiceDetector from '../detector/VoiceDetector';
 import { audioContext } from '../audio/audioContext';
@@ -61,7 +61,7 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
     return state.melodies.find((melody) => melody.id === id) as MelodyState;
 };
 
-const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
+const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
     function fitToMeter<T extends number | undefined>(note: T): T | number {
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
@@ -83,6 +83,8 @@ const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onCo
     const { play } = useAudio({ keyNumber, hasBackground: true });
 
     React.useEffect(() => {
+        if (keyNumber === 0 && octave === 0) return;
+
         setState(getUniversalTaskProgressInitialState(targets[0]));
         const voiceDetector = new VoiceDetector(ctx.audioContext);
         const subscriptions = [
@@ -93,9 +95,12 @@ const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onCo
                     universalRecognizer({ sustainLength$, recognizers, keyNumber }),
                     universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
                 )
-                .subscribe((nextState) => {
-                    if (nextState.results.length === targets.length && onComplete) onComplete(nextState.results);
-                    setState(nextState);
+                .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
+                    if (nextState.results.length >= targets.length && nextState.results[targets.length - 1].stop && onComplete) {
+                        onComplete(nextState.results.slice(0, targets.length));
+                    } else {
+                        setState(nextState);
+                    }
                 })
         ];
 
@@ -119,9 +124,9 @@ const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onCo
                 </div>
                 <div className={classes.right}>
                     <TargetBox height="7rem">
-                        {state.nextTarget.type === TaskType.PITCH && <h2>Pitch: {convertScalePitchToString(state.nextTarget.value)}</h2>}
+                        {state.nextTarget.type === TaskType.PITCH && <h2>Pitch: {convertNumericNoteToString(state.nextTarget.value)}</h2>}
                         {state.nextTarget.type === TaskType.INTERVAL && (
-                            <h2>Interval: {convertIntervalToString(state.nextTarget.value)}</h2>
+                            <h2>Interval: {convertNumericNoteToString(state.nextTarget.value)}</h2>
                         )}
                         {state.nextTarget.type === TaskType.MELODY && (
                             <MelodyDiagram
@@ -167,9 +172,9 @@ const AllTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onCo
     );
 };
 
-AllTasks.defaultProps = {
+SingTasks.defaultProps = {
     maxAttempts: 1,
     withPrompts: false
 };
 
-export default AllTasks;
+export default SingTasks;

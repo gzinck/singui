@@ -5,6 +5,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormItemBox from './FormItemBox';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
+import FormControl from '@material-ui/core/FormControl';
 
 interface FormRadioProps {
     header: string;
@@ -37,11 +38,13 @@ const FormRadio = ({ header, text, options, value, setValue, error, variant }: F
     const labelPlacement = variant === 'horizontal' ? 'bottom' : 'end';
     return (
         <FormItemBox header={header} text={text} error={error}>
-            <RadioGroup className={classes[variant]} aria-label={header} value={value || ''} onChange={(e) => setValue(e.target.value)}>
-                {options.map((opt) => (
-                    <FormControlLabel labelPlacement={labelPlacement} control={<Radio />} label={opt} value={opt} key={opt} />
-                ))}
-            </RadioGroup>
+            <FormControl component="fieldset" name={header}>
+                <RadioGroup className={classes[variant]} aria-label={header} value={value || ''} onChange={(e) => setValue(e.target.value)}>
+                    {options.map((opt) => (
+                        <FormControlLabel labelPlacement={labelPlacement} control={<Radio />} label={opt} value={opt} key={opt} />
+                    ))}
+                </RadioGroup>
+            </FormControl>
         </FormItemBox>
     );
 };

@@ -58,8 +58,8 @@ const FormItemBox = (props: Props): React.ReactElement<Props> => {
                         </Typography>
                     ))
                 ))}
-            {error && <FormHelperText error>{error}</FormHelperText>}
             {children && <div className={classes.children}>{children}</div>}
+            {error && <FormHelperText error>{error}</FormHelperText>}
         </div>
     );
 };

@@ -1,9 +1,10 @@
-import { StudyProps } from './Study';
-import { StudyTaskType } from './studyTasks';
-import { shuffleArray } from '../tasks/possibleTasks';
-import { PitchTaskTarget } from '../tasks/target';
-import { RecognizerMap, TaskType } from '../../utils/rxjs/recognizers/universalRecognizer';
-import { FormTypes } from '../form/formTypes';
+import { StudyProps } from '../Study';
+import { StudyTaskType } from '../studyTasks';
+import { shuffleArray } from '../../tasks/possibleTasks';
+import { PitchTaskTarget } from '../../tasks/target';
+import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
+import { FormTypes } from '../../form/formTypes';
+import { studyId } from './studyId';
 
 const pitches = [0, 2, 4, 5, 7, 9, 11];
 const recognizers: RecognizerMap = {
@@ -29,14 +30,13 @@ const toTargets = (arr: number[]): PitchTaskTarget[] => {
 const radioButtonValidator = (val: any) => (typeof val === 'string' ? undefined : 'Select a radio button');
 // const textFieldValidator = (val: any) => (typeof val === 'string' ? undefined : 'This field is required')
 
-export const study1Props: StudyProps = {
-    studyID: 'pitch-tasks-05-01',
-    studyName: 'Pitch study',
+export const pitchStudyProps: StudyProps = {
+    id: studyId.PITCH_STUDY,
+    dependencies: [studyId.SETUP_STUDY],
+    name: 'Pitch study',
+    description: 'Sing individual pitches to control your computer',
+    time: 10,
     tasks: [
-        {
-            id: 'calibrate',
-            type: StudyTaskType.CALIBRATE
-        },
         {
             id: 'video',
             type: StudyTaskType.MESSAGE,
@@ -59,8 +59,7 @@ export const study1Props: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task pre-evaluation',
-                targets: shuffleArray(toTargets([0])),
-                // targets: shuffleArray(toTargets([...pitches, ...pitches, ...pitches])),
+                targets: shuffleArray(toTargets([...pitches])),
                 recognizers,
                 withPrompts: false,
                 maxAttempts: 1
@@ -80,8 +79,7 @@ export const study1Props: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task training I',
-                targets: shuffleArray(toTargets([4])),
-                // targets: shuffleArray(toTargets([...pitches, ...pitches])),
+                targets: shuffleArray(toTargets([...pitches])),
                 recognizers,
                 withPrompts: true,
                 maxAttempts: 10
@@ -100,10 +98,9 @@ export const study1Props: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task training II',
-                targets: shuffleArray(toTargets([1])),
-                // targets: shuffleArray(toTargets([...pitches, ...pitches, ...pitches, ...pitches, ...pitches, ...pitches])),
+                targets: shuffleArray(toTargets([...pitches])),
                 recognizers,
-                withPrompts: true,
+                withPrompts: false,
                 maxAttempts: 10
             }
         },
@@ -121,10 +118,18 @@ export const study1Props: StudyProps = {
             props: {
                 header: 'Pitch task post-evaluation',
                 targets: shuffleArray(toTargets([...pitches])),
-                // targets: shuffleArray(toTargets([...pitches, ...pitches, ...pitches])),
                 recognizers,
                 withPrompts: false,
                 maxAttempts: 1
+            }
+        },
+        {
+            id: 'msg-participant-rating',
+            type: StudyTaskType.MESSAGE,
+            props: {
+                header: 'Pitch task rating',
+                text:
+                    'Now that you have experience singing pitches to interact with your computer, we want to know what you think. Fill out the form on the next page.'
             }
         },
         {
@@ -142,7 +147,7 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'recognize-pitch-effectiveness',
+                        id: 'recognizePitchEffectiveness',
                         header: 'How often did the application correctly recognize the pitches you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
@@ -156,7 +161,7 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'challenge-before-training',
+                        id: 'challengeBeforeTraining',
                         header: 'How challenging were the tasks before the two training stages?',
                         options: [
                             'Very challenging',
@@ -172,7 +177,7 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'challenge-after-training',
+                        id: 'challengeAfterTraining',
                         header: 'How challenging were the tasks after the two training stages?',
                         options: [
                             'Very challenging',
@@ -188,7 +193,7 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'in',
+                        id: 'performanceSatisfaction',
                         header: 'How satisfied were you with your performance?',
                         options: [
                             'Very unsatisfied',
@@ -204,13 +209,13 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
-                        id: 'technical-problems',
+                        id: 'technicalProblems',
                         header: 'Were there any technical issues when you were performing the tasks?',
                         label: 'Add any technical problems here...'
                     },
                     {
                         type: FormTypes.CHECKBOX,
-                        id: 'use-cases',
+                        id: 'useCases',
                         header: 'What use cases, if any, would you consider using pitch-based interaction for?',
                         options: [
                             'Switching tools in Photoshop',
@@ -221,7 +226,7 @@ export const study1Props: StudyProps = {
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
-                        id: 'use-cases-other',
+                        id: 'useCasesOther',
                         header: 'If you chose "other", describe your use case(s) for pitch-based interactions',
                         label: 'Add any other use cases here...'
                     },

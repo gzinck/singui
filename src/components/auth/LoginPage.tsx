@@ -9,6 +9,7 @@ import { Alert } from '@material-ui/lab';
 import { from } from 'rxjs';
 import { useHistory } from 'react-router-dom';
 import { DASHBOARD_ROUTE, SIGNIN_ROUTE, SIGNUP_ROUTE } from '../../routes';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     textField: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
 const LoginPage = (): React.ReactElement => {
     const classes = useStyles();
     const history = useHistory();
+    const query = new URLSearchParams(history.location.search);
     const userExists = history.location.pathname === SIGNIN_ROUTE;
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -63,13 +65,13 @@ const LoginPage = (): React.ReactElement => {
 
             setError(undefined);
             from<Promise<UserCredential>>(createUserWithEmailAndPassword(auth, email, password)).subscribe({
-                next: () => history.push(DASHBOARD_ROUTE),
+                next: () => history.push(query.get('next') || DASHBOARD_ROUTE),
                 error: (err: Error) => setError(err.message)
             });
         } else {
             setError(undefined);
             from<Promise<UserCredential>>(signInWithEmailAndPassword(auth, email, password)).subscribe({
-                next: () => history.push(DASHBOARD_ROUTE),
+                next: () => history.push(query.get('next') || DASHBOARD_ROUTE),
                 error: (err: Error) => setError(err.message)
             });
         }
@@ -77,6 +79,9 @@ const LoginPage = (): React.ReactElement => {
 
     return (
         <Page header={action}>
+            <Typography variant="h3" gutterBottom>
+                {action}
+            </Typography>
             <TextField
                 className={classes.textField}
                 label="Email"
@@ -108,7 +113,9 @@ const LoginPage = (): React.ReactElement => {
                 </Alert>
             )}
             <div className={classes.buttonBox}>
-                <Button onClick={() => history.push(userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE)}>{oppositeAction}</Button>
+                <Button onClick={() => history.push(`${userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE}${history.location.search}`)}>
+                    {oppositeAction}
+                </Button>
                 <Button variant="contained" color="primary" onClick={onConfirm}>
                     {action}
                 </Button>
