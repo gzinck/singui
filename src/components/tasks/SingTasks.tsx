@@ -2,7 +2,7 @@ import React from 'react';
 import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
 import { SingTaskResult, TaskProgressState } from '../../utils/rxjs/taskProgress';
-import { sustainLength$, tonic$ } from '../detector/shared';
+import { sustainLength$ } from '../detector/shared';
 import { smoothPitch } from '../../utils/rxjs/smoothPitch';
 import useAudio from '../audio/useAudio';
 import StaticPitchMeter, { numeric15Notes } from './progressIndicators/StaticPitchMeter';
@@ -17,6 +17,8 @@ import TargetBox from './progressIndicators/TargetBox';
 import VoiceDetector from '../detector/VoiceDetector';
 import { audioContext } from '../audio/audioContext';
 import useSustainLength from '../audio/useSustainLength';
+import { useAudioCache } from '../audio/useAudioCache';
+import useTonic from '../audio/useTonic';
 
 interface Props {
     header: string;
@@ -66,13 +68,9 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
 
-    const [tonic, setTonic] = React.useState(0);
+    const [tonic] = useTonic();
     const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
-    React.useEffect(() => {
-        const sub = tonic$.subscribe((n) => setTonic(n));
-        return () => sub.unsubscribe();
-    }, []);
 
     const classes = useStyles();
     const ctx = React.useContext(audioContext);
@@ -80,6 +78,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
     const [state, setState] = React.useState<TaskProgressState<TaskTarget, UniversalRecognizerState>>(
         getUniversalTaskProgressInitialState(targets[0])
     );
+    useAudioCache({ keyNumber, octave, targets });
     const { play } = useAudio({ keyNumber, hasBackground: true });
 
     React.useEffect(() => {
@@ -87,24 +86,22 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
 
         setState(getUniversalTaskProgressInitialState(targets[0]));
         const voiceDetector = new VoiceDetector(ctx.audioContext);
-        const subscriptions = [
-            voiceDetector
-                .getState()
-                .pipe(
-                    smoothPitch(),
-                    universalRecognizer({ sustainLength$, recognizers, keyNumber }),
-                    universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
-                )
-                .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
-                    if (nextState.results.length >= targets.length && nextState.results[targets.length - 1].stop && onComplete) {
-                        onComplete(nextState.results.slice(0, targets.length));
-                    } else {
-                        setState(nextState);
-                    }
-                })
-        ];
+        const sub = voiceDetector
+            .getState()
+            .pipe(
+                smoothPitch(),
+                universalRecognizer({ sustainLength$, recognizers, keyNumber }),
+                universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
+            )
+            .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
+                if (nextState.results.length >= targets.length && nextState.results[targets.length - 1].stop && onComplete) {
+                    onComplete(nextState.results.slice(0, targets.length));
+                } else {
+                    setState(nextState);
+                }
+            });
 
-        return () => subscriptions.forEach((sub) => sub.unsubscribe());
+        return () => sub.unsubscribe();
     }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts, onComplete]);
 
     return (

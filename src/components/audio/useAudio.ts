@@ -1,21 +1,15 @@
 import { audioContext } from './audioContext';
 import React from 'react';
-import { fromFetch } from 'rxjs/fetch';
 import { combineLatest, concat, interval, of, Subscription, timer } from 'rxjs';
-import { concatMap, map, mergeMap } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { IAudioContext, IAudioNode, IGainNode } from 'standardized-audio-context';
+import { getCachedAudio } from './getCachedAudio';
 
 const backgroundGain = 0.3;
 const foregroundRampUpTime = 0.1;
 const overlapTime = 0.5;
 const gainUpCurve: Float32Array = new Float32Array([0, 1]);
 const gainDownCurve: Float32Array = new Float32Array([1, 0]);
-
-const getAudioFrom = (url: string, ctx: IAudioContext) =>
-    fromFetch(url).pipe(
-        mergeMap((res) => res.arrayBuffer()),
-        mergeMap((buffer) => ctx.decodeAudioData(buffer))
-    );
 
 interface CrossfadeProps {
     toFadeIn: IGainNode<IAudioContext>;
@@ -54,8 +48,8 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
         if (hasBackground) {
             subscriptions.push(
                 combineLatest([
-                    getAudioFrom(`/audio/background/background-${keyNumber}-start.mp3`, ctx.audioContext),
-                    getAudioFrom(`/audio/background/background-${keyNumber}-loop.mp3`, ctx.audioContext)
+                    getCachedAudio(`/audio/background/background-${keyNumber}-start.mp3`, ctx.audioContext),
+                    getCachedAudio(`/audio/background/background-${keyNumber}-loop.mp3`, ctx.audioContext)
                 ]).subscribe(([startAudio, loopAudio]) => {
                     const startSource = ctx.audioContext.createBufferSource();
                     startSource.buffer = startAudio;
@@ -118,7 +112,7 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
             ctx.foregroundGain.gain.setValueAtTime(1, ctx.audioContext.currentTime);
             ctx.backgroundGain.gain.linearRampToValueAtTime(backgroundGain, startAtGoal);
 
-            getAudioFrom(url, ctx.audioContext).subscribe((buffer) => {
+            getCachedAudio(url, ctx.audioContext).subscribe((buffer) => {
                 const source = ctx.audioContext.createBufferSource();
                 source.buffer = buffer;
 

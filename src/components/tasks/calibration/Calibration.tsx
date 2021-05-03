@@ -11,6 +11,7 @@ import Slider from '@material-ui/core/Slider';
 import Card from '@material-ui/core/Card';
 import { tonic$ } from '../../detector/shared';
 import Page from '../../page/Page';
+import { clearCachedAudio } from '../../audio/getCachedAudio';
 
 interface CalibrationProps {
     onComplete?: (startNote: number) => void;
@@ -74,6 +75,7 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
             setSliderVal(0);
         } else {
             tonic$.next(startNote);
+            clearCachedAudio();
             onComplete && onComplete(startNote);
             setIsDone(true);
         }
