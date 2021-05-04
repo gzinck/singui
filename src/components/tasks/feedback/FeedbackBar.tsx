@@ -3,7 +3,6 @@ import FailIcon from '@material-ui/icons/HighlightOff';
 import SuccessIcon from '@material-ui/icons/CheckCircleOutline';
 import { Theme } from '../../theme';
 import React from 'react';
-import { Subscription, timer } from 'rxjs';
 import clsx from 'clsx';
 
 interface Props {
@@ -52,12 +51,6 @@ const FeedbackBar = ({ items }: Props): React.ReactElement => {
     const classes = useStyles();
     const [queue, setQueue] = React.useState<Item[]>([]);
     const lastIdx = React.useRef<number>(0);
-    const subs = React.useRef<Subscription[]>([]);
-
-    // Clean up all subscriptions at the end
-    React.useEffect(() => {
-        subs.current.forEach((sub) => sub.unsubscribe());
-    }, []);
 
     React.useEffect(() => {
         // If no change, leave it
@@ -68,7 +61,7 @@ const FeedbackBar = ({ items }: Props): React.ReactElement => {
                 .map((success, idx) => ({ success, idx }))
                 .slice(lastIdx.current)
                 .forEach((item, idx) => {
-                    subs.current.push(timer(idx * 600).subscribe(() => setQueue((queue) => [...queue.slice(-3), item])));
+                    setQueue((queue) => [...queue.slice(-3), item]);
                 });
             lastIdx.current = items.length;
         }

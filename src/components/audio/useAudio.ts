@@ -7,6 +7,7 @@ import { getCachedAudio } from './getCachedAudio';
 
 const backgroundGain = 0.3;
 const foregroundRampUpTime = 0.1;
+const foregroundRampDownTime = 1;
 const overlapTime = 0.5;
 const gainUpCurve: Float32Array = new Float32Array([0, 1]);
 const gainDownCurve: Float32Array = new Float32Array([1, 0]);
@@ -38,11 +39,9 @@ interface Props {
 
 const useAudio = ({ keyNumber, hasBackground }: Props) => {
     const ctx = React.useContext(audioContext);
-    const [isPlaying, setIsPlaying] = React.useState(false);
 
     React.useEffect(() => {
         const sources: IAudioNode<any>[] = [];
-
         const subscriptions: Subscription[] = [];
 
         if (hasBackground) {
@@ -55,15 +54,15 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                     startSource.buffer = startAudio;
                     const startGain = ctx.audioContext.createGain();
                     startSource.connect(startGain);
-                    startGain.connect(ctx.backgroundGain);
+                    startGain.connect(ctx.backgroundGain.node());
 
                     // Make two gain controls for the loop audio
                     const loopGain1 = ctx.audioContext.createGain();
                     loopGain1.gain.setValueAtTime(0, 0);
-                    loopGain1.connect(ctx.backgroundGain);
+                    loopGain1.connect(ctx.backgroundGain.node());
                     const loopGain2 = ctx.audioContext.createGain();
                     loopGain2.gain.setValueAtTime(0, 0);
-                    loopGain2.connect(ctx.backgroundGain);
+                    loopGain2.connect(ctx.backgroundGain.node());
 
                     // Hold onto the sources to do cleanup later
                     sources.push(startSource, loopGain1, loopGain2);
@@ -102,43 +101,40 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
         };
     }, [keyNumber, hasBackground, ctx]);
 
-    // Can slign timing with background music by recording start time of the music.
-    const audioEndSubs = React.useRef<Subscription[]>([]);
+    // Can align timing with background music by recording start time of the music.
     const play = React.useCallback(
         (url: string) => {
             // Fade the background music
             const startAtGoal = ctx.audioContext.currentTime + foregroundRampUpTime;
-            ctx.backgroundGain.gain.setValueAtTime(1, ctx.audioContext.currentTime);
-            ctx.foregroundGain.gain.setValueAtTime(1, ctx.audioContext.currentTime);
-            ctx.backgroundGain.gain.linearRampToValueAtTime(backgroundGain, startAtGoal);
+            ctx.backgroundGain.schedule({ to: backgroundGain, duration: foregroundRampUpTime * 1000 });
+            ctx.foregroundGain.schedule({ to: 1, duration: 100 });
 
             getCachedAudio(url, ctx.audioContext).subscribe((buffer) => {
                 const source = ctx.audioContext.createBufferSource();
                 source.buffer = buffer;
 
-                setIsPlaying(true);
                 const startAt = startAtGoal < ctx.audioContext.currentTime ? ctx.audioContext.currentTime : startAtGoal;
-                source.connect(ctx.foregroundGain);
+                source.connect(ctx.foregroundGain.node());
                 source.start(startAt);
 
                 // Bring back the background music
-                audioEndSubs.current.forEach((sub) => sub.unsubscribe());
-                audioEndSubs.current = [
-                    timer(Math.max(foregroundRampUpTime, buffer.duration - foregroundRampUpTime) * 1000).subscribe(() => {
-                        // Must call set before ramp
-                        ctx.backgroundGain.gain.setValueAtTime(backgroundGain, ctx.audioContext.currentTime);
-                        ctx.foregroundGain.gain.setValueAtTime(1, ctx.audioContext.currentTime);
-                        ctx.backgroundGain.gain.linearRampToValueAtTime(1, ctx.audioContext.currentTime + foregroundRampUpTime);
-                        ctx.foregroundGain.gain.linearRampToValueAtTime(0, ctx.audioContext.currentTime + foregroundRampUpTime);
-                    }),
-                    timer(buffer.duration * 1000).subscribe(() => setIsPlaying(false))
-                ];
+                ctx.backgroundGain.schedule({
+                    to: 1,
+                    duration: foregroundRampDownTime * 1000,
+                    // at can be negative, acts as 0
+                    at: (buffer.duration - foregroundRampDownTime) * 1000
+                });
+                ctx.foregroundGain.schedule({
+                    to: 0,
+                    duration: foregroundRampDownTime * 1000,
+                    at: (buffer.duration - foregroundRampDownTime) * 1000
+                });
             });
         },
         [ctx]
     );
 
-    return { play, isPlaying };
+    return { play };
 };
 
 export default useAudio;
