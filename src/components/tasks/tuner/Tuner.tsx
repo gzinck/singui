@@ -1,11 +1,11 @@
 import React from 'react';
-import { smoothPitch } from '../../utils/rxjs/smoothPitch';
-import ScrollingPitchMeter from './progressIndicators/ScrollingPitchMeter';
+import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
+import ScrollingPitchMeter from './ScrollingPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
-import VoiceDetector from '../detector/VoiceDetector';
-import { audioContext } from '../audio/audioContext';
-import Page from '../page/Page';
+import { Theme } from '../../theme';
+import VoiceDetector from '../../detector/VoiceDetector';
+import { audioContext } from '../../audio/audioContext';
+import Page from '../../page/Page';
 
 const useStyles = makeStyles<Theme>(() => ({
     root: {

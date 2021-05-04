@@ -1,8 +1,8 @@
 import React from 'react';
-import Page from '../page/Page';
+import Page from '../../page/Page';
 import FormText from './FormText';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import { FormItem, FormTypes } from './formTypes';
 import FormRadio from './FormRadio';
 import FormTextField from './FormTextField';

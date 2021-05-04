@@ -1,4 +1,4 @@
-import { TaskType } from '../../utils/rxjs/recognizers/universalRecognizer';
+import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 
 export interface PitchTaskTarget {
     type: TaskType.PITCH;

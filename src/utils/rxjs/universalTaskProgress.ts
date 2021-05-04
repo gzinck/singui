@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { TaskType, UniversalRecognizerState } from './recognizers/universalRecognizer';
-import { MelodyTaskTarget, TaskTarget } from '../../components/tasks/target';
+import { MelodyTaskTarget, TaskTarget } from '../../components/tasks/sing/target';
 import { getTaskProgressInitialState, taskProgress, TaskProgressState } from './taskProgress';
 import { pitchRecognizerInitialState } from './recognizers/pitchRecognizer';
 import { mod12 } from '../math';

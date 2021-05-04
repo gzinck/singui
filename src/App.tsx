@@ -15,19 +15,18 @@ import {
     DASHBOARD_ROUTE,
     STUDY_ROUTE
 } from './routes';
-import Tuner from './components/tasks/Tuner';
-import UnsupportedBrowserAlert from './components/UnsupportedBrowserAlert';
-import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/possibleTasks';
+import Tuner from './components/tasks/tuner/Tuner';
+import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Calibration from './components/tasks/calibration/Calibration';
-import Form from './components/form/Form';
+import Form from './components/tasks/form/Form';
 import { firebaseConfig } from './firebaseConfig';
 import { getApps, initializeApp } from 'firebase/app';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
-import { testForm } from './components/form/testForm';
+import { testForm } from './components/tasks/form/testForm';
 import RoutedStudy from './components/study/RoutedStudy';
-import RoutedSingTasks from './components/tasks/RoutedSingTasks';
+import RoutedSingTasks from './components/tasks/sing/RoutedSingTasks';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -69,7 +68,6 @@ function App() {
                         <Redirect to={SIGNIN_ROUTE} />
                     </Switch>
                 </Router>
-                <UnsupportedBrowserAlert />
             </ThemeProvider>
         </audioContext.Provider>
     );

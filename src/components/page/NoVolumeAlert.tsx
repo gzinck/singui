@@ -1,7 +1,7 @@
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import React from 'react';
-import { audioVolume$ } from '../../detector/shared';
+import { audioVolume$ } from '../detector/shared';
 import { take } from 'rxjs/operators';
 
 const NoVolumeAlert = (): React.ReactElement => {

@@ -1,4 +1,4 @@
-import { TaskTarget } from '../tasks/target';
+import { TaskTarget } from '../tasks/sing/target';
 import React from 'react';
 import { from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';

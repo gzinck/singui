@@ -1,6 +1,6 @@
-import { SingTaskProps } from '../tasks/possibleTasks';
-import { FormProps } from '../form/Form';
-import { MessageProps } from '../message/MessagePage';
+import { SingTaskProps } from '../tasks/sing/possibleTasks';
+import { FormProps } from '../tasks/form/Form';
+import { MessageProps } from '../tasks/message/MessagePage';
 
 export enum StudyTaskType {
     SING = 'SING',

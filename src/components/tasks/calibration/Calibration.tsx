@@ -3,7 +3,7 @@ import Typography from '@material-ui/core/Typography';
 import useAudio from '../../audio/useAudio';
 import { getAudioURL } from '../../audio/getAudioURL';
 import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { TaskTarget } from '../target';
+import { TaskTarget } from '../sing/target';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';

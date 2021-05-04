@@ -1,6 +1,6 @@
 import { StudyProps } from '../Study';
 import { StudyTaskType } from '../studyTasks';
-import { FormTypes } from '../../form/formTypes';
+import { FormTypes } from '../../tasks/form/formTypes';
 import { studyId } from './studyId';
 
 const radioButtonValidator = (val: any) => (typeof val === 'string' ? undefined : 'Select a radio button');

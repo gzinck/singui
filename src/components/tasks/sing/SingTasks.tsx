@@ -1,25 +1,30 @@
 import React from 'react';
-import TaskPage from './taskPage/TaskPage';
 import MelodyDiagram from './progressIndicators/MelodyDiagram';
-import { SingTaskResult, TaskProgressState } from '../../utils/rxjs/taskProgress';
-import { sustainLength$ } from '../detector/shared';
-import { smoothPitch } from '../../utils/rxjs/smoothPitch';
-import useAudio from '../audio/useAudio';
+import { SingTaskResult, TaskProgressState } from '../../../utils/rxjs/taskProgress';
+import { sustainLength$ } from '../../detector/shared';
+import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
+import useAudio from '../../audio/useAudio';
 import StaticPitchMeter, { numeric15Notes } from './progressIndicators/StaticPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../theme';
-import { RecognizerMap, TaskType, universalRecognizer, UniversalRecognizerState } from '../../utils/rxjs/recognizers/universalRecognizer';
-import { MelodyRecognizerState, MelodyState } from '../../utils/rxjs/recognizers/melodyRecognizer';
+import { Theme } from '../../theme';
+import {
+    RecognizerMap,
+    TaskType,
+    universalRecognizer,
+    UniversalRecognizerState
+} from '../../../utils/rxjs/recognizers/universalRecognizer';
+import { MelodyRecognizerState, MelodyState } from '../../../utils/rxjs/recognizers/melodyRecognizer';
 import { MelodyTaskTarget, TaskTarget } from './target';
-import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../utils/rxjs/universalTaskProgress';
-import { convertNumericNoteToString } from '../../utils/pitchConverter';
+import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../../utils/rxjs/universalTaskProgress';
+import { convertNumericNoteToString } from '../../../utils/pitchConverter';
 import TargetBox from './progressIndicators/TargetBox';
-import VoiceDetector from '../detector/VoiceDetector';
-import { audioContext } from '../audio/audioContext';
-import useSustainLength from '../audio/useSustainLength';
-import { useAudioCache } from '../audio/useAudioCache';
-import useTonic from '../audio/useTonic';
-import FeedbackBar from './feedback/FeedbackBar';
+import VoiceDetector from '../../detector/VoiceDetector';
+import { audioContext } from '../../audio/audioContext';
+import useSustainLength from '../../audio/useSustainLength';
+import { useAudioCache } from '../../audio/useAudioCache';
+import useTonic from '../../audio/useTonic';
+import SuccessBar from './progressIndicators/SuccessBar';
+import Page from '../../page/Page';
 
 interface Props {
     header: string;
@@ -35,6 +40,7 @@ const leftWidth = '16rem';
 const useStyles = makeStyles<Theme>(() => ({
     root: {
         width: '100%',
+        position: 'relative',
         height: 'calc(100vh - 8rem)',
         '& > div': {
             clear: 'none',
@@ -47,7 +53,7 @@ const useStyles = makeStyles<Theme>(() => ({
     },
     right: {
         height: '100%',
-        width: `calc(100% - ${leftWidth})`
+        width: `calc(100% - ${leftWidth} - 2rem)`
     },
     pitchBox: {
         width: '10rem',
@@ -108,7 +114,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
     }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts, onComplete]);
 
     return (
-        <TaskPage header={header}>
+        <Page header={header}>
             <div className={classes.root}>
                 <div className={classes.left}>
                     <StaticPitchMeter
@@ -167,9 +173,9 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
                         </div>
                     )}
                 </div>
-                <FeedbackBar items={feedback} />
+                <SuccessBar items={feedback} />
             </div>
-        </TaskPage>
+        </Page>
     );
 };
 

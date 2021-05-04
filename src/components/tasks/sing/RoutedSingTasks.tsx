@@ -1,6 +1,6 @@
 import React from 'react';
 import { TaskTarget } from './target';
-import { RecognizerMap } from '../../utils/rxjs/recognizers/universalRecognizer';
+import { RecognizerMap } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import SingTasks from './SingTasks';
 import { useLocation } from 'react-router-dom';
 

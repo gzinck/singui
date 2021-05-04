@@ -1,4 +1,4 @@
-import { TaskTarget } from '../tasks/target';
+import { TaskTarget } from '../tasks/sing/target';
 import { TaskType } from '../../utils/rxjs/recognizers/universalRecognizer';
 
 interface AudioParams {

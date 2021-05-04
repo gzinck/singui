@@ -1,9 +1,9 @@
 import { StudyProps } from '../Study';
 import { StudyTaskType } from '../studyTasks';
-import { shuffleArray } from '../../tasks/possibleTasks';
-import { PitchTaskTarget } from '../../tasks/target';
+import { shuffleArray } from '../../tasks/sing/possibleTasks';
+import { PitchTaskTarget } from '../../tasks/sing/target';
 import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { FormTypes } from '../../form/formTypes';
+import { FormTypes } from '../../tasks/form/formTypes';
 import { studyId } from './studyId';
 
 const pitches = [0, 2, 4, 5, 7, 9, 11];

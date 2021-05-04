@@ -1,5 +1,5 @@
-import { Melody } from '../../utils/rxjs/recognizers/melodyRecognizer';
-import { RecognizerMap, TaskType } from '../../utils/rxjs/recognizers/universalRecognizer';
+import { Melody } from '../../../utils/rxjs/recognizers/melodyRecognizer';
+import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import { IntervalTaskTarget, MelodyTaskTarget, PitchTaskTarget, TaskTarget } from './target';
 
 export function shuffleArray<T>(inArr: T[]): T[] {

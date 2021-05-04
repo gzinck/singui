@@ -1,7 +1,7 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import FailIcon from '@material-ui/icons/HighlightOff';
 import SuccessIcon from '@material-ui/icons/CheckCircleOutline';
-import { Theme } from '../../theme';
+import { Theme } from '../../../theme';
 import React from 'react';
 import clsx from 'clsx';
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
-const FeedbackBar = ({ items }: Props): React.ReactElement => {
+const SuccessBar = ({ items }: Props): React.ReactElement => {
     const classes = useStyles();
     const [queue, setQueue] = React.useState<Item[]>([]);
     const lastIdx = React.useRef<number>(0);
@@ -85,4 +85,4 @@ const FeedbackBar = ({ items }: Props): React.ReactElement => {
     );
 };
 
-export default FeedbackBar;
+export default SuccessBar;

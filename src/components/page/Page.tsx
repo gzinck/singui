@@ -2,11 +2,12 @@ import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import TopBar from './TopBar';
-import NoVolumeAlert from '../tasks/taskPage/NoVolumeAlert';
+import NoVolumeAlert from './NoVolumeAlert';
 import Slider from '@material-ui/core/Slider';
-import OptionsPopover from '../tasks/taskPage/OptionsPopover';
+import OptionsPopover from './OptionsPopover';
 import useGain from '../audio/useGain';
 import useSustainLength from '../audio/useSustainLength';
+import UnsupportedBrowserAlert from './UnsupportedBrowserAlert';
 
 interface TaskPageProps {
     children?: React.ReactNode;
@@ -70,6 +71,7 @@ const Page = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
             <div className={classes.main}>
                 {props.children}
                 <NoVolumeAlert />
+                <UnsupportedBrowserAlert />
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../../theme';
+import { Theme } from '../../../theme';
 import React from 'react';
 import clsx from 'clsx';
 

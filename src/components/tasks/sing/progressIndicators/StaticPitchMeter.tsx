@@ -1,11 +1,11 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../../theme';
+import { Theme } from '../../../theme';
 import {
     convertIntervalToString,
     convertNoteToString,
     convertNumericNoteToString,
     convertScalePitchToString
-} from '../../../utils/pitchConverter';
+} from '../../../../utils/pitchConverter';
 import React from 'react';
 import Circle from './Circle';
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { StudySingTask, StudyTask, StudyTaskType } from './studyTasks';
-import MessagePage from '../message/MessagePage';
+import MessagePage from '../tasks/message/MessagePage';
 import { useHistory } from 'react-router-dom';
 import { DASHBOARD_ROUTE, SIGNIN_ROUTE } from '../../routes';
-import SingTasks from '../tasks/SingTasks';
+import SingTasks from '../tasks/sing/SingTasks';
 import Calibration from '../tasks/calibration/Calibration';
-import Form from '../form/Form';
+import Form from '../tasks/form/Form';
 import { from } from 'rxjs';
 import { doc, getFirestore, setDoc, getDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -14,7 +14,7 @@ import { mergeMap, timeout } from 'rxjs/operators';
 import { studyId } from './studyProps/studyId';
 import ProgressBar from './progress/ProgressBar';
 import { SingTaskResult } from '../../utils/rxjs/taskProgress';
-import { TaskTarget } from '../tasks/target';
+import { TaskTarget } from '../tasks/sing/target';
 
 export interface StudyProps {
     tasks: StudyTask[];
