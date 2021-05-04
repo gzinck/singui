@@ -26,7 +26,7 @@ interface Props {
     recognizers: RecognizerMap;
     withPrompts?: boolean;
     maxAttempts: number;
-    onComplete?: (results: SingTaskResult<UniversalRecognizerState, TaskTarget>[]) => void;
+    onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
 const leftWidth = '16rem';
