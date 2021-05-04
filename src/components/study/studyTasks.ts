@@ -6,7 +6,8 @@ export enum StudyTaskType {
     SING = 'SING',
     FORM = 'FORM',
     CALIBRATE = 'CALIBRATE',
-    MESSAGE = 'MESSAGE'
+    MESSAGE = 'MESSAGE',
+    HEADPHONE_MESSAGE = 'HEADPHONE_MESSAGE'
 }
 
 interface TaskBase {
@@ -32,4 +33,9 @@ interface StudyMessageTask extends TaskBase {
     props: MessageProps;
 }
 
-export type StudyTask = StudySingTask | StudyFormTask | StudyCalibrateTask | StudyMessageTask;
+interface StudyHeadphoneMessageTask extends TaskBase {
+    type: StudyTaskType.HEADPHONE_MESSAGE;
+    props: MessageProps;
+}
+
+export type StudyTask = StudySingTask | StudyFormTask | StudyCalibrateTask | StudyMessageTask | StudyHeadphoneMessageTask;

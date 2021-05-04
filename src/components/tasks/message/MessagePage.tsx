@@ -8,7 +8,8 @@ import { CircularProgress } from '@material-ui/core';
 
 export interface MessageProps {
     header: string;
-    text: string;
+    text?: string;
+    children?: React.ReactNode;
     onComplete?: () => void;
     isLoading?: boolean;
 }
@@ -38,7 +39,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
-const MessagePage = ({ header, text, onComplete, isLoading }: MessageProps): React.ReactElement<MessageProps> => {
+const MessagePage = ({ header, text, children, onComplete, isLoading }: MessageProps): React.ReactElement<MessageProps> => {
     const classes = useStyles();
     return (
         <Page header={header}>
@@ -46,9 +47,12 @@ const MessagePage = ({ header, text, onComplete, isLoading }: MessageProps): Rea
                 <Typography variant="h4" align="center" gutterBottom>
                     {header}
                 </Typography>
-                <Typography align="center" gutterBottom>
-                    {text}
-                </Typography>
+                {text && (
+                    <Typography align="center" gutterBottom>
+                        {text}
+                    </Typography>
+                )}
+                {children}
                 <div className={classes.buttonBox}>
                     <Button onClick={onComplete} variant="contained" color="primary" disabled={isLoading}>
                         {isLoading && <CircularProgress className={classes.loading} size="1rem" />}

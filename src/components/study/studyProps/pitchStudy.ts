@@ -38,6 +38,13 @@ export const pitchStudyProps: StudyProps = {
     time: 10,
     tasks: [
         {
+            id: 'headphones',
+            type: StudyTaskType.HEADPHONE_MESSAGE,
+            props: {
+                header: 'Headphones'
+            }
+        },
+        {
             id: 'video',
             type: StudyTaskType.MESSAGE,
             props: {

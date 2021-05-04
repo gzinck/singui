@@ -7,7 +7,7 @@ import SingTasks from '../tasks/sing/SingTasks';
 import Calibration from '../tasks/calibration/Calibration';
 import Form from '../tasks/form/Form';
 import { from } from 'rxjs';
-import { doc, getFirestore, setDoc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { currUser$ } from '../auth/observableUser';
 import { mergeMap, timeout } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { studyId } from './studyProps/studyId';
 import ProgressBar from './progress/ProgressBar';
 import { SingTaskResult } from '../../utils/rxjs/taskProgress';
 import { TaskTarget } from '../tasks/sing/target';
+import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 
 export interface StudyProps {
     tasks: StudyTask[];
@@ -139,11 +140,14 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
             case StudyTaskType.CALIBRATE:
                 page = <Calibration onComplete={onComplete} />;
                 break;
+            case StudyTaskType.FORM:
+                page = <Form {...task.props} onComplete={onComplete} />;
+                break;
             case StudyTaskType.MESSAGE:
                 page = <MessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
                 break;
-            case StudyTaskType.FORM:
-                page = <Form {...task.props} onComplete={onComplete} />;
+            case StudyTaskType.HEADPHONE_MESSAGE:
+                page = <HeadphoneMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
                 break;
         }
     }
