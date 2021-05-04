@@ -19,6 +19,7 @@ import { audioContext } from '../audio/audioContext';
 import useSustainLength from '../audio/useSustainLength';
 import { useAudioCache } from '../audio/useAudioCache';
 import useTonic from '../audio/useTonic';
+import FeedbackBar from './feedback/FeedbackBar';
 
 interface Props {
     header: string;
@@ -69,6 +70,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
         return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
     }
 
+    const [feedback, setFeedback] = React.useState<boolean[]>([]);
     const [tonic] = useTonic();
     const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
@@ -96,8 +98,9 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
             )
             .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
                 setState(nextState);
-                if (onComplete && nextState.isDone) {
-                    onComplete(nextState.results.slice(0, nextState.results.length - 1));
+                if (nextState.isDone) {
+                    setFeedback((feedback) => [...feedback, nextState.isCorrect]);
+                    onComplete && onComplete(nextState.results.slice(0, nextState.results.length - 1));
                 }
             });
 
@@ -164,6 +167,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
                         </div>
                     )}
                 </div>
+                <FeedbackBar items={feedback} />
             </div>
         </TaskPage>
     );
