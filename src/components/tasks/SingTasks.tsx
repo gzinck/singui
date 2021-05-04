@@ -26,6 +26,7 @@ interface Props {
     recognizers: RecognizerMap;
     withPrompts?: boolean;
     maxAttempts: number;
+    // Called every time a task is completed
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
@@ -94,10 +95,9 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
                 universalTaskProgress({ targets, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
             )
             .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
-                if (nextState.results.length >= targets.length && nextState.results[targets.length - 1].stop && onComplete) {
-                    onComplete(nextState.results.slice(0, targets.length));
-                } else {
-                    setState(nextState);
+                setState(nextState);
+                if (onComplete && nextState.isDone) {
+                    onComplete(nextState.results.slice(0, nextState.results.length - 1));
                 }
             });
 

@@ -13,7 +13,7 @@ interface TaskBase {
     id: string;
 }
 
-interface StudySingTask extends TaskBase {
+export interface StudySingTask extends TaskBase {
     type: StudyTaskType.SING;
     props: SingTaskProps;
 }

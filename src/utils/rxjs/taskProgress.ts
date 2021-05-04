@@ -109,7 +109,7 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                         };
                     }
 
-                    // Notify completion if needed
+                    // Notify completion of a trial if needed
                     if (onComplete) onComplete(currTarget, nextTarget);
                 }
 
