@@ -26,6 +26,7 @@ export interface MelodyState {
 
 export interface MelodyRecognizerState {
     startNote: number;
+    hz: number;
     note: number;
     error: number;
     interval: number;
@@ -36,6 +37,7 @@ export interface MelodyRecognizerState {
 
 const getMelodyRecognizerInitialState = (melodies: Melody[]): MelodyRecognizerState => ({
     startNote: 0,
+    hz: 0,
     note: 0,
     interval: 0,
     error: 0,
@@ -100,6 +102,7 @@ export const melodyRecognizer = ({ melodies, startNote, startNoteIdx }: Props) =
 
             return {
                 startNote,
+                hz: curr.hz,
                 note: interval + startNoteIdx,
                 error: curr.error,
                 interval,

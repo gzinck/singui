@@ -66,12 +66,12 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
             initialTarget = target.startNote;
             break;
     }
-    return getTaskProgressInitialState(
+    return getTaskProgressInitialState<UniversalRecognizerState, TaskTarget>(
         target,
         {
             ...pitchRecognizerInitialState,
             type: TaskType.PITCH,
-            inProgress: false
+            isDone: false
         },
         initialTarget
     );

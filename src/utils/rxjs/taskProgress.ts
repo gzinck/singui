@@ -10,18 +10,19 @@ interface Props<RecognizerState, Target> {
     maxAttempts: number;
 }
 
-export interface SingTaskResult<Target> {
+export interface SingTaskResult<RecognizerState, Target> {
     target: Target;
     success?: boolean;
     attempts: number;
-    start: Date;
-    stop?: Date;
+    recognized: (RecognizerState & { time: number })[];
+    start: number;
+    stop?: number;
 }
 
-export interface State<Target> {
+export interface State<RecognizerState, Target> {
     isDone: boolean;
     isCorrect: boolean; // If current note is correct
-    results: SingTaskResult<Target>[];
+    results: SingTaskResult<RecognizerState, Target>[];
     currTargetIdx: number;
     currTarget: Target;
     nextTargetIdx: number;
@@ -29,7 +30,7 @@ export interface State<Target> {
     nextNote: number | undefined;
 }
 
-export type TaskProgressState<Target, RecognizerState> = State<Target> & RecognizerState;
+export type TaskProgressState<Target, RecognizerState> = State<RecognizerState, Target> & RecognizerState;
 
 export function getTaskProgressInitialState<RecognizerState, Target>(
     initialTarget: Target,
@@ -43,8 +44,9 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
         results: [
             {
                 target: initialTarget,
-                start: new Date(),
-                attempts: 1
+                start: performance.now(),
+                attempts: 1,
+                recognized: []
             }
         ],
         currTargetIdx: 0,
@@ -55,7 +57,7 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
     };
 }
 
-export function taskProgress<RecognizerState extends { isDone: boolean }, Target>({
+export function taskProgress<RecognizerState extends { hz: number; isDone: boolean }, Target>({
     targets,
     checkCorrect,
     initialState,
@@ -72,7 +74,17 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
                 let nextTarget = state.nextTarget;
                 const isCorrect = checkCorrect(curr, currTarget, currTargetIdx);
 
-                const results: SingTaskResult<Target>[] = [...state.results];
+                const results: SingTaskResult<RecognizerState, Target>[] = [...state.results];
+                // Add on the current frequency
+                if (!curr.isDone) {
+                    // Add the frequency to the results
+                    const oldResult = results[results.length - 1];
+                    results[results.length - 1] = {
+                        ...oldResult,
+                        recognized: [...oldResult.recognized, { ...curr, time: performance.now() }]
+                    };
+                }
+
                 if (curr.isDone && !state.isDone) {
                     // If we're done and it's right (or we maxed out our attempts), more forward
                     const attempts = results[results.length - 1].attempts;
@@ -81,13 +93,14 @@ export function taskProgress<RecognizerState extends { isDone: boolean }, Target
                         nextTarget = targets[nextTargetIdx];
                         results[results.length - 1] = {
                             ...results[results.length - 1],
-                            stop: new Date(),
+                            stop: performance.now(),
                             success: isCorrect
                         };
                         results.push({
                             target: targets[results.length % targets.length],
-                            start: new Date(),
-                            attempts: 1
+                            start: performance.now(),
+                            attempts: 1,
+                            recognized: []
                         });
                     } else {
                         results[results.length - 1] = {

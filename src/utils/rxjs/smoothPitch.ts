@@ -9,7 +9,9 @@ interface Options {
     minVolume?: number;
 }
 
-export const smoothPitch: (options?: Options) => (source: Observable<VocalState>) => Observable<ReadableVocalState> = (
+const breakTime = 500;
+
+export const smoothPitch: (options?: Options) => (source$: Observable<VocalState>) => Observable<ReadableVocalState> = (
     opts: Options = {}
 ) => (source) => {
     const options = {
@@ -23,17 +25,22 @@ export const smoothPitch: (options?: Options) => (source: Observable<VocalState>
         filter((state) => convertHzToNoteNum(state.pitch) >= 0 && state.clarity >= options.minClarity && state.volume >= options.minVolume),
         scan(
             (state, curr) => {
+                const time = performance.now();
                 return {
                     ...curr,
-                    pitch: state.pitch === 0 ? curr.pitch : curr.pitch * options.pitchWeight + state.pitch * (1 - options.pitchWeight),
-                    time: new Date()
+                    // If it's been 500ms since last valid sound, don't do smoothing
+                    pitch:
+                        time - state.time >= breakTime
+                            ? curr.pitch
+                            : curr.pitch * options.pitchWeight + state.pitch * (1 - options.pitchWeight),
+                    time
                 };
             },
             {
                 pitch: 0,
                 clarity: 0,
                 volume: 0,
-                time: new Date(0)
+                time: -breakTime
             }
         ),
         map((state) => convertPitchToReadable(state))

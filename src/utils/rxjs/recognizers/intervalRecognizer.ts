@@ -9,6 +9,7 @@ interface Props {
 
 export interface IntervalRecognizerTonicState {
     startNote: number;
+    hz: number;
     note: number; // This is the interval (relative pitch compared to the start note).
     interval: number;
     error: number;
@@ -17,6 +18,7 @@ export interface IntervalRecognizerTonicState {
 
 export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState = {
     startNote: 0,
+    hz: 0,
     note: 0,
     interval: 0,
     error: 0,
@@ -31,6 +33,7 @@ export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
             const interval = state.noteAbs - startNote;
             return {
                 startNote,
+                hz: state.hz,
                 note: interval + startNoteIdx,
                 interval,
                 error: state.error,

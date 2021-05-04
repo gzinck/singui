@@ -97,7 +97,7 @@ export interface ReadableVocalState {
     noteNum: number;
     hz: number; // frequency hz
     volume: number;
-    time: Date;
+    time: number;
 }
 
 const a4Frequency = 440;
@@ -117,6 +117,6 @@ export const convertPitchToReadable = (state: VocalState): ReadableVocalState =>
         hz: state.pitch,
         volume: state.volume,
         noteNum,
-        time: new Date()
+        time: performance.now()
     };
 };
