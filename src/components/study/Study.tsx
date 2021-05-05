@@ -16,6 +16,7 @@ import ProgressBar from './progress/ProgressBar';
 import { SingTaskResult } from '../../utils/rxjs/taskProgress';
 import { TaskTarget } from '../tasks/sing/target';
 import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
+import VideoPage from '../tasks/video/VideoPage';
 
 export interface StudyProps {
     tasks: StudyTask[];
@@ -148,6 +149,9 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
                 break;
             case StudyTaskType.HEADPHONE_MESSAGE:
                 page = <HeadphoneMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                break;
+            case StudyTaskType.VIDEO:
+                page = <VideoPage {...task.props} onComplete={() => onComplete('confirmed')} />;
                 break;
         }
     }

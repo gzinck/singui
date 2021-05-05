@@ -46,10 +46,11 @@ export const pitchStudyProps: StudyProps = {
         },
         {
             id: 'video',
-            type: StudyTaskType.MESSAGE,
+            type: StudyTaskType.VIDEO,
             props: {
                 header: 'Pitch task tutorial',
-                text: 'Insert a tutorial video here!'
+                text: 'Before you start performing the tasks, watch this short video demonstration.',
+                embedID: 'LFsP4o6kpE0'
             }
         },
         {

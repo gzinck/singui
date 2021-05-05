@@ -1,13 +1,15 @@
 import { SingTaskProps } from '../tasks/sing/possibleTasks';
 import { FormProps } from '../tasks/form/Form';
 import { MessageProps } from '../tasks/message/MessagePage';
+import { VideoProps } from '../tasks/video/VideoPage';
 
 export enum StudyTaskType {
     SING = 'SING',
     FORM = 'FORM',
     CALIBRATE = 'CALIBRATE',
     MESSAGE = 'MESSAGE',
-    HEADPHONE_MESSAGE = 'HEADPHONE_MESSAGE'
+    HEADPHONE_MESSAGE = 'HEADPHONE_MESSAGE',
+    VIDEO = 'VIDEO'
 }
 
 interface TaskBase {
@@ -38,4 +40,9 @@ interface StudyHeadphoneMessageTask extends TaskBase {
     props: MessageProps;
 }
 
-export type StudyTask = StudySingTask | StudyFormTask | StudyCalibrateTask | StudyMessageTask | StudyHeadphoneMessageTask;
+interface StudyVideoTask extends TaskBase {
+    type: StudyTaskType.VIDEO;
+    props: VideoProps;
+}
+
+export type StudyTask = StudySingTask | StudyFormTask | StudyCalibrateTask | StudyMessageTask | StudyHeadphoneMessageTask | StudyVideoTask;
