@@ -52,6 +52,11 @@ export const pitchStudyProps: StudyProps = {
             }
         },
         {
+            id: 'silence-pre-evaluation',
+            type: StudyTaskType.RECORD,
+            props: {}
+        },
+        {
             id: 'msg-pre-evaluation',
             type: StudyTaskType.MESSAGE,
             props: {
@@ -73,6 +78,11 @@ export const pitchStudyProps: StudyProps = {
             }
         },
         {
+            id: 'silence-training-I',
+            type: StudyTaskType.RECORD,
+            props: {}
+        },
+        {
             id: 'msg-training-I',
             type: StudyTaskType.MESSAGE,
             props: {
@@ -91,6 +101,11 @@ export const pitchStudyProps: StudyProps = {
                 withPrompts: true,
                 maxAttempts: 10
             }
+        },
+        {
+            id: 'silence-training-II',
+            type: StudyTaskType.RECORD,
+            props: {}
         },
         {
             id: 'msg-training-II',
@@ -153,6 +168,11 @@ export const pitchStudyProps: StudyProps = {
                 withPrompts: false,
                 maxAttempts: 10
             }
+        },
+        {
+            id: 'silence-post-evaluation',
+            type: StudyTaskType.RECORD,
+            props: {}
         },
         {
             id: 'msg-post-evaluation',

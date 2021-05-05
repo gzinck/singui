@@ -9,6 +9,7 @@ import Form from '../tasks/form/Form';
 import { from } from 'rxjs';
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { currUser$ } from '../auth/observableUser';
 import { mergeMap, timeout } from 'rxjs/operators';
 import { studyId } from './studyProps/studyId';
@@ -17,6 +18,7 @@ import { SingTaskResult } from '../../utils/rxjs/taskProgress';
 import { TaskTarget } from '../tasks/sing/target';
 import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 import VideoPage from '../tasks/video/VideoPage';
+import RecordPage from '../tasks/record/RecordPage';
 
 export interface StudyProps {
     tasks: StudyTask[];
@@ -55,6 +57,19 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
             setResults(newResults);
         },
         [id, results, taskIdx, tasks]
+    );
+
+    const recordOnComplete = React.useCallback(
+        (blob: Blob) => {
+            const user = getAuth().currentUser;
+            const storage = getStorage();
+            if (user) {
+                const path = `users/${user.uid}/study-${id}/${tasks[taskIdx].id}.mp3`;
+                const docRef = ref(storage, path);
+                uploadBytes(docRef, blob).then(() => onComplete(path));
+            }
+        },
+        [onComplete, id, taskIdx, tasks]
     );
 
     const singOnComplete = React.useCallback(
@@ -152,6 +167,9 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
                 break;
             case StudyTaskType.VIDEO:
                 page = <VideoPage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                break;
+            case StudyTaskType.RECORD:
+                page = <RecordPage {...task.props} onComplete={recordOnComplete} />;
                 break;
         }
     }

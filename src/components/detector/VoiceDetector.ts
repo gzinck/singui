@@ -18,41 +18,43 @@ class VoiceDetector {
     constructor(audioContext: IAudioContext) {
         this.audioContext = audioContext;
         this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-            const sourceNode = audioContext.createMediaStreamSource(stream);
-            this.nodes.push(sourceNode);
+        navigator.mediaDevices
+            .getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } })
+            .then((stream) => {
+                const sourceNode = audioContext.createMediaStreamSource(stream);
+                this.nodes.push(sourceNode);
 
-            // Throw in a band pass filter
-            const bandPass = audioContext.createBiquadFilter();
-            bandPass.type = 'bandpass';
-            bandPass.frequency.value = 1850;
-            bandPass.Q.value = 0.25;
-            sourceNode.connect(bandPass);
-            this.nodes.push(bandPass);
+                // Throw in a band pass filter
+                const bandPass = audioContext.createBiquadFilter();
+                bandPass.type = 'bandpass';
+                bandPass.frequency.value = 1850;
+                bandPass.Q.value = 0.25;
+                sourceNode.connect(bandPass);
+                this.nodes.push(bandPass);
 
-            const analyserNode = audioContext.createAnalyser();
-            analyserNode.fftSize = 2048;
-            bandPass.connect(analyserNode);
-            this.nodes.push(analyserNode);
+                const analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 2048;
+                bandPass.connect(analyserNode);
+                this.nodes.push(analyserNode);
 
-            // For processing the pitch
-            const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
-            const timeData = new Float32Array(detector.inputLength);
-            const freqData = new Uint8Array(analyserNode.frequencyBinCount);
-            audioContext.resume();
+                // For processing the pitch
+                const detector = PitchDetector.forFloat32Array(analyserNode.fftSize);
+                const timeData = new Float32Array(detector.inputLength);
+                const freqData = new Uint8Array(analyserNode.frequencyBinCount);
+                audioContext.resume();
 
-            // Do this every 100 ms
-            this.subscriptions.push(
-                interval(100).subscribe(() => {
-                    analyserNode.getFloatTimeDomainData(timeData);
-                    const [pitch, clarity] = detector.findPitch(timeData, audioContext.sampleRate);
+                // Do this every 100 ms
+                this.subscriptions.push(
+                    interval(100).subscribe(() => {
+                        analyserNode.getFloatTimeDomainData(timeData);
+                        const [pitch, clarity] = detector.findPitch(timeData, audioContext.sampleRate);
 
-                    analyserNode.getByteFrequencyData(freqData);
-                    const volume = this.getVolume(freqData);
-                    this.events$.next({ pitch, clarity, volume });
-                })
-            );
-        });
+                        analyserNode.getByteFrequencyData(freqData);
+                        const volume = this.getVolume(freqData);
+                        this.events$.next({ pitch, clarity, volume });
+                    })
+                );
+            });
     }
 
     private getVolume(input: Uint8Array): number {

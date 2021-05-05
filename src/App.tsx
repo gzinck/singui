@@ -27,6 +27,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import { testForm } from './components/tasks/form/testForm';
 import RoutedStudy from './components/study/RoutedStudy';
 import RoutedSingTasks from './components/tasks/sing/RoutedSingTasks';
+import RecordPage from './components/tasks/record/RecordPage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -63,6 +64,9 @@ function App() {
                         </Route>
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />
+                        </Route>
+                        <Route path="/record">
+                            <RecordPage />
                         </Route>
                         <Route path={STUDY_ROUTE} component={RoutedStudy} />
                         <Redirect to={SIGNIN_ROUTE} />
