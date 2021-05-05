@@ -17,7 +17,9 @@ const HeadphoneMessagePage = (props: MessageProps): React.ReactElement<MessagePr
     return (
         <MessagePage {...props}>
             <HeadsetMicIcon className={classes.icon} />
-            <Typography align="center">This study requires a set of headphones or earbuds with a decent quality microphone.</Typography>
+            <Typography align="center">
+                This study requires a set of headphones or earbuds with a decent quality microphone. You also need to be in a silent room.
+            </Typography>
             <Typography align="center" gutterBottom>
                 <b>Put on your headphones and press "Next".</b>
             </Typography>
