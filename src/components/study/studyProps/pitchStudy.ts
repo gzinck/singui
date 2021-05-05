@@ -215,20 +215,45 @@ export const pitchStudyProps: StudyProps = {
                         text:
                             'Now that you have experience singing pitches to interact with your computer, let us know what your thoughts are.'
                     },
+                    // Technical
                     {
                         type: FormTypes.RADIO,
                         id: 'recognizePitchEffectiveness',
                         header: 'How often did the application correctly recognize the pitches you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
-                            '0-25% of the time',
-                            '25-50% of the time',
-                            '50-75% of the time',
-                            '75-90% of the time',
-                            '90-100% of the time'
+                            '0-20% of the time',
+                            '20-40% of the time',
+                            '40-60% of the time',
+                            '60-80% of the time',
+                            '80-100% of the time'
                         ],
                         getError: radioButtonValidator
                     },
+                    {
+                        type: FormTypes.RADIO,
+                        id: 'recognizePitchEffectiveness2',
+                        header: 'To what extent was the application successful at recognizing the pitches you sang?',
+                        text: 'Your response should not consider your own ability to perform the tasks.',
+                        options: [
+                            'Very unsuccessful',
+                            'Unsuccessful',
+                            'Somewhat unsuccessful',
+                            'Neither successful nor unsuccessful',
+                            'Somewhat successful',
+                            'Successful',
+                            'Very successful'
+                        ],
+                        variant: 'horizontal',
+                        getError: radioButtonValidator
+                    },
+                    {
+                        type: FormTypes.TEXT_FIELD,
+                        id: 'technicalProblems',
+                        header: 'Were there any technical problems you encountered when using the application?',
+                        label: 'Add any technical problems here...'
+                    },
+                    // Perceived task difficulty & learnability
                     {
                         type: FormTypes.RADIO,
                         id: 'challengeBeforeTraining',
@@ -263,8 +288,8 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'performanceSatisfaction',
-                        header: 'How satisfied were you with your performance?',
+                        id: 'satisfactionBeforeTraining',
+                        header: 'How satisfied were you with your performance before the two training stages?',
                         options: [
                             'Very unsatisfied',
                             'Unsatisfied',
@@ -278,19 +303,56 @@ export const pitchStudyProps: StudyProps = {
                         getError: radioButtonValidator
                     },
                     {
-                        type: FormTypes.TEXT_FIELD,
-                        id: 'technicalProblems',
-                        header: 'Were there any technical issues when you were performing the tasks?',
-                        label: 'Add any technical problems here...'
+                        type: FormTypes.RADIO,
+                        id: 'satisfactionAfterTraining',
+                        header: 'How satisfied were you with your performance after the two training stages?',
+                        options: [
+                            'Very unsatisfied',
+                            'Unsatisfied',
+                            'Somewhat unsatisfied',
+                            'Neutral',
+                            'Somewhat satisfied',
+                            'Satisfied',
+                            'Very satisfied'
+                        ],
+                        variant: 'horizontal',
+                        getError: radioButtonValidator
                     },
+                    {
+                        type: FormTypes.RADIO,
+                        id: 'practiceTime',
+                        header:
+                            'Relative to the amount of practice time provided, how much practice time would you have needed to consistently perform the tasks successfully?',
+                        options: ['Much less', 'Less', 'Slightly less', 'The same amount', 'Slightly more', 'More', 'Much more'],
+                        variant: 'horizontal',
+                        getError: radioButtonValidator
+                    },
+                    // Enjoyability
+                    {
+                        type: FormTypes.RADIO,
+                        id: 'enjoyability',
+                        header: 'To what extent did you find the tasks enjoyable?',
+                        options: [
+                            'Very unenjoyable',
+                            'Unenjoyable',
+                            'Slightly unenjoyable',
+                            'Neither enjoyable nor unenjoyable',
+                            'Slightly enjoyable',
+                            'Enjoyable',
+                            'Very enjoyable'
+                        ],
+                        variant: 'horizontal',
+                        getError: radioButtonValidator
+                    },
+                    // Use cases
                     {
                         type: FormTypes.CHECKBOX,
                         id: 'useCases',
-                        header: 'What use cases, if any, would you consider using pitch-based interaction for?',
+                        header: 'For what use cases would you consider using these interactions, if any?',
                         options: [
-                            'Switching tools in Photoshop',
-                            'Switching editing modes in a text editor/word processor',
-                            'Navigating a powerpoint presentation',
+                            'Switching tools in a photo or drawing application like Photoshop',
+                            'Performing shortcuts in word processors, like Microsoft Word, or text editors, like Notepad or vim',
+                            'Switching slides in a slideshow',
                             'Other'
                         ]
                     },
@@ -300,6 +362,7 @@ export const pitchStudyProps: StudyProps = {
                         header: 'If you chose "other", describe your use case(s) for pitch-based interactions',
                         label: 'Add any other use cases here...'
                     },
+                    // Extra
                     {
                         type: FormTypes.TEXT_FIELD,
                         id: 'thoughts',

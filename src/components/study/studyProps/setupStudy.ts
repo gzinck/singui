@@ -34,7 +34,7 @@ export const setupStudyProps: StudyProps = {
                         id: 'title',
                         header: 'Consent',
                         text:
-                            'This is a university-approved consent message about how we will use your data for research purposes only. Note that we collect audio data for select tasks (it will be explicitly indicated) to verify your audio quality. Your audio data is deleted within 6 months.'
+                            'This is a university-approved consent message about how we will use your data for research purposes only. Note that we collect audio data for select tasks (it will be explicitly indicated) to verify your audio quality.'
                     },
                     {
                         type: FormTypes.CHECKBOX,
@@ -67,6 +67,13 @@ export const setupStudyProps: StudyProps = {
                         getError: numberValidator
                     },
                     {
+                        type: FormTypes.RADIO,
+                        id: 'gender',
+                        header: 'What gender do you identify with??',
+                        options: ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'],
+                        getError: radioButtonValidator
+                    },
+                    {
                         type: FormTypes.TEXT_FIELD,
                         id: 'musicalExperiencePrivate',
                         header: 'How many years of private musical lessons have you had?',
@@ -94,7 +101,7 @@ export const setupStudyProps: StudyProps = {
                     {
                         type: FormTypes.RADIO,
                         id: 'singingFifth',
-                        header: 'Can you sing a perfect fifth on demand?',
+                        header: 'Can you sing a perfect fifth interval on demand?',
                         text: 'If you do not understand this question, respond "Not sure".',
                         options: ['Yes', 'No', 'Not sure'],
                         getError: radioButtonValidator
@@ -102,7 +109,7 @@ export const setupStudyProps: StudyProps = {
                     {
                         type: FormTypes.RADIO,
                         id: 'singingSeventh',
-                        header: 'Can you sing a major seventh on demand?',
+                        header: 'Can you sing a major seventh interval on demand?',
                         text: 'If you do not understand this question, respond "Not sure".',
                         options: ['Yes', 'No', 'Not sure'],
                         getError: radioButtonValidator
