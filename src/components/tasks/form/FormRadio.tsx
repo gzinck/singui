@@ -38,7 +38,7 @@ const FormRadio = ({ header, text, options, value, setValue, error, variant }: F
     const labelPlacement = variant === 'horizontal' ? 'bottom' : 'end';
     return (
         <FormItemBox header={header} text={text} error={error}>
-            <FormControl component="fieldset" name={header}>
+            <FormControl className={classes[variant]} component="fieldset" name={header}>
                 <RadioGroup className={classes[variant]} aria-label={header} value={value || ''} onChange={(e) => setValue(e.target.value)}>
                     {options.map((opt) => (
                         <FormControlLabel labelPlacement={labelPlacement} control={<Radio />} label={opt} value={opt} key={opt} />

@@ -5,7 +5,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormItemBox from './FormItemBox';
 import FormControl from '@material-ui/core/FormControl';
 
-interface FormRadioProps {
+interface FormCheckboxProps {
     header: string;
     text?: string;
     options: string[];
@@ -14,7 +14,7 @@ interface FormRadioProps {
     error?: string;
 }
 
-const FormRadio = ({ header, text, options, value, setValue, error }: FormRadioProps): React.ReactElement<FormRadioProps> => {
+const FormCheckbox = ({ header, text, options, value, setValue, error }: FormCheckboxProps): React.ReactElement<FormCheckboxProps> => {
     const toggle = (s: string) => {
         const without = (value || []).filter((opt) => opt !== s);
         // If we didn't change anything, add it back in
@@ -41,4 +41,4 @@ const FormRadio = ({ header, text, options, value, setValue, error }: FormRadioP
     );
 };
 
-export default FormRadio;
+export default FormCheckbox;

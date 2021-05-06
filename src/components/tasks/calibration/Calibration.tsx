@@ -1,17 +1,22 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import useAudio from '../../audio/useAudio';
-import { getAudioURL } from '../../audio/getAudioURL';
-import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { TaskTarget } from '../sing/target';
-import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
-import Slider from '@material-ui/core/Slider';
-import Card from '@material-ui/core/Card';
-import { tonic$ } from '../../detector/shared';
 import Page from '../../page/Page';
+import ButtonBox from '../../common/ButtonBox';
+import Button from '@material-ui/core/Button';
+import useAudio from '../../audio/useAudio';
+import { TaskTarget } from '../sing/target';
+import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
+import { getAudioURL } from '../../audio/getAudioURL';
+import FormRadio from '../form/FormRadio';
+import CalibrationBar from './CalibrationBar';
+import RangeSelector from './RangeSelector';
+import { Subject, timer } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import Typography from '@material-ui/core/Typography';
+import { tonic$ } from '../../detector/shared';
 import { clearCachedAudio } from '../../audio/getCachedAudio';
+import { Card } from '@material-ui/core';
 
 interface CalibrationProps {
     onComplete?: (startNote: number) => void;
@@ -19,65 +24,157 @@ interface CalibrationProps {
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        margin: theme.spacing(2)
+        position: 'relative',
+        width: '90%',
+        maxWidth: '50rem'
     },
-    buttonBox: {
-        margin: theme.spacing(2, 0, 0),
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        '& > *': {
-            margin: theme.spacing(0, 2)
-        }
-    },
-    spinner: {
-        marginRight: '0.3rem'
+    text: {
+        marginBottom: theme.spacing(4)
     },
     card: {
-        maxWidth: '100vw',
-        marginTop: theme.spacing(3),
-        padding: theme.spacing(4, 8)
+        padding: theme.spacing(0, 4)
     }
 }));
 
-const target: TaskTarget = {
+const maxNoteNum = 71; // NOTE: the max minimum note is 60, but this is the highest number for the top note
+const minNoteNum = 12;
+const defaultNoteNum = 44;
+
+const noteTarget: TaskTarget = {
+    type: TaskType.PITCH,
+    value: 0
+};
+
+const octaveTarget: TaskTarget = {
     type: TaskType.INTERVAL,
     value: 12,
     startNote: 0
 };
 
-const maxNoteNum = 60;
-const minNoteNum = 12;
-const defaultNoteNum = 44;
+enum Stage {
+    FIND_START,
+    DESCENDING,
+    ASCENDING,
+    USER_CHOICE,
+    DONE
+}
 
-const clamp = (n: number): number => Math.max(minNoteNum, Math.min(maxNoteNum, n));
+const formOptions = ['Too low', 'Slightly low', 'Just right', 'Slightly high', 'Too high'];
+
+const getHeader = (stage: Stage) => {
+    switch (stage) {
+        case Stage.FIND_START:
+        case Stage.DESCENDING:
+        case Stage.ASCENDING:
+            return 'Sing the note being played.';
+        case Stage.USER_CHOICE:
+            return 'Move the slider to your desired range.';
+        case Stage.DONE:
+            return 'All done!';
+    }
+};
+
+const getText = (stage: Stage) => {
+    switch (stage) {
+        case Stage.FIND_START:
+        case Stage.DESCENDING:
+        case Stage.ASCENDING:
+            return 'After singing, record whether the note is too low or high for your voice. Only select "Just right" if it is easy to sing.';
+        case Stage.USER_CHOICE:
+            return 'Listen to the notes played in the background and sing them back. Move the slider until the notes feel comfortable. After, click "Next".';
+        case Stage.DONE:
+            return 'Good work.';
+    }
+};
 
 const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<CalibrationProps> => {
     const classes = useStyles();
-    const [startNote, setStartNote] = React.useState(defaultNoteNum);
-    const [sliderVal, setSliderVal] = React.useState(0);
-    const [isDone, setIsDone] = React.useState(false);
+    const [currNote, setCurrNote] = React.useState(defaultNoteNum);
+    const [maxNote, setMaxNote] = React.useState(maxNoteNum); // For binary search
+    const [minNote, setMinNote] = React.useState(minNoteNum); // for binary search
+
+    const [stage, setStage] = React.useState<Stage>(Stage.FIND_START);
+    const [status, setStatus] = React.useState<Record<number, number>>({});
     const { play } = useAudio({ keyNumber: 0 });
-    const currAudioURL = getAudioURL({ target, keyNumber: startNote % 12, octave: Math.floor(startNote / 12) });
+    const play$ = React.useRef<Subject<string>>(new Subject());
+
+    const onDone = () => {
+        setStage(Stage.DONE);
+        tonic$.next(currNote);
+        clearCachedAudio();
+        onComplete && onComplete(currNote);
+    };
+
+    const currAudioURL = getAudioURL({
+        target: stage === Stage.USER_CHOICE ? octaveTarget : noteTarget,
+        keyNumber: currNote % 12,
+        octave: Math.floor(currNote / 12)
+    });
 
     React.useEffect(() => {
-        play(currAudioURL);
-    }, [currAudioURL, play]);
+        const sub = play$.current.pipe(debounceTime(stage === Stage.USER_CHOICE ? 400 : 0)).subscribe((url) => play(url));
+        return () => sub.unsubscribe();
+    }, [play, stage]);
+    React.useEffect(() => play$.current.next(currAudioURL), [currAudioURL]);
 
-    const onNext = () => {
-        if (sliderVal !== 0) {
-            setStartNote(clamp(startNote - sliderVal));
-            setSliderVal(0);
-        } else {
-            tonic$.next(startNote);
-            clearCachedAudio();
-            onComplete && onComplete(startNote);
-            setIsDone(true);
+    // To make the radio buttons show an effect then open up for the next question
+    const [radioVal, setRadioVal] = React.useState('');
+    React.useEffect(() => {
+        if (radioVal !== '') {
+            const sub = timer(250).subscribe(() => setRadioVal(''));
+            return () => sub.unsubscribe();
+        }
+    }, [radioVal]);
+
+    const selectRange = (selection: string) => {
+        setRadioVal(selection);
+        const idx = formOptions.indexOf(selection);
+        const noteRating = idx > 2 ? 4 - idx : idx;
+        switch (stage) {
+            case Stage.FIND_START:
+                if (noteRating === 2) {
+                    setStatus((range) => ({ ...range, [currNote]: noteRating }));
+                    setStage(Stage.DESCENDING);
+                    setCurrNote(currNote - 1);
+                    setMaxNote(currNote); // Where we'll start ascending again
+                } else if (idx < 2) {
+                    // Find a note that's higher
+                    setMinNote(currNote);
+                    let nextNote = Math.ceil((maxNote + currNote) / 2);
+                    // If the user thinks a note is both too low and too high...
+                    if (nextNote === currNote) {
+                        setMaxNote(maxNoteNum);
+                        nextNote = Math.ceil((maxNoteNum + currNote) / 2);
+                    }
+                    setCurrNote(nextNote);
+                } else {
+                    // Find a note that's lower
+                    setMaxNote(currNote);
+                    let nextNote = Math.floor((minNote + currNote) / 2);
+                    // If the user thinks a note is both too high and too low...
+                    if (nextNote === currNote) {
+                        setMinNote(minNoteNum);
+                        nextNote = Math.floor((minNoteNum + currNote) / 2);
+                    }
+                    setCurrNote(nextNote);
+                }
+                break;
+            case Stage.DESCENDING:
+                setStatus((range) => ({ ...range, [currNote]: noteRating }));
+                if (noteRating === 0 || currNote === minNoteNum) {
+                    setStage(Stage.ASCENDING);
+                    setCurrNote(maxNote);
+                    setMinNote(currNote + 1); // Bottom of their range
+                } else setCurrNote(currNote - 1);
+                break;
+            case Stage.ASCENDING:
+                setStatus((range) => ({ ...range, [currNote]: noteRating }));
+                if (noteRating === 0 || currNote === maxNoteNum) {
+                    setStage(Stage.USER_CHOICE);
+                    setCurrNote(minNote);
+                    setMaxNote(currNote - 1); // Top of their range
+                } else setCurrNote(currNote + 1);
+                break;
         }
     };
 
@@ -85,42 +182,48 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
         <Page header="Calibration">
             <div className={classes.root}>
                 <Typography variant="h4" align="center" gutterBottom>
-                    {isDone ? 'All done!' : 'Sing the two notes being played.'}
+                    {getHeader(stage)}
                 </Typography>
-                {!isDone && (
+                <Typography className={classes.text} align="center" gutterBottom>
+                    {getText(stage)}
+                </Typography>
+                <CalibrationBar minNote={minNoteNum} maxNote={maxNoteNum} status={status} />
+                {stage === Stage.USER_CHOICE && (
+                    <RangeSelector
+                        minNote={minNoteNum}
+                        maxNote={maxNoteNum}
+                        note={currNote}
+                        setNote={(note) => setCurrNote(Math.max(minNote, Math.min(maxNote - 12, note)))}
+                    />
+                )}
+                {[Stage.FIND_START, Stage.ASCENDING, Stage.DESCENDING].includes(stage) && (
                     <Card className={classes.card}>
-                        <Typography id="calibration-feedback-slider">How do the two notes sit in your vocal range?</Typography>
-                        <Slider
-                            track={false}
-                            aria-labelledby="calibration-feedback-slider"
-                            marks={[
-                                {
-                                    value: -8,
-                                    label: 'Very low'
-                                },
-                                {
-                                    value: 0,
-                                    label: 'Perfect'
-                                },
-                                {
-                                    value: 8,
-                                    label: 'Very high'
-                                }
-                            ]}
-                            min={-8}
-                            max={8}
-                            step={1}
-                            value={sliderVal}
-                            onChange={(_, val) => setSliderVal(val as number)}
+                        <FormRadio
+                            value={radioVal}
+                            header="How does the note being played fit in your vocal range?"
+                            options={formOptions}
+                            setValue={selectRange}
+                            variant="horizontal"
                         />
-                        <div className={classes.buttonBox}>
-                            <Button onClick={() => play(currAudioURL)}>Replay sound</Button>
-                            <Button onClick={onNext} variant="contained" color="primary">
-                                Next
-                            </Button>
-                        </div>
                     </Card>
                 )}
+                <ButtonBox margin={5}>
+                    <Button
+                        onClick={() => {
+                            setStage(Stage.FIND_START);
+                            setCurrNote(defaultNoteNum);
+                            setStatus({});
+                        }}
+                    >
+                        Restart
+                    </Button>
+                    <Button onClick={() => play(currAudioURL)}>Replay sound</Button>
+                    {stage === Stage.USER_CHOICE && (
+                        <Button onClick={onDone} variant="contained" color="primary">
+                            Next
+                        </Button>
+                    )}
+                </ButtonBox>
             </div>
         </Page>
     );

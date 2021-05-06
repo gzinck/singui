@@ -18,7 +18,6 @@ import {
 import Tuner from './components/tasks/tuner/Tuner';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
-import Calibration from './components/tasks/calibration/Calibration';
 import Form from './components/tasks/form/Form';
 import { firebaseConfig } from './firebaseConfig';
 import { getApps, initializeApp } from 'firebase/app';
@@ -28,6 +27,7 @@ import { testForm } from './components/tasks/form/testForm';
 import RoutedStudy from './components/study/RoutedStudy';
 import RoutedSingTasks from './components/tasks/sing/RoutedSingTasks';
 import RecordPage from './components/tasks/record/RecordPage';
+import Calibration from './components/tasks/calibration/Calibration';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 

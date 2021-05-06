@@ -106,7 +106,7 @@ const Drawer = (): React.ReactElement => {
                             <ListItemIcon>
                                 <AssignmentTurnedInIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Calibration" />
+                            <ListItemText primary="SpeedyCalibration" />
                         </ListItem>
                     </List>
                 </div>
