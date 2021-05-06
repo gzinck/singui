@@ -92,14 +92,15 @@ const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
             isCorrect === undefined ? theme.palette.primary.main : isCorrect ? theme.palette.success.main : theme.palette.error.main,
         bottom: `calc(${(100 / noteLabels.length) * (bottNum + bottError + 0.5)}% - 2.5vh)`,
         left: 0,
-        transition: 'top 0.1s'
+        transition: 'bottom 0.1s'
     }),
     circle: ({ noteLabels, endError, endNum }) => ({
         left: 0,
         position: 'absolute',
         width: `${circleSize}rem`,
         height: `${circleSize}rem`,
-        bottom: `calc(${(100 / noteLabels.length) * (endNum + endError + 0.5)}% - ${circleSize / 2}rem)`
+        bottom: `calc(${(100 / noteLabels.length) * (endNum + endError + 0.5)}% - ${circleSize / 2}rem)`,
+        transition: 'bottom 0.1s'
     })
 }));
 
