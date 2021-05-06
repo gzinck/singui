@@ -8,7 +8,7 @@ import { Theme } from '../theme';
 
 interface Props {
     header: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({

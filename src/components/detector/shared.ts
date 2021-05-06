@@ -11,12 +11,14 @@ tonic$.subscribe((tonic) => cookieStorage.setItem('tonic', `${tonic}`));
 
 const defaultSustainLength = 3;
 export const sustainLength$ = new BehaviorSubject<number>(defaultSustainLength);
-const initialSustainLength = cookieStorage.getItem('sustainLength');
-if (initialSustainLength) sustainLength$.next(parseInt(initialSustainLength));
-sustainLength$.subscribe((sustainLength) => cookieStorage.setItem('sustainLength', `${sustainLength}`));
+// To allow changing the sustainLength$, simply uncomment below.
+// const initialSustainLength = cookieStorage.getItem('sustainLength');
+// if (initialSustainLength) sustainLength$.next(parseInt(initialSustainLength));
+// sustainLength$.subscribe((sustainLength) => cookieStorage.setItem('sustainLength', `${sustainLength}`));
 
 const defaultAudioVolume = 1;
 export const audioVolume$ = new BehaviorSubject<number>(defaultAudioVolume);
-const initialVolume = cookieStorage.getItem('audioVolume');
-if (initialVolume) audioVolume$.next(parseFloat(initialVolume));
-audioVolume$.subscribe((audioVolume) => cookieStorage.setItem('audioVolume', `${audioVolume}`));
+// To allow changing the audioVolume$, simply uncomment below.
+// const initialVolume = cookieStorage.getItem('audioVolume');
+// if (initialVolume) audioVolume$.next(parseFloat(initialVolume));
+// audioVolume$.subscribe((audioVolume) => cookieStorage.setItem('audioVolume', `${audioVolume}`));
