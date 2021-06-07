@@ -4,7 +4,6 @@ import { SingTaskResult, TaskProgressState } from '../../../utils/rxjs/taskProgr
 import { sustainLength$ } from '../../detector/shared';
 import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
 import useAudio from '../../audio/useAudio';
-import StaticPitchMeter, { numeric15Notes } from './progressIndicators/StaticPitchMeter';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
 import {
@@ -25,6 +24,7 @@ import { useAudioCache } from '../../audio/useAudioCache';
 import useTonic from '../../audio/useTonic';
 import SuccessBar from './progressIndicators/SuccessBar';
 import Page from '../../page/Page';
+import CircularPitchMeter, { noteNamesFrom } from './progressIndicators/CircularPitchMeter';
 
 interface Props {
     header: string;
@@ -36,33 +36,18 @@ interface Props {
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
-const leftWidth = '16rem';
 const useStyles = makeStyles<Theme>(() => ({
     root: {
         width: '100%',
         position: 'relative',
-        height: 'calc(100vh - 8rem)',
-        '& > div': {
-            clear: 'none',
-            float: 'left'
-        }
+        height: 'calc(100vh - 8rem)'
     },
-    left: {
-        height: '100%',
-        width: leftWidth
+    target: {
+        maxWidth: '30rem',
+        margin: '0 calc(50% - 15rem)'
     },
-    right: {
-        height: '100%',
-        width: `calc(100% - ${leftWidth} - 2rem)`
-    },
-    pitchBox: {
-        width: '10rem',
-        height: '10rem',
-        position: 'relative'
-    },
-    matchesBox: {
-        maxHeight: 'calc(100% - 11rem)',
-        overflowY: 'scroll'
+    pitchPopup: {
+        margin: '1rem calc(50% - 8.5rem)'
     }
 }));
 
@@ -72,14 +57,12 @@ const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState 
 };
 
 const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
-    function fitToMeter<T extends number | undefined>(note: T): T | number {
-        return typeof note === 'number' ? Math.max(0, Math.min(13, note + 1)) : note;
-    }
-
     const [feedback, setFeedback] = React.useState<boolean[]>([]);
     const [tonic] = useTonic();
     const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
+
+    const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);
 
     const classes = useStyles();
     const ctx = React.useContext(audioContext);
@@ -116,19 +99,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
     return (
         <Page header={header}>
             <div className={classes.root}>
-                <div className={classes.left}>
-                    <StaticPitchMeter
-                        // Uncomment below for precise musical language instead of numbers
-                        // noteLabels={state.type === TaskType.INTERVAL ? intervalsAscendingNotes : scale15Notes}
-                        noteLabels={numeric15Notes}
-                        startNum={fitToMeter(state.note)}
-                        startError={state.error}
-                        target={fitToMeter(state.nextNote)}
-                        progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
-                        isCorrect={state.nextNote === state.note}
-                    />
-                </div>
-                <div className={classes.right}>
+                <div className={classes.target}>
                     <TargetBox height="7rem">
                         {state.nextTarget.type === TaskType.PITCH && <h2>Pitch: {convertNumericNoteToString(state.nextTarget.value)}</h2>}
                         {state.nextTarget.type === TaskType.INTERVAL && (
@@ -148,30 +119,14 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
                             />
                         )}
                     </TargetBox>
-                    {state.type === TaskType.MELODY && (
-                        <div className={classes.matchesBox}>
-                            <h3>Matching melodies</h3>
-                            {state.melodies.map((melody: MelodyState, idx: number) => (
-                                <TargetBox
-                                    key={melody.id}
-                                    height="5rem"
-                                    variant={
-                                        idx === 0 && state.isValid
-                                            ? state.currTarget.type === TaskType.MELODY && melody.id === state.currTarget.id
-                                                ? 'success'
-                                                : 'failure'
-                                            : ''
-                                    }
-                                >
-                                    <MelodyDiagram
-                                        melody={melody.intervals.map((i) => i.interval)}
-                                        done={melody.intervals.map((interval) => interval.duration !== 0)}
-                                        current={state.interval}
-                                    />
-                                </TargetBox>
-                            ))}
-                        </div>
-                    )}
+                </div>
+                <div className={classes.pitchPopup}>
+                    <CircularPitchMeter
+                        noteLabels={noteLabels}
+                        startNum={state.note}
+                        startError={state.error}
+                        progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
+                    />
                 </div>
                 <SuccessBar items={feedback} />
             </div>
