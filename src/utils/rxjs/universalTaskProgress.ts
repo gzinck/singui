@@ -80,10 +80,8 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
 export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAttempts }: Props) => (
     source$: Observable<UniversalRecognizerState>
 ): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
-    // Before starting, the tasks, play the first sound right away.
-    if (play) {
-        play(getAudioURL({ target: targets[0], keyNumber, octave }));
-    }
+    // Uncomment to play before the start of the first trial
+    // if (play) play(getAudioURL({ target: targets[0], keyNumber, octave }));
 
     return source$.pipe(
         taskProgress<UniversalRecognizerState, TaskTarget>({
@@ -101,8 +99,9 @@ export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAtt
             },
             initialState: getUniversalTaskProgressInitialState(targets[0]),
             getNextNote: (state) => getNextNote(state, keyNumber),
-            onComplete: (_, target) => {
-                if (play) {
+            onComplete: (_, target, isRepeated) => {
+                // Remove isRepeated logic to play before every note
+                if (play && isRepeated) {
                     play(getAudioURL({ target, keyNumber, octave }));
                 }
             },

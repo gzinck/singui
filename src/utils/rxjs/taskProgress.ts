@@ -6,7 +6,7 @@ interface Props<RecognizerState, Target> {
     checkCorrect: (state: RecognizerState, target: Target, targetIdx: number) => boolean;
     initialState: TaskProgressState<Target, RecognizerState>;
     getNextNote: (state: TaskProgressState<Target, RecognizerState>) => number | undefined;
-    onComplete?: (completed: Target, next: Target) => void;
+    onComplete?: (completed: Target, next: Target, isRepeated: boolean) => void;
     maxAttempts: number;
 }
 
@@ -88,7 +88,9 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                 if (curr.isDone && !state.isDone) {
                     // If we're done and it's right (or we maxed out our attempts), more forward
                     const attempts = results[results.length - 1].attempts;
+                    let isRepeated = true;
                     if (isCorrect || attempts >= maxAttempts) {
+                        isRepeated = false;
                         nextTargetIdx = results.length % targets.length;
                         nextTarget = targets[nextTargetIdx];
                         results[results.length - 1] = {
@@ -109,8 +111,8 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                         };
                     }
 
-                    // Notify completion of a trial if needed
-                    if (onComplete) onComplete(currTarget, nextTarget);
+                    // Notify that we're repeating
+                    if (onComplete) onComplete(currTarget, nextTarget, isRepeated);
                 }
 
                 return {
