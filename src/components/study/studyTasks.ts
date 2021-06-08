@@ -3,6 +3,7 @@ import { FormProps } from '../tasks/form/Form';
 import { MessageProps } from '../tasks/message/MessagePage';
 import { VideoProps } from '../tasks/video/VideoPage';
 import { RecordProps } from '../tasks/record/RecordPage';
+import { PerformanceMessageProps } from '../tasks/message/PerformanceMessagePage';
 
 export enum StudyTaskType {
     SING = 'SING',
@@ -10,6 +11,7 @@ export enum StudyTaskType {
     CALIBRATE = 'CALIBRATE',
     MESSAGE = 'MESSAGE',
     HEADPHONE_MESSAGE = 'HEADPHONE_MESSAGE',
+    PERFORMANCE_MESSAGE = 'PERFORMANCE_MESSAGE',
     VIDEO = 'VIDEO',
     RECORD = 'RECORD'
 }
@@ -42,6 +44,12 @@ interface StudyHeadphoneMessageTask extends TaskBase {
     props: MessageProps;
 }
 
+interface StudyPerformanceMessageTask extends TaskBase {
+    type: StudyTaskType.PERFORMANCE_MESSAGE;
+    for: string; // id of the task to show performance for
+    props: Partial<PerformanceMessageProps>;
+}
+
 interface StudyVideoTask extends TaskBase {
     type: StudyTaskType.VIDEO;
     props: VideoProps;
@@ -58,5 +66,6 @@ export type StudyTask =
     | StudyCalibrateTask
     | StudyMessageTask
     | StudyHeadphoneMessageTask
+    | StudyPerformanceMessageTask
     | StudyVideoTask
     | StudyRecordTask;

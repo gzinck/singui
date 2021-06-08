@@ -71,11 +71,19 @@ export const pitchStudyProps: StudyProps = {
             props: {
                 header: 'Pitch task pre-evaluation',
                 // Should generate this randomly using the scripts/gen_pitches.py script
-                targets: toTargets([4, 0, 7, 0, 7, 4, 9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5]),
+                targets: toTargets([9, 2, 0, 9]), //, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5]),
                 recognizers,
                 withPrompts: false,
                 hideFeedback: true,
                 maxAttempts: 1
+            }
+        },
+        {
+            id: 'performance-pre-evaluation',
+            for: 'pre-evaluation',
+            type: StudyTaskType.PERFORMANCE_MESSAGE,
+            props: {
+                multiAttempt: false
             }
         },
         {

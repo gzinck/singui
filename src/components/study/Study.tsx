@@ -19,6 +19,7 @@ import { TaskTarget } from '../tasks/sing/target';
 import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 import VideoPage from '../tasks/video/VideoPage';
 import RecordPage from '../tasks/record/RecordPage';
+import PerformanceMessagePage from '../tasks/message/PerformanceMessagePage';
 
 export interface StudyProps {
     tasks: StudyTask[];
@@ -29,10 +30,17 @@ export interface StudyProps {
     time: number;
 }
 
+interface Result {
+    type: StudyTaskType;
+    id: string;
+    details: any;
+    doneAt: Date;
+}
+
 const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> => {
     const history = useHistory();
     const [taskIdx, setTaskIdx] = React.useState(-1);
-    const [results, setResults] = React.useState<Record<number, {}>>({});
+    const [results, setResults] = React.useState<Result[]>([]);
     const [progress, setProgress] = React.useState(0);
 
     // These callbacks should not trigger refreshes of the child components, so we need to useCallback
@@ -43,7 +51,8 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
 
             const type = tasks[taskIdx].type;
             // Send results to database
-            const newResults = { ...results, [taskIdx]: { type, id, details, doneAt: new Date() } };
+
+            const newResults = [...results, { type, id, details, doneAt: new Date() }];
             const isDone = taskIdx === tasks.length - 1;
             const nextIdx = taskIdx + 1;
             if (user) {
@@ -93,7 +102,7 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
 
         // Clean things up
         setTaskIdx(-1);
-        setResults({});
+        setResults([]);
         setIsLoading(true);
 
         // Get the study progress first
@@ -164,6 +173,16 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
                 break;
             case StudyTaskType.HEADPHONE_MESSAGE:
                 page = <HeadphoneMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                break;
+            case StudyTaskType.PERFORMANCE_MESSAGE:
+                const taskIdx = tasks.findIndex((tsk) => tsk.id === task.for);
+                page = (
+                    <PerformanceMessagePage
+                        {...task.props}
+                        results={results[taskIdx].details as SingTaskResult<any>[]}
+                        onComplete={() => onComplete('confirmed')}
+                    />
+                );
                 break;
             case StudyTaskType.VIDEO:
                 page = <VideoPage {...task.props} onComplete={() => onComplete('confirmed')} />;
