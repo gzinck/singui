@@ -1,5 +1,5 @@
 import { Observable, Subject } from 'rxjs';
-import { intervalRecognizer, IntervalRecognizerTonicState } from './intervalRecognizer';
+import { intervalRecognizer, IntervalRecognizerState } from './intervalRecognizer';
 import { pitchRecognizer, PitchRecognizerState } from './pitchRecognizer';
 import { Melody, melodyRecognizer, MelodyRecognizerState } from './melodyRecognizer';
 import { concatMap, debounceTime, map, shareReplay, startWith, takeUntil, withLatestFrom } from 'rxjs/operators';
@@ -33,7 +33,7 @@ interface CommonState {
     isDone: boolean;
 }
 
-type IntervalState = IntervalRecognizerTonicState & CommonState & { type: TaskType.INTERVAL };
+type IntervalState = IntervalRecognizerState & CommonState & { type: TaskType.INTERVAL };
 type PitchState = PitchRecognizerState & CommonState & { type: TaskType.PITCH };
 type MelodyState = MelodyRecognizerState & CommonState & { type: TaskType.MELODY };
 export type UniversalRecognizerState = IntervalState | PitchState | MelodyState;
@@ -82,7 +82,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                     return source$.pipe(
                         pitchRecognizer({ sustainLength$, keyNumber }),
                         intervalRecognizer({ startNote: noteAbs, startNoteIdx: note }),
-                        map<IntervalRecognizerTonicState, IntervalState>((state) => ({
+                        map<IntervalRecognizerState, IntervalState>((state) => ({
                             ...state,
                             type: TaskType.INTERVAL,
                             isDone: false

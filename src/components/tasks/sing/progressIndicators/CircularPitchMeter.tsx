@@ -16,6 +16,7 @@ interface PopupPitchMeterProps {
 }
 
 const radius = 250;
+const noteLabelRadius = 0.85;
 const strokeWidth = 24;
 const center = radius + strokeWidth;
 
@@ -49,7 +50,7 @@ const useStyles = makeStyles<Theme, PopupPitchMeterProps>((theme) => ({
     label: {
         fill: '#FFF',
         fontFamily: theme.typography.fontFamily,
-        fontSize: radius / 7,
+        fontSize: radius / 8,
         dominantBaseline: 'middle',
         textAnchor: 'middle',
         fontWeight: 300,
@@ -60,7 +61,7 @@ const useStyles = makeStyles<Theme, PopupPitchMeterProps>((theme) => ({
     },
     centerLabel: {
         fontWeight: 400,
-        fontSize: radius / 3
+        fontSize: radius / 5
     },
     mask: {
         fill: 'transparent',
@@ -107,31 +108,18 @@ const CircularPitchMeter = (props: PopupPitchMeterProps) => {
                     />
                 </mask>
 
-                {/* Uncomment below to show a progress circle appear */}
-                {/*<mask id="progressMask">*/}
-                {/*    <circle*/}
-                {/*        r={radius}*/}
-                {/*        cx={center}*/}
-                {/*        cy={center}*/}
-                {/*        className={classes.mask}*/}
-                {/*        strokeDasharray={`${props.progress * Math.PI * 2 * radius} ${Math.PI * 2 * radius}`}*/}
-                {/*        transform={`rotate(-90 ${center} ${center})`}*/}
-                {/*    />*/}
-                {/*</mask>*/}
-
                 <circle cx={center} cy={center} r={radius + strokeWidth} className={classes.arc} mask="url(#currNoteMask)" />
                 <circle cx={center} cy={center} r={radius} className={classes.circle} />
-                {/*<circle cx={center} cy={center} r={radius - 2} className={clsx(classes.circle, classes.progress)} mask="url(#progressMask)" />*/}
 
                 <text x={center} y={center} className={clsx(classes.label, classes.centerLabel)}>
                     {props.label}
                 </text>
                 {props.noteLabels.map((label, idx) => (
                     <text
-                        x={center + Math.sin((idx * Math.PI) / 6) * radius * 0.8}
-                        y={center - Math.cos((idx * Math.PI) / 6) * radius * 0.8}
+                        x={center + Math.sin((idx * Math.PI) / 6) * radius * noteLabelRadius}
+                        y={center - Math.cos((idx * Math.PI) / 6) * radius * noteLabelRadius}
                         key={label}
-                        className={clsx(classes.label, idx === lowNum || idx === highNum ? classes.currentLabel : '')}
+                        className={clsx(classes.label, (idx === lowNum || idx === highNum) && classes.currentLabel)}
                     >
                         {label}
                     </text>

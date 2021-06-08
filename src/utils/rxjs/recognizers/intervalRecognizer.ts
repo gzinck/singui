@@ -7,19 +7,21 @@ interface Props {
     startNoteIdx: number; //
 }
 
-export interface IntervalRecognizerTonicState {
+export interface IntervalRecognizerState {
     startNote: number;
     hz: number;
     note: number; // This is the interval (relative pitch compared to the start note).
+    noteAbs: number;
     interval: number;
     error: number;
     isValid: boolean;
 }
 
-export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState = {
+export const intervalRecognizerInitialState: IntervalRecognizerState = {
     startNote: 0,
     hz: 0,
     note: 0,
+    noteAbs: 0,
     interval: 0,
     error: 0,
     isValid: false
@@ -27,7 +29,7 @@ export const intervalRecognizerTonicInitialState: IntervalRecognizerTonicState =
 
 export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
     source$: Observable<PitchRecognizerState>
-): Observable<IntervalRecognizerTonicState> => {
+): Observable<IntervalRecognizerState> => {
     return source$.pipe(
         map((state) => {
             const interval = state.noteAbs - startNote;
@@ -35,6 +37,7 @@ export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
                 startNote,
                 hz: state.hz,
                 note: interval + startNoteIdx,
+                noteAbs: state.noteAbs,
                 interval,
                 error: state.error,
                 isValid: interval !== 0 // Everything is fair game EXCEPT singing one note

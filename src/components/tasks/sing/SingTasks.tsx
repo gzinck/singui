@@ -1,5 +1,4 @@
 import React from 'react';
-import MelodyDiagram from './progressIndicators/MelodyDiagram';
 import { SingTaskResult, TaskProgressState } from '../../../utils/rxjs/taskProgress';
 import { sustainLength$ } from '../../detector/shared';
 import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
@@ -12,10 +11,9 @@ import {
     universalRecognizer,
     UniversalRecognizerState
 } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { MelodyRecognizerState, MelodyState } from '../../../utils/rxjs/recognizers/melodyRecognizer';
-import { MelodyTaskTarget, TaskTarget } from './target';
+import { TaskTarget } from './target';
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../../utils/rxjs/universalTaskProgress';
-import { convertNumericNoteToString } from '../../../utils/pitchConverter';
+import { convertNoteToString } from '../../../utils/pitchConverter';
 import TargetBox from './progressIndicators/TargetBox';
 import VoiceDetector from '../../detector/VoiceDetector';
 import { audioContext } from '../../audio/audioContext';
@@ -25,6 +23,7 @@ import useTonic from '../../audio/useTonic';
 import SuccessBar from './progressIndicators/SuccessBar';
 import Page from '../../page/Page';
 import CircularPitchMeter, { noteNamesFrom } from './progressIndicators/CircularPitchMeter';
+import clsx from 'clsx';
 
 interface Props {
     header: string;
@@ -47,13 +46,46 @@ const useStyles = makeStyles<Theme>(() => ({
         margin: '0 calc(50% - 15rem)'
     },
     pitchPopup: {
-        margin: '1rem calc(50% - 8.5rem)'
+        margin: '1rem calc(50% - 8.5rem)',
+        opacity: 0,
+        transition: 'opacity 0.2s'
+    },
+    visible: {
+        opacity: 1
     }
 }));
 
-const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState => {
-    // Ignore when it's undefined; we assume that never happens
-    return state.melodies.find((melody) => melody.id === id) as MelodyState;
+// Gets the string representing the currently recognized interaction
+const getCurrentString = (state: UniversalRecognizerState, includeOctave = true): string => {
+    switch (state.type) {
+        case TaskType.PITCH:
+            return convertNoteToString(state.noteAbs, includeOctave);
+        case TaskType.INTERVAL:
+            return `${convertNoteToString(state.startNote, includeOctave)}–${convertNoteToString(state.noteAbs, includeOctave)}`;
+        case TaskType.MELODY:
+            return state.melodies[0].intervals.reduce((acc, next) => {
+                const note = convertNoteToString(next.interval + state.startNote, includeOctave);
+                return acc.length > 0 ? `${acc}–${note}` : note;
+            }, '');
+    }
+};
+
+const getTargetString = (target: TaskTarget, key: number, includeOctave = true): string => {
+    const adjust = (n: number) => n + key;
+    switch (target.type) {
+        case TaskType.PITCH:
+            return convertNoteToString(adjust(target.value), includeOctave);
+        case TaskType.INTERVAL:
+            return `${convertNoteToString(adjust(target.startNote), includeOctave)}–${convertNoteToString(
+                adjust(target.value),
+                includeOctave
+            )}`;
+        case TaskType.MELODY:
+            return target.value.reduce((acc, next) => {
+                const note = convertNoteToString(adjust(next + target.startNote), includeOctave);
+                return acc.length > 0 ? `${acc}–${note}` : note;
+            }, '');
+    }
 };
 
 const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
@@ -101,31 +133,16 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
             <div className={classes.root}>
                 <div className={classes.target}>
                     <TargetBox height="7rem">
-                        {state.nextTarget.type === TaskType.PITCH && <h2>Pitch: {convertNumericNoteToString(state.nextTarget.value)}</h2>}
-                        {state.nextTarget.type === TaskType.INTERVAL && (
-                            <h2>Interval: {convertNumericNoteToString(state.nextTarget.value)}</h2>
-                        )}
-                        {state.nextTarget.type === TaskType.MELODY && (
-                            <MelodyDiagram
-                                melody={state.nextTarget.value}
-                                done={
-                                    state.type === TaskType.MELODY
-                                        ? getTargetMelody(state, (state.currTarget as MelodyTaskTarget).id).intervals.map(
-                                              (interval) => interval.duration !== 0
-                                          )
-                                        : Array(state.nextTarget.value.length).fill(false)
-                                }
-                                current={state.type === TaskType.MELODY ? state.interval : state.note - state.nextTarget.startNote}
-                            />
-                        )}
+                        <h2>{getTargetString(state.nextTarget, tonic)}</h2>
                     </TargetBox>
                 </div>
-                <div className={classes.pitchPopup}>
+                <div className={clsx(classes.pitchPopup, (state.type !== TaskType.PITCH || state.progress > 0) && classes.visible)}>
                     <CircularPitchMeter
                         noteLabels={noteLabels}
                         startNum={state.note}
                         startError={state.error}
                         progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
+                        label={getCurrentString(state)}
                     />
                 </div>
                 <SuccessBar items={feedback} />
