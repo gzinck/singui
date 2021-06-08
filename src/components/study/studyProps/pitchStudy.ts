@@ -74,6 +74,7 @@ export const pitchStudyProps: StudyProps = {
                 targets: toTargets([4, 0, 7, 0, 7, 4, 9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5]),
                 recognizers,
                 withPrompts: false,
+                hideFeedback: true,
                 maxAttempts: 1
             }
         },

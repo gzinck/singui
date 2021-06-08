@@ -31,6 +31,7 @@ interface Props {
     recognizers: RecognizerMap;
     withPrompts?: boolean;
     maxAttempts: number;
+    hideFeedback?: boolean;
     // Called every time a task is completed
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
@@ -88,7 +89,15 @@ const getTargetString = (target: TaskTarget, key: number, includeOctave = true):
     }
 };
 
-const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onComplete }: Props): React.ReactElement<Props> => {
+const SingTasks = ({
+    header,
+    targets,
+    recognizers,
+    withPrompts,
+    maxAttempts,
+    onComplete,
+    hideFeedback
+}: Props): React.ReactElement<Props> => {
     const [feedback, setFeedback] = React.useState<boolean[]>([]);
     const [tonic] = useTonic();
     const octave = Math.floor(tonic / 12);
@@ -145,7 +154,7 @@ const SingTasks = ({ header, targets, recognizers, withPrompts, maxAttempts, onC
                         label={getCurrentString(state)}
                     />
                 </div>
-                <SuccessBar items={feedback} />
+                {!hideFeedback && <SuccessBar items={feedback} />}
             </div>
         </Page>
     );

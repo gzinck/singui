@@ -15,7 +15,8 @@ const RoutedSingTasks = (props: Props): React.ReactElement<Props> => {
     const query = new URLSearchParams(location.search);
     const maxAttempts = +(query.get('maxAttempts') || '1');
     const withPrompts = query.get('withPrompts') === 'true';
-    return <SingTasks {...props} maxAttempts={maxAttempts} withPrompts={withPrompts} />;
+    const hideFeedback = query.get('hideFeedback') === 'true';
+    return <SingTasks {...props} maxAttempts={maxAttempts} withPrompts={withPrompts} hideFeedback={hideFeedback} />;
 };
 
 export default RoutedSingTasks;
