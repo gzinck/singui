@@ -19,22 +19,15 @@ class VoiceDetector {
         this.audioContext = audioContext;
         this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
         navigator.mediaDevices
-            .getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } })
+            // Don't disable echoCancellation, noiseSuppression, autoGainControl for best results
+            .getUserMedia({ audio: {} })
             .then((stream) => {
                 const sourceNode = audioContext.createMediaStreamSource(stream);
                 this.nodes.push(sourceNode);
 
-                // Throw in a band pass filter
-                const bandPass = audioContext.createBiquadFilter();
-                bandPass.type = 'bandpass';
-                bandPass.frequency.value = 1850;
-                bandPass.Q.value = 0.25;
-                sourceNode.connect(bandPass);
-                this.nodes.push(bandPass);
-
                 const analyserNode = audioContext.createAnalyser();
                 analyserNode.fftSize = 2048;
-                bandPass.connect(analyserNode);
+                sourceNode.connect(analyserNode);
                 this.nodes.push(analyserNode);
 
                 // For processing the pitch

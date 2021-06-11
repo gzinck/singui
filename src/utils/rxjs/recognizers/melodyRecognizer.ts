@@ -25,6 +25,7 @@ export interface MelodyRecognizerState {
     startNote: number;
     hz: number;
     note: number;
+    noteAbs: number;
     error: number;
     interval: number;
     intervals: number[];
@@ -36,6 +37,7 @@ const getMelodyRecognizerInitialState = (melodies: Melody[]): MelodyRecognizerSt
     startNote: 0,
     hz: 0,
     note: 0,
+    noteAbs: 0,
     interval: 0,
     error: 0,
     intervals: [0],
@@ -64,10 +66,11 @@ export const melodyRecognizer = ({ melodies, startNote, startNoteIdx, scoreMelod
                 startNote,
                 hz: curr.hz,
                 note: interval + startNoteIdx,
+                noteAbs: curr.noteAbs,
                 error: curr.error,
                 interval,
                 intervals,
-                isValid: true,
+                isValid: intervals.length > 5, // Must have sung for at least 500 ms to register
                 melodies: sortedMelodies
             };
         }, getMelodyRecognizerInitialState(melodies))

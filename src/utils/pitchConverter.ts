@@ -17,7 +17,7 @@ const notes: Record<number, string> = {
 };
 
 export const convertNoteToString = (noteNum: number, includeOctave: boolean = true): string => {
-    const octave = Math.floor(noteNum / 12);
+    const octave = Math.floor((noteNum + 9) / 12);
     const noteName = notes[mod12(noteNum)];
     return `${noteName}${includeOctave ? octave : ''}`;
 };

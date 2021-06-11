@@ -4,11 +4,13 @@ import { map } from 'rxjs/operators';
 
 interface Props {
     startNote: number;
+    startError: number;
     startNoteIdx: number; //
 }
 
 export interface IntervalRecognizerState {
     startNote: number;
+    startError: number;
     hz: number;
     note: number; // This is the interval (relative pitch compared to the start note).
     noteAbs: number;
@@ -19,6 +21,7 @@ export interface IntervalRecognizerState {
 
 export const intervalRecognizerInitialState: IntervalRecognizerState = {
     startNote: 0,
+    startError: 0,
     hz: 0,
     note: 0,
     noteAbs: 0,
@@ -27,7 +30,7 @@ export const intervalRecognizerInitialState: IntervalRecognizerState = {
     isValid: false
 };
 
-export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
+export const intervalRecognizer = ({ startNote, startError, startNoteIdx }: Props) => (
     source$: Observable<PitchRecognizerState>
 ): Observable<IntervalRecognizerState> => {
     return source$.pipe(
@@ -35,6 +38,7 @@ export const intervalRecognizer = ({ startNote, startNoteIdx }: Props) => (
             const interval = state.noteAbs - startNote;
             return {
                 startNote,
+                startError,
                 hz: state.hz,
                 note: interval + startNoteIdx,
                 noteAbs: state.noteAbs,

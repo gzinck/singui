@@ -137,6 +137,9 @@ const SingTasks = ({
         return () => sub.unsubscribe();
     }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts, onComplete]);
 
+    console.log(tonic);
+    console.log(state);
+
     return (
         <Page header={header}>
             <div className={classes.root}>
@@ -148,8 +151,10 @@ const SingTasks = ({
                 <div className={clsx(classes.pitchPopup, (state.type !== TaskType.PITCH || state.progress > 0) && classes.visible)}>
                     <CircularPitchMeter
                         noteLabels={noteLabels}
-                        startNum={state.note}
-                        startError={state.error}
+                        startNum={(state.type === TaskType.INTERVAL ? state.startNote : state.noteAbs) - keyNumber}
+                        startError={state.type === TaskType.INTERVAL ? state.startError : state.error}
+                        endNum={state.noteAbs - keyNumber}
+                        endError={state.error}
                         progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
                         label={getCurrentString(state)}
                     />

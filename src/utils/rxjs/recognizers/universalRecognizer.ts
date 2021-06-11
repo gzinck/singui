@@ -42,9 +42,10 @@ interface Mode {
     type: TaskType;
     noteAbs: number;
     note: number;
+    error: number;
 }
 
-const initialMode: Mode = { type: TaskType.PITCH, noteAbs: 0, note: 0 };
+const initialMode: Mode = { type: TaskType.PITCH, noteAbs: 0, note: 0, error: 0 };
 
 export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: Props) => (
     source$: Observable<ReadableVocalState>
@@ -55,7 +56,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
     const state$ = mode$.pipe(
         // Must start with something to allow the processing to occur
         startWith(initialMode),
-        concatMap(({ type, noteAbs, note }) => {
+        concatMap(({ type, noteAbs, note, error }) => {
             const recognizer = recognizers[note];
             switch (type) {
                 case TaskType.PITCH:
@@ -81,7 +82,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                 case TaskType.INTERVAL:
                     return source$.pipe(
                         pitchRecognizer({ sustainLength$, keyNumber }),
-                        intervalRecognizer({ startNote: noteAbs, startNoteIdx: note }),
+                        intervalRecognizer({ startNote: noteAbs, startNoteIdx: note, startError: error }),
                         map<IntervalRecognizerState, IntervalState>((state) => ({
                             ...state,
                             type: TaskType.INTERVAL,
@@ -115,10 +116,10 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
             const recognizer = recognizers[state.note];
             switch (recognizer.type) {
                 case TaskType.INTERVAL:
-                    mode$.next({ type: TaskType.INTERVAL, noteAbs: state.noteAbs, note: state.note });
+                    mode$.next({ type: TaskType.INTERVAL, noteAbs: state.noteAbs, note: state.note, error: state.error });
                     break;
                 case TaskType.MELODY:
-                    mode$.next({ type: TaskType.MELODY, noteAbs: state.noteAbs, note: state.note });
+                    mode$.next({ type: TaskType.MELODY, noteAbs: state.noteAbs, note: state.note, error: state.error });
                     break;
             }
         }
