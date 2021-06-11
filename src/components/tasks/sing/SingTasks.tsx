@@ -65,7 +65,7 @@ const getCurrentString = (state: UniversalRecognizerState, includeOctave = true)
             return `${convertNoteToString(state.startNote, includeOctave)}–${convertNoteToString(state.noteAbs, includeOctave)}`;
         case TaskType.MELODY:
             return state.melodies[0].intervals.reduce((acc, next) => {
-                const note = convertNoteToString(next.interval + state.startNote, includeOctave);
+                const note = convertNoteToString(next + state.startNote, includeOctave);
                 return acc.length > 0 ? `${acc}–${note}` : note;
             }, '');
     }

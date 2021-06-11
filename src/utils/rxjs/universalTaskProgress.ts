@@ -4,7 +4,6 @@ import { MelodyTaskTarget, TaskTarget } from '../../components/tasks/sing/target
 import { getTaskProgressInitialState, taskProgress, TaskProgressState } from './taskProgress';
 import { pitchRecognizerInitialState } from './recognizers/pitchRecognizer';
 import { mod12 } from '../math';
-import { MelodyRecognizerState, MelodyState } from './recognizers/melodyRecognizer';
 import { getAudioURL } from '../../components/audio/getAudioURL';
 
 interface Props {
@@ -14,11 +13,6 @@ interface Props {
     play?: (url: string) => void;
     maxAttempts: number;
 }
-
-const getTargetMelody = (state: MelodyRecognizerState, id: string): MelodyState => {
-    // Ignore when it's undefined; we assume that never happens
-    return state.melodies.find((melody) => melody.id === id) as MelodyState;
-};
 
 const getNextNote = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>, keyNumber: number): number | undefined => {
     if (state.type === TaskType.PITCH || state.nextTarget !== state.currTarget) {
@@ -42,14 +36,7 @@ const getNextNote = (state: TaskProgressState<TaskTarget, UniversalRecognizerSta
                 ? state.currTarget.startNote + state.currTarget.value
                 : undefined;
         case TaskType.MELODY:
-            // If we're not at the right melody, return
-            if (state.type !== TaskType.MELODY || mod12(state.startNote - keyNumber) !== state.currTarget.startNote) return;
-            const intervals = getTargetMelody(state, (state.currTarget as MelodyTaskTarget).id).intervals;
-
-            return (
-                (intervals.find((interval) => interval.duration === 0) || intervals[intervals.length - 1]).interval +
-                state.currTarget.startNote
-            );
+            return; // We can't get the next note for most algorithms
     }
 };
 

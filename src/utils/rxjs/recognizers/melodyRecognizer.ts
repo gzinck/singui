@@ -1,27 +1,24 @@
 import { Observable } from 'rxjs';
 import { PitchRecognizerState } from './pitchRecognizer';
 import { scan } from 'rxjs/operators';
+import { scoreMelodyDTW } from './melodyScoring/scoreMelodyDTW';
 
 export interface Melody {
     intervals: number[];
     id: string;
 }
 
+export interface MelodyState extends Melody {
+    score: number; // Higher score when good
+}
+
 interface Props {
     melodies: Melody[];
+    // Function to score the melody with highest score for closest match (negatives allowed).
+    // Defaults to DTW algorithm.
+    scoreMelody?: (melodies: Melody[], intervals: number[]) => MelodyState[];
     startNote: number;
     startNoteIdx: number; // If startNote is 4th note in scale, it's 4.
-}
-
-interface Interval {
-    interval: number;
-    duration: number;
-}
-
-export interface MelodyState {
-    intervals: Interval[];
-    score: number; // Higher score when good
-    id: string; // Index of the melody
 }
 
 export interface MelodyRecognizerState {
@@ -30,7 +27,7 @@ export interface MelodyRecognizerState {
     note: number;
     error: number;
     interval: number;
-    intervals: Interval[];
+    intervals: number[];
     isValid: boolean;
     melodies: MelodyState[]; // ordered from highest to lowest score
 }
@@ -41,64 +38,27 @@ const getMelodyRecognizerInitialState = (melodies: Melody[]): MelodyRecognizerSt
     note: 0,
     interval: 0,
     error: 0,
-    intervals: [
-        {
-            interval: 0,
-            duration: 1
-        }
-    ],
+    intervals: [0],
     isValid: false,
     melodies: melodies.map((melody) => ({
-        intervals: melody.intervals.map((interval) => ({ interval, duration: 0 })),
+        intervals: melody.intervals,
         score: 0,
         id: melody.id
     }))
 });
 
-// Record the durations of all items in the melodies, sort by the date.
-// WARNING: this is inefficient and can easily be improved when necessary.
-const getMelodiesWithProgress = (melodies: Melody[], intervals: Interval[]): MelodyState[] => {
-    return melodies.map((melody) => {
-        let intervalPos = 0;
-        const melIntervals = melody.intervals.map((interval) => {
-            while (intervalPos < intervals.length && intervals[intervalPos].interval !== interval) intervalPos++;
-            return {
-                interval: interval,
-                duration: intervalPos < intervals.length ? intervals[intervalPos].duration : 0
-            };
-        });
-        return {
-            id: melody.id,
-            intervals: melIntervals,
-            score: melIntervals.reduce((acc: number, interval: Interval) => acc + interval.duration, 0)
-        };
-    });
-};
-
 const sortMelodies = (melodies: MelodyState[]) => [...melodies].sort((melody1, melody2) => melody2.score - melody1.score);
 
-export const melodyRecognizer = ({ melodies, startNote, startNoteIdx }: Props) => (
+export const melodyRecognizer = ({ melodies, startNote, startNoteIdx, scoreMelody }: Props) => (
     source$: Observable<PitchRecognizerState>
 ): Observable<MelodyRecognizerState> => {
     return source$.pipe(
         scan<PitchRecognizerState, MelodyRecognizerState>((state, curr) => {
             const interval = curr.noteAbs - startNote;
 
-            // Extend the previous interval or start the next one
-            const intervals = [...state.intervals];
-            if (intervals.length > 0 && intervals[intervals.length - 1].interval === interval) {
-                intervals[intervals.length - 1] = {
-                    ...intervals[intervals.length - 1],
-                    duration: intervals[intervals.length - 1].duration + 1
-                };
-            } else {
-                intervals.push({
-                    interval,
-                    duration: 1
-                });
-            }
+            const intervals = [...state.intervals, interval];
 
-            const sortedMelodies = sortMelodies(getMelodiesWithProgress(melodies, intervals));
+            const sortedMelodies = sortMelodies((scoreMelody || scoreMelodyDTW)(melodies, intervals));
 
             return {
                 startNote,
@@ -107,7 +67,7 @@ export const melodyRecognizer = ({ melodies, startNote, startNoteIdx }: Props) =
                 error: curr.error,
                 interval,
                 intervals,
-                isValid: sortedMelodies[0].intervals[sortedMelodies[0].intervals.length - 1].duration !== 0,
+                isValid: true,
                 melodies: sortedMelodies
             };
         }, getMelodyRecognizerInitialState(melodies))
