@@ -16,7 +16,16 @@ const RoutedSingTasks = (props: Props): React.ReactElement<Props> => {
     const maxAttempts = +(query.get('maxAttempts') || '1');
     const withPrompts = query.get('withPrompts') === 'true';
     const hideFeedback = query.get('hideFeedback') === 'true';
-    return <SingTasks {...props} maxAttempts={maxAttempts} withPrompts={withPrompts} hideFeedback={hideFeedback} />;
+    const hasBackground = query.get('hasBackground') !== 'false';
+    return (
+        <SingTasks
+            {...props}
+            maxAttempts={maxAttempts}
+            withPrompts={withPrompts}
+            hideFeedback={hideFeedback}
+            hasBackground={hasBackground}
+        />
+    );
 };
 
 export default RoutedSingTasks;

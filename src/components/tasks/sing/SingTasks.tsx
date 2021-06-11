@@ -32,6 +32,7 @@ interface Props {
     withPrompts?: boolean;
     maxAttempts: number;
     hideFeedback?: boolean;
+    hasBackground: boolean;
     // Called every time a task is completed
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
@@ -96,7 +97,8 @@ const SingTasks = ({
     withPrompts,
     maxAttempts,
     onComplete,
-    hideFeedback
+    hideFeedback,
+    hasBackground
 }: Props): React.ReactElement<Props> => {
     const [feedback, setFeedback] = React.useState<boolean[]>([]);
     const [tonic] = useTonic();
@@ -112,7 +114,7 @@ const SingTasks = ({
         getUniversalTaskProgressInitialState(targets[0])
     );
     useAudioCache({ keyNumber, octave, targets });
-    const { play } = useAudio({ keyNumber, hasBackground: true });
+    const { play } = useAudio({ keyNumber, hasBackground: hasBackground });
 
     React.useEffect(() => {
         if (keyNumber === 0 && octave === 0) return;
@@ -136,9 +138,6 @@ const SingTasks = ({
 
         return () => sub.unsubscribe();
     }, [keyNumber, octave, withPrompts, recognizers, targets, ctx.audioContext, play, maxAttempts, onComplete]);
-
-    console.log(tonic);
-    console.log(state);
 
     return (
         <Page header={header}>
@@ -167,7 +166,8 @@ const SingTasks = ({
 
 SingTasks.defaultProps = {
     maxAttempts: 1,
-    withPrompts: false
+    withPrompts: false,
+    hasBackground: true
 };
 
 export default SingTasks;

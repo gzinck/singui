@@ -33,6 +33,7 @@ export interface SingTaskProps {
     maxAttempts?: number;
     withPrompts?: boolean;
     hideFeedback?: boolean;
+    hasBackground?: boolean;
 }
 
 export const allTasksProps: SingTaskProps = {

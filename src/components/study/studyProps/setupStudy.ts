@@ -13,7 +13,7 @@ export const setupStudyProps: StudyProps = {
     name: 'Setup',
     description: 'For obtaining consent, collecting demographic information, and calibrating the system.',
     time: 10,
-    tasks: [
+    getTasks: () => [
         {
             id: 'msg-consent',
             type: StudyTaskType.MESSAGE,

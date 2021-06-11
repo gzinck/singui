@@ -4,6 +4,8 @@ import { PitchTaskTarget } from '../../tasks/sing/target';
 import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import { FormTypes } from '../../tasks/form/formTypes';
 import { studyId } from './studyId';
+import { reorderLatinSquare } from './variations/reorder';
+import { varyBackgroundMusic } from './variations/backgroundMusic';
 
 const recognizers: RecognizerMap = {
     0: { type: TaskType.PITCH },
@@ -34,7 +36,7 @@ export const pitchStudyProps: StudyProps = {
     name: 'Pitch study',
     description: 'Sing individual pitches to control your computer',
     time: 10,
-    tasks: [
+    getTasks: (latinSquare: number) => [
         {
             id: 'headphones',
             type: StudyTaskType.HEADPHONE_MESSAGE,
@@ -65,19 +67,23 @@ export const pitchStudyProps: StudyProps = {
                     "To get a baseline for your performance, the first block of tasks do not have audio prompts. Don't worry, you'll have a chance to practice afterwards."
             }
         },
-        {
-            id: 'pre-evaluation',
-            type: StudyTaskType.SING,
-            props: {
-                header: 'Pitch task pre-evaluation',
-                // Should generate this randomly using the scripts/gen_pitches.py script
-                targets: toTargets([9, 2, 0, 9]), //, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5]),
-                recognizers,
-                withPrompts: false,
-                hideFeedback: true,
-                maxAttempts: 1
-            }
-        },
+        // Rearrangeable section for when there is(n't) background music
+        ...reorderLatinSquare(
+            varyBackgroundMusic({
+                id: `pre-evaluation`,
+                type: StudyTaskType.SING,
+                props: {
+                    header: 'Pitch task pre-evaluation',
+                    // Should generate this randomly using the scripts/gen_pitches.py script
+                    targets: toTargets(reorderLatinSquare([9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5], latinSquare)),
+                    recognizers,
+                    withPrompts: false,
+                    hideFeedback: true,
+                    maxAttempts: 1
+                }
+            }),
+            latinSquare
+        ),
         {
             id: 'performance-pre-evaluation',
             for: 'pre-evaluation',

@@ -6,12 +6,6 @@ import { DASHBOARD_ROUTE, SIGNIN_ROUTE } from '../../routes';
 import SingTasks from '../tasks/sing/SingTasks';
 import Calibration from '../tasks/calibration/Calibration';
 import Form from '../tasks/form/Form';
-import { from } from 'rxjs';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import { currUser$ } from '../auth/observableUser';
-import { mergeMap, timeout } from 'rxjs/operators';
 import { studyId } from './studyProps/studyId';
 import ProgressBar from './progress/ProgressBar';
 import { SingTaskResult } from '../../utils/rxjs/taskProgress';
@@ -20,9 +14,11 @@ import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 import VideoPage from '../tasks/video/VideoPage';
 import RecordPage from '../tasks/record/RecordPage';
 import PerformanceMessagePage from '../tasks/message/PerformanceMessagePage';
+import { getLatinSquare } from '../../utils/clients/latinSquareClient';
+import { getStudyData, saveAudioFile, setStudyData, StudyResult } from '../../utils/clients/studyClient';
 
 export interface StudyProps {
-    tasks: StudyTask[];
+    getTasks: (latinSquare: number) => StudyTask[];
     name: string;
     id: studyId;
     dependencies: studyId[];
@@ -30,36 +26,25 @@ export interface StudyProps {
     time: number;
 }
 
-interface Result {
-    type: StudyTaskType;
-    id: string;
-    details: any;
-    doneAt: Date;
-}
-
-const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> => {
+const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProps> => {
     const history = useHistory();
+    const [tasks, setTasks] = React.useState<StudyTask[]>([]);
     const [taskIdx, setTaskIdx] = React.useState(-1);
-    const [results, setResults] = React.useState<Result[]>([]);
+    const [results, setResults] = React.useState<StudyResult[]>([]);
     const [progress, setProgress] = React.useState(0);
 
-    // These callbacks should not trigger refreshes of the child components, so we need to useCallback
     const onComplete = React.useCallback(
         (details: any) => {
-            const user = getAuth().currentUser;
-            const db = getFirestore();
-
-            const type = tasks[taskIdx].type;
             // Send results to database
+            const newResults: StudyResult[] = [...results, { type: tasks[taskIdx].type, id, details, doneAt: new Date() }];
+            setStudyData(id, {
+                isDone: taskIdx === tasks.length - 1,
+                nextIdx: taskIdx + 1,
+                results: newResults
+            }).subscribe({
+                error: (err) => console.error('Critical error saving to database:', err)
+            });
 
-            const newResults = [...results, { type, id, details, doneAt: new Date() }];
-            const isDone = taskIdx === tasks.length - 1;
-            const nextIdx = taskIdx + 1;
-            if (user) {
-                from(setDoc(doc(db, 'users', user.uid, 'studies', id), { isDone, nextIdx, results: newResults })).subscribe({
-                    error: (err) => console.error('Critical error saving to database:', err)
-                });
-            }
             // Move to next task
             setProgress(((taskIdx + 2) / (tasks.length + 1)) * 100);
             setTaskIdx(taskIdx + 1);
@@ -70,13 +55,7 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
 
     const recordOnComplete = React.useCallback(
         (blob: Blob) => {
-            const user = getAuth().currentUser;
-            const storage = getStorage();
-            if (user) {
-                const path = `users/${user.uid}/study-${id}/${tasks[taskIdx].id}.mp3`;
-                const docRef = ref(storage, path);
-                uploadBytes(docRef, blob).then(() => onComplete(path));
-            }
+            saveAudioFile(id, tasks[taskIdx].id, blob).subscribe((result) => onComplete(result.metadata.fullPath));
         },
         [onComplete, id, taskIdx, tasks]
     );
@@ -93,54 +72,63 @@ const Study = ({ tasks, name, id }: StudyProps): React.ReactElement<StudyProps> 
         [tasks, taskIdx, onComplete]
     );
 
+    const onError = React.useCallback(
+        (err: any) => {
+            if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
+            else console.error('Critical error retrieving data from database:', err);
+        },
+        [history]
+    );
+
+    // Get the latin square so we can get the ordered tasks
+    React.useEffect(() => {
+        setTasks([]);
+        const sub = getLatinSquare().subscribe({
+            next: (idx) => setTasks(getTasks(idx)),
+            error: onError
+        });
+
+        return () => sub.unsubscribe();
+    }, [onError, getTasks]);
+
     // Get our starting point by reading the past study results
     const [isLoading, setIsLoading] = React.useState(true);
     const [startIdx, setStartIdx] = React.useState(0);
 
+    // Get the study progress
     React.useEffect(() => {
-        const db = getFirestore();
-
-        // Clean things up
         setTaskIdx(-1);
         setResults([]);
         setIsLoading(true);
 
-        // Get the study progress first
-        const sub = currUser$
-            .pipe(
-                timeout(1000),
-                mergeMap((user) => getDoc(doc(db, 'users', user.uid, 'studies', id)))
-            )
-            .subscribe({
-                next: (doc) => {
-                    setIsLoading(false);
-                    if (doc.exists()) {
-                        const data = doc.data();
-                        setResults(data.results);
-                        setStartIdx(data.nextIdx);
-                    }
-                },
-                error: (err) => {
-                    if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
-                    else console.error('Critical error retrieving data from database:', err);
+        const sub = getStudyData(id).subscribe({
+            next: (data) => {
+                setIsLoading(false);
+                if (data) {
+                    setResults(data.results);
+                    setStartIdx(data.nextIdx);
                 }
-            });
+            },
+            error: onError
+        });
+
         return () => sub.unsubscribe();
-    }, [id, history]);
+    }, [id, onError]);
 
     let page;
 
     if (taskIdx === -1) {
-        const text = isLoading
-            ? 'The study is loading...'
-            : startIdx === 0
-            ? 'Click "Next" to start the study'
-            : 'Click "Next" to resume the study';
+        const text =
+            isLoading || tasks.length === 0
+                ? 'The study is loading...'
+                : startIdx === 0
+                ? 'Click "Next" to start the study'
+                : 'Click "Next" to resume the study';
         page = (
             <MessagePage
                 header={name}
                 text={text}
-                isLoading={isLoading}
+                isLoading={isLoading || tasks.length === 0}
                 onComplete={() => {
                     setTaskIdx(startIdx);
                     setProgress(((startIdx + 1) / (tasks.length + 1)) * 100);
