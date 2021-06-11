@@ -36,9 +36,9 @@ class VoiceDetector {
                 const freqData = new Uint8Array(analyserNode.frequencyBinCount);
                 audioContext.resume();
 
-                // Do this every 100 ms
+                // Do this every 50 ms
                 this.subscriptions.push(
-                    interval(100).subscribe(() => {
+                    interval(50).subscribe(() => {
                         analyserNode.getFloatTimeDomainData(timeData);
                         const [pitch, clarity] = detector.findPitch(timeData, audioContext.sampleRate);
 
