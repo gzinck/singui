@@ -44,7 +44,7 @@ const useStyles = makeStyles<Theme>(() => ({
     },
     target: {
         maxWidth: '30rem',
-        margin: '0 calc(50% - 15rem)'
+        margin: '0 max(1rem, calc(50% - 15rem))'
     },
     pitchPopup: {
         margin: '1rem calc(50% - 8.5rem)',
