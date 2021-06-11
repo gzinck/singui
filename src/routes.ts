@@ -9,3 +9,4 @@ export const SIGNIN_ROUTE = '/signin';
 export const SIGNUP_ROUTE = '/signup';
 export const DASHBOARD_ROUTE = '/dashboard';
 export const STUDY_ROUTE = '/study/:studyId';
+export const AUDIO_TEST_ROUTE = '/audio-test';
