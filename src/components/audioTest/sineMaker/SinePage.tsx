@@ -3,35 +3,36 @@ import Page from '../../page/Page';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
+import useSine from './useSine';
+import { convertNoteToString } from '../../../utils/pitchConverter';
 
 const useStyles = makeStyles<Theme>(() => ({
     buttonBox: {
         width: '100%',
         display: 'flex',
         flexWrap: 'wrap',
-        justifyContent: 'center',
-        '& > *': {
-            width: '50vw',
-            height: 'calc(33vh - 3rem)',
-            borderRadius: 0,
-            fontSize: '2rem',
-            border: '1px #555 solid'
-            // margin: theme.spacing(0, 2)
-        }
+        justifyContent: 'center'
+    },
+    button: {
+        width: '50vw',
+        height: 'calc(33vh - 3rem)',
+        borderRadius: 0,
+        fontSize: '2rem',
+        border: '1px #555 solid'
     }
 }));
 
 const SinePage = (): React.ReactElement => {
     const classes = useStyles();
+    const { toggle } = useSine();
     return (
         <Page header="Audio Test—Phone">
             <div className={classes.buttonBox}>
-                <Button>A3</Button>
-                <Button>C4</Button>
-                <Button>A4</Button>
-                <Button>C5</Button>
-                <Button>A5</Button>
-                <Button>C6</Button>
+                {[36, 43, 48, 55, 60, 67].map((noteNum) => (
+                    <Button className={classes.button} key={noteNum} onClick={() => toggle(noteNum)}>
+                        {convertNoteToString(noteNum)}
+                    </Button>
+                ))}
             </div>
         </Page>
     );
