@@ -20,6 +20,14 @@ This sandbox is currently under development for a paper in CHI 2022.
 Run `yarn install` to install dependencies. If you want to get pre-commit
 hooks working, run `npx mrm lint-staged` afterwards.
 
+To run a dev server, run `yarn run start`.
+
+### Running on mobile
+
+To test it out on a mobile device, after running `yarn start`, run
+`ifconfig` on Mac and find your `inet address`. On your mobile device, go
+to `http://{{INET_ADDRESS}}:3000`.
+
 ## Available Scripts
 
 In the project directory, you can run:

@@ -3,9 +3,10 @@ import Page from '../../page/Page';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
-import useSine from './useSine';
 import { convertNoteToString } from '../../../utils/pitchConverter';
 import { notesToTestAudio } from '../constants';
+import { getAudioURL } from '../../audio/getAudioURL';
+import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 
 const useStyles = makeStyles<Theme>(() => ({
     buttonBox: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles<Theme>(() => ({
     },
     button: {
         width: '50vw',
-        height: 'calc(33vh - 3rem)',
+        height: 'calc(50vh - 3rem)',
         borderRadius: 0,
         fontSize: '2rem',
         border: '1px #555 solid'
@@ -25,12 +26,29 @@ const useStyles = makeStyles<Theme>(() => ({
 
 const SinePage = (): React.ReactElement => {
     const classes = useStyles();
-    const { toggle } = useSine();
+    const audioRefs = React.useRef(notesToTestAudio.map(() => React.createRef<HTMLAudioElement>()));
+    const playNote = (idx: number) => {
+        audioRefs.current.forEach((ref, i) => {
+            if (ref.current === null) return;
+            else if (i === idx) {
+                ref.current.currentTime = 0;
+                ref.current.play();
+            } else if (!ref.current.ended) {
+                ref.current.currentTime = 0;
+                ref.current.pause();
+            }
+        });
+    };
+    // const { toggle } = useSine();
     return (
         <Page header="Audio Test—Phone">
             <div className={classes.buttonBox}>
-                {notesToTestAudio.map((noteNum) => (
-                    <Button className={classes.button} key={noteNum} onClick={() => toggle(noteNum)}>
+                {notesToTestAudio.map((noteNum, idx) => (
+                    <Button className={classes.button} key={noteNum} onClick={() => playNote(idx)}>
+                        <audio
+                            ref={audioRefs.current[idx]}
+                            src={getAudioURL({ target: { type: TaskType.PITCH, value: noteNum }, keyNumber: 0, octave: 0 })}
+                        />
                         {convertNoteToString(noteNum)}
                     </Button>
                 ))}

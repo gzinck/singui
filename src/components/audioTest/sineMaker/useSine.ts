@@ -10,12 +10,11 @@ const useSine = () => {
 
     const start = (noteNum: number): void => {
         oscillator.current = ctx.audioContext.createOscillator();
+        oscillator.current.type = 'sine';
         oscillator.current.frequency.value = convertNoteNumToHz(noteNum);
-        oscillator.current.connect(ctx.audioContext.destination);
-        if (currNote.current === -1) {
-            currNote.current = noteNum;
-            oscillator.current.start();
-        }
+        oscillator.current.connect(ctx.foregroundGain.node());
+        currNote.current = noteNum;
+        oscillator.current.start(0);
     };
 
     const stop = () => {

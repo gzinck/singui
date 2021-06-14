@@ -1,1 +1,1 @@
-export const notesToTestAudio = [36, 43, 48, 55, 60, 67];
+export const notesToTestAudio = [48, 52, 55, 60];

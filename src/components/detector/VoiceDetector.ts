@@ -18,9 +18,12 @@ class VoiceDetector {
     constructor(audioContext: IAudioContext) {
         this.audioContext = audioContext;
         this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
+
+        if (!navigator.mediaDevices) throw new Error('Error getting media devices from browser: none are available');
+
         navigator.mediaDevices
             // Don't disable echoCancellation, noiseSuppression, autoGainControl for best results
-            .getUserMedia({ audio: {} })
+            .getUserMedia({ audio: true })
             .then((stream) => {
                 const sourceNode = audioContext.createMediaStreamSource(stream);
                 this.nodes.push(sourceNode);

@@ -26,6 +26,10 @@ export const useSinging = ({ targets, octaveDependent, recognizers, withPrompts,
     const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
 
+    // Increment this to refresh the state
+    const [resetIndex, setResetIndex] = React.useState(0);
+    const reset = () => setResetIndex((i) => i + 1);
+
     const ctx = React.useContext(audioContext);
     const [state, setState] = React.useState<TaskProgressState<TaskTarget, UniversalRecognizerState>>(
         getUniversalTaskProgressInitialState(targets[0])
@@ -59,9 +63,21 @@ export const useSinging = ({ targets, octaveDependent, recognizers, withPrompts,
             });
 
         return () => sub.unsubscribe();
-    }, [keyNumber, octave, withPrompts, recognizers, targets, octaveDependent, ctx.audioContext, play, maxAttempts, onComplete]);
+    }, [
+        resetIndex,
+        keyNumber,
+        octave,
+        withPrompts,
+        recognizers,
+        targets,
+        octaveDependent,
+        ctx.audioContext,
+        play,
+        maxAttempts,
+        onComplete
+    ]);
 
     // Note that tonic, octave, and keyNumber pertain to the user's tonic/octave/keyNumber set for the experiment.
     // Consider removing down the road.
-    return { state, feedback };
+    return { state, feedback, reset };
 };

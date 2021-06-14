@@ -83,7 +83,11 @@ export const getCachedAudio = (url: string, ctx: IAudioContext): Observable<Audi
                 // Silently cache it when it arrives
                 tap((buffer) => {
                     getDB().subscribe((db) => {
-                        db.transaction([objectStoreName], 'readwrite').objectStore(objectStoreName).put(buffer, url);
+                        try {
+                            db.transaction([objectStoreName], 'readwrite').objectStore(objectStoreName).put(buffer, url);
+                        } catch (err) {
+                            // Do nothing if we failed to cache; it's fine
+                        }
                     });
                 })
             );

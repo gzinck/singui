@@ -2,8 +2,6 @@ import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import TopBar from './TopBar';
-import NoVolumeAlert from './NoVolumeAlert';
-import UnsupportedBrowserAlert from './UnsupportedBrowserAlert';
 
 interface TaskPageProps {
     children?: React.ReactNode;
@@ -39,11 +37,7 @@ const Page = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
     return (
         <div className={classes.root}>
             <TopBar header={props.header} />
-            <div className={classes.main}>
-                {props.children}
-                <NoVolumeAlert />
-                <UnsupportedBrowserAlert />
-            </div>
+            <div className={classes.main}>{props.children}</div>
         </div>
     );
 };
