@@ -14,9 +14,10 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
     root: {
         width: '100%',
         boxSizing: 'border-box',
-        padding: theme.spacing(3),
         marginBottom: theme.spacing(2),
-        position: 'relative'
+        padding: theme.spacing(3),
+        position: 'relative',
+        maxWidth: '30rem'
     },
     success: {
         backgroundColor: theme.palette.success.dark

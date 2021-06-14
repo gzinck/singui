@@ -5,6 +5,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
 import useSine from './useSine';
 import { convertNoteToString } from '../../../utils/pitchConverter';
+import { notesToTestAudio } from '../constants';
 
 const useStyles = makeStyles<Theme>(() => ({
     buttonBox: {
@@ -28,7 +29,7 @@ const SinePage = (): React.ReactElement => {
     return (
         <Page header="Audio Test—Phone">
             <div className={classes.buttonBox}>
-                {[36, 43, 48, 55, 60, 67].map((noteNum) => (
+                {notesToTestAudio.map((noteNum) => (
                     <Button className={classes.button} key={noteNum} onClick={() => toggle(noteNum)}>
                         {convertNoteToString(noteNum)}
                     </Button>

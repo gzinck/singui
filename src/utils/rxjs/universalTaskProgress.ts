@@ -8,6 +8,7 @@ import { getAudioURL } from '../../components/audio/getAudioURL';
 
 interface Props {
     targets: TaskTarget[];
+    octaveDependent?: boolean; // If false, then 0 = 12 = 24, etc. Otherwise, targets must match singing exactly.
     keyNumber: number;
     octave: number;
     play?: (url: string) => void;
@@ -64,7 +65,7 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
     );
 };
 
-export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAttempts }: Props) => (
+export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAttempts, octaveDependent }: Props) => (
     source$: Observable<UniversalRecognizerState>
 ): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
     // Uncomment to play before the start of the first trial
@@ -77,7 +78,7 @@ export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAtt
                 if (target.type !== state.type) return false;
                 switch (state.type) {
                     case TaskType.PITCH:
-                        return target.value === state.note;
+                        return octaveDependent ? target.value === state.noteAbs : target.value === state.note;
                     case TaskType.INTERVAL:
                         return target.value === state.interval;
                     case TaskType.MELODY:

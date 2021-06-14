@@ -10,12 +10,15 @@ interface CacheParams {
     targets: TaskTarget[];
     keyNumber: number;
     octave: number;
+    pauseCache?: boolean;
 }
 
-export const useAudioCache = ({ targets, keyNumber, octave }: CacheParams) => {
+export const useAudioCache = ({ targets, keyNumber, octave, pauseCache }: CacheParams) => {
     const { audioContext: ctx } = React.useContext(audioContext);
     React.useEffect(() => {
         if (octave === 0 && keyNumber === 0) return; // skip if nothing has been loaded yet
+        if (pauseCache) return; // Don't do any caching
+
         const sub = from(targets)
             .pipe(
                 mergeMap((target) => {
@@ -27,5 +30,5 @@ export const useAudioCache = ({ targets, keyNumber, octave }: CacheParams) => {
             });
 
         return () => sub.unsubscribe();
-    }, [targets, keyNumber, octave, ctx]);
+    }, [targets, keyNumber, octave, ctx, pauseCache]);
 };

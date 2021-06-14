@@ -14,7 +14,8 @@ import {
     UNIVERSAL_TASKS_ROUTE,
     DASHBOARD_ROUTE,
     STUDY_ROUTE,
-    AUDIO_TEST_ROUTE
+    AUDIO_TEST_ROUTE,
+    AUDIO_TEST_PHONE_ROUTE
 } from './routes';
 import Tuner from './components/tasks/tuner/Tuner';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
@@ -30,6 +31,7 @@ import RoutedSingTasks from './components/tasks/sing/RoutedSingTasks';
 import RecordPage from './components/tasks/record/RecordPage';
 import Calibration from './components/tasks/calibration/Calibration';
 import SinePage from './components/audioTest/sineMaker/SinePage';
+import AudioTestPage from './components/audioTest/AudioTestPage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -40,7 +42,8 @@ function App() {
                 <Router>
                     <Switch>
                         <Route path={TUNER_ROUTE} component={Tuner} />
-                        <Route path={AUDIO_TEST_ROUTE} component={SinePage} />
+                        <Route path={AUDIO_TEST_ROUTE} component={AudioTestPage} />
+                        <Route path={AUDIO_TEST_PHONE_ROUTE} component={SinePage} />
                         <Route path={RELATIVE_PITCH_TASKS_ROUTE}>
                             <RoutedSingTasks {...pitchTaskProps} />
                         </Route>
