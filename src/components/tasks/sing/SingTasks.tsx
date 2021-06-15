@@ -6,7 +6,7 @@ import TargetBox from './progressIndicators/TargetBox';
 import SuccessBar from './progressIndicators/SuccessBar';
 import Page from '../../page/Page';
 import { useSinging } from './useSinging';
-import { getStringForTarget } from '../../../utils/targetConverter';
+import { getLetterStringForTarget, getNumberStringForTarget } from '../../../utils/targetConverter';
 import PitchIndicatorFromState from './progressIndicators/PitchIndicatorFromState';
 import useTonic from '../../audio/useTonic';
 
@@ -18,6 +18,7 @@ interface Props {
     maxAttempts: number;
     hideFeedback?: boolean;
     hasBackground: boolean;
+    numberLabels: boolean;
     // Called every time a task is completed
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
@@ -29,7 +30,9 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
     return (
         <Page header={props.header}>
             <TargetBox height="7rem">
-                <h2>{getStringForTarget(state.nextTarget, tonic)}</h2>
+                <h2>
+                    {props.numberLabels ? getNumberStringForTarget(state.nextTarget) : getLetterStringForTarget(state.nextTarget, tonic)}
+                </h2>
             </TargetBox>
             <PitchIndicatorFromState state={state} hideable={true} />
             {!props.hideFeedback && <SuccessBar items={feedback} />}
@@ -40,7 +43,8 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
 SingTasks.defaultProps = {
     maxAttempts: 1,
     withPrompts: false,
-    hasBackground: true
+    hasBackground: true,
+    numberLabels: true
 };
 
 export default SingTasks;
