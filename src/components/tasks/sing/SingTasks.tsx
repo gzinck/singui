@@ -7,7 +7,7 @@ import SuccessBar from './progressIndicators/SuccessBar';
 import Page from '../../page/Page';
 import { useSinging } from './useSinging';
 import { getStringForTarget } from '../../../utils/targetConverter';
-import PitchIndicatorFromState from './PitchIndicatorFromState';
+import PitchIndicatorFromState from './progressIndicators/PitchIndicatorFromState';
 import useTonic from '../../audio/useTonic';
 
 interface Props {

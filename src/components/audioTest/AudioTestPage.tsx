@@ -9,7 +9,7 @@ import { notesToTestAudio } from './constants';
 import { PitchTaskTarget, TaskTarget } from '../tasks/sing/target';
 import { TaskType, UniversalRecognizerState } from '../../utils/rxjs/recognizers/universalRecognizer';
 import TargetBox from '../tasks/sing/progressIndicators/TargetBox';
-import PitchIndicatorFromState from '../tasks/sing/PitchIndicatorFromState';
+import PitchIndicatorFromState from '../tasks/sing/progressIndicators/PitchIndicatorFromState';
 import SuccessBar from '../tasks/sing/progressIndicators/SuccessBar';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import { timer } from 'rxjs';
