@@ -14,6 +14,7 @@ import SuccessBar from '../tasks/sing/progressIndicators/SuccessBar';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import { timer } from 'rxjs';
 import { AUDIO_TEST_PHONE_ROUTE } from '../../routes';
+import QRCode from './QRCode';
 
 interface Props {
     onComplete: () => void;
@@ -82,7 +83,8 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
                     <h2>Before you begin</h2>
                     <p>Make sure you are in a quiet environment.</p>
                     <p>Wear headphones. Make sure they are connected to your computer and not your phone.</p>
-                    <p>On your phone, go to https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}.</p>
+                    <p>On your phone, go to https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE} by scanning the QR Code below.</p>
+                    <QRCode />
                     <p>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</p>
                 </>
             );
