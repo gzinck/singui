@@ -34,7 +34,7 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
                     {props.numberLabels ? getNumberStringForTarget(state.nextTarget) : getLetterStringForTarget(state.nextTarget, tonic)}
                 </h2>
             </TargetBox>
-            <PitchIndicatorFromState state={state} hideable={true} />
+            <PitchIndicatorFromState state={state} hideable={true} numberLabels={props.numberLabels} />
             {!props.hideFeedback && <SuccessBar items={feedback} />}
         </Page>
     );

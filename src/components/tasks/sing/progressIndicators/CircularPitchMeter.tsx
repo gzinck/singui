@@ -45,7 +45,7 @@ const useStyles = makeStyles<Theme, PopupPitchMeterProps>((theme) => ({
         strokeWidth: 0
     }),
     recognized: ({ progress }) => ({
-        fill: rgbToHex(255 - progress * (255 - 69), 255 - progress * (255 - 197), 255),
+        fill: progress > 0 ? rgbToHex(255 - progress * (255 - 69), 255 - progress * (255 - 197), 255) : theme.palette.background.paper,
         transition: 'fill 0.2s',
         strokeWidth: 0
     }),
@@ -115,7 +115,7 @@ const CircularPitchMeter = (props: PopupPitchMeterProps) => {
                     const r = radius - innerWidth * idx;
 
                     return (
-                        <>
+                        <React.Fragment key={idx}>
                             <mask id={`intervalMask${idx}`}>
                                 <circle
                                     r={r}
@@ -134,7 +134,7 @@ const CircularPitchMeter = (props: PopupPitchMeterProps) => {
                                 />
                             </mask>
                             <circle cx={center} cy={center} r={r} className={classes.arc} mask={`url(#intervalMask${idx})`} />
-                        </>
+                        </React.Fragment>
                     );
                 })}
 
@@ -169,7 +169,7 @@ const CircularPitchMeter = (props: PopupPitchMeterProps) => {
                     <text
                         x={center + Math.sin((idx * Math.PI) / 6) * radius * noteLabelRadius}
                         y={center - Math.cos((idx * Math.PI) / 6) * radius * noteLabelRadius}
-                        key={label}
+                        key={`${label}-${idx}`}
                         className={clsx(classes.label, props.recognized.map((r) => mod12(r)).includes(idx) && classes.currentLabel)}
                     >
                         {label}

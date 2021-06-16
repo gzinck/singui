@@ -1,18 +1,18 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import useAudio from '../../audio/useAudio';
-import { getAudioURL } from '../../audio/getAudioURL';
-import { TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { TaskTarget } from '../sing/target';
+import useAudio from '../../../audio/useAudio';
+import { getAudioURL } from '../../../audio/getAudioURL';
+import { TaskType } from '../../../../utils/rxjs/recognizers/universalRecognizer';
+import { TaskTarget } from '../../sing/target';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../../theme';
+import { Theme } from '../../../theme';
 import Slider from '@material-ui/core/Slider';
 import Card from '@material-ui/core/Card';
-import { tonic$ } from '../../detector/shared';
-import Page from '../../page/Page';
-import { clearCachedAudio } from '../../audio/getCachedAudio';
-import ButtonBox from '../../common/ButtonBox';
+import { tonic$ } from '../../../detector/shared';
+import Page from '../../../page/Page';
+import { clearCachedAudio } from '../../../audio/getCachedAudio';
+import ButtonBox from '../../../common/ButtonBox';
 
 interface CalibrationProps {
     onComplete?: (startNote: number) => void;

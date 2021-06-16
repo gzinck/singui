@@ -13,6 +13,7 @@ export interface MessageProps {
     children?: React.ReactNode;
     onComplete?: () => void;
     isLoading?: boolean;
+    buttons?: React.ReactNode;
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
@@ -45,7 +46,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
-const MessagePage = ({ header, text, children, onComplete, isLoading }: MessageProps): React.ReactElement<MessageProps> => {
+const MessagePage = ({ header, text, children, onComplete, isLoading, buttons }: MessageProps): React.ReactElement<MessageProps> => {
     const classes = useStyles();
     return (
         <Page header={header}>
@@ -61,6 +62,7 @@ const MessagePage = ({ header, text, children, onComplete, isLoading }: MessageP
                     )}
                     {children}
                     <div className={classes.buttonBox}>
+                        {buttons}
                         <Button onClick={onComplete} variant="contained" color="primary" disabled={isLoading}>
                             {isLoading && <CircularProgress className={classes.loading} size="1rem" />}
                             Next

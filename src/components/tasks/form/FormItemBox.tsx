@@ -15,7 +15,7 @@ interface Props {
 
 const useStyles = makeStyles<Theme, Props>((theme) => ({
     root: {
-        margin: theme.spacing(12, 0),
+        margin: theme.spacing(1, 0, 6),
         position: 'relative'
     },
     header: ({ error }) => ({

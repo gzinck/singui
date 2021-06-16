@@ -1,5 +1,5 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '../../theme';
+import { Theme } from '../../../theme';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -15,7 +15,7 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
         width: '100%',
         height: '1rem',
         backgroundColor: theme.palette.background.paper,
-        margin: theme.spacing(4, 0)
+        margin: theme.spacing(2, 0)
     },
     note: ({ minNote, maxNote }) => ({
         position: 'absolute',

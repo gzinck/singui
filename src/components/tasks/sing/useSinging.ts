@@ -11,7 +11,7 @@ import { useAudioCache } from '../../audio/useAudioCache';
 import useAudio from '../../audio/useAudio';
 import useTonic from '../../audio/useTonic';
 
-interface Props {
+export interface SingingProps {
     targets: TaskTarget[];
     octaveDependent?: boolean; // If false, then 0 = 12 = 24, etc. Otherwise, targets must match singing exactly.
     recognizers: RecognizerMap;
@@ -21,7 +21,15 @@ interface Props {
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
-export const useSinging = ({ targets, octaveDependent, recognizers, withPrompts, hasBackground, maxAttempts, onComplete }: Props) => {
+export const useSinging = ({
+    targets,
+    octaveDependent,
+    recognizers,
+    withPrompts,
+    hasBackground,
+    maxAttempts,
+    onComplete
+}: SingingProps) => {
     const [tonic] = useTonic();
     const octave = Math.floor(tonic / 12);
     const keyNumber = tonic % 12;
