@@ -13,6 +13,7 @@ interface CalibrationProps {
 }
 
 const getError = (val: any) => (val === undefined ? 'This question is required' : undefined);
+const pluralize = (num: number, word: string) => `${num} ${word}${num !== 1 ? 's' : ''}`;
 
 const comfortFormID = 'comfort-2';
 const comfortForm = (isHigh: boolean): FormItem[] => [
@@ -31,6 +32,7 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
     const [minNote, setMinNote] = React.useState(0);
     const [maxNote, setMaxNote] = React.useState(0);
     const [startNote, setStartNote] = React.useState(0);
+    const [error, setError] = React.useState('');
 
     const next = () => {
         setPrvIdx(currIdx);
@@ -42,46 +44,73 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
     };
 
     const calibrationTasks: CalibrationTask[] = [
-        ...[false, true].reduce<CalibrationTask[]>(
-            (acc, isHigh) => [
-                ...acc,
-                {
-                    type: CalibrationTaskType.SING,
-                    props: {
-                        header: 'Calibration',
-                        startMessage:
-                            prvIdx - 1 === currIdx
-                                ? `Let's try again. Sing a comfortable, ${isHigh ? 'high' : 'low'} pitch`
-                                : `Sing a pitch that is ${isHigh ? 'high' : 'low'} but still comfortable`,
-                        onComplete: (note: number) => {
-                            isHigh ? setMaxNote(note) : setMinNote(note);
-                            next();
-                        }
-                    }
-                },
-                {
-                    type: CalibrationTaskType.FORM,
-                    props: {
-                        header: 'Calibration',
-                        form: comfortForm(isHigh),
-                        onComplete: (responses) => {
-                            if (responses[comfortFormID] !== 'No') prev();
-                            else next();
-                        }
+        // Get bottom of range
+        {
+            type: CalibrationTaskType.SING,
+            props: {
+                header: 'Calibration',
+                startMessage:
+                    prvIdx - 1 === currIdx
+                        ? `This time, try going a bit lower. Sing a comfortable, low pitch`
+                        : `Sing a pitch that is low but still comfortable`,
+                onComplete: (note: number) => {
+                    setMinNote(note);
+                    next();
+                }
+            }
+        },
+        {
+            type: CalibrationTaskType.FORM,
+            props: {
+                header: 'Calibration',
+                form: comfortForm(false),
+                onComplete: (responses) => {
+                    if (responses[comfortFormID] !== 'No') prev();
+                    else next();
+                }
+            }
+        },
+        {
+            type: CalibrationTaskType.SING,
+            props: {
+                error,
+                header: 'Calibration',
+                startMessage:
+                    prvIdx - 1 === currIdx
+                        ? `This time, try going a bit higher. Sing a comfortable, high pitch`
+                        : `Sing a pitch that is high but still comfortable`,
+                onComplete: (note: number) => {
+                    if (note < minNote) {
+                        setError('The pitch you sang was lower than what you sang last time. Sing a higher pitch than last time.');
+                    } else {
+                        setError('');
+                        setMaxNote(note);
+                        next();
                     }
                 }
-            ],
-            []
-        ),
+            }
+        },
+        {
+            type: CalibrationTaskType.FORM,
+            props: {
+                header: 'Calibration',
+                form: comfortForm(true),
+                onComplete: (responses) => {
+                    if (responses[comfortFormID] !== 'No') prev();
+                    else next();
+                }
+            }
+        },
         {
             type: CalibrationTaskType.MESSAGE,
             props: {
                 header: 'Calibration',
                 text: `Your range is from ${convertNoteToString(minNote)} to ${convertNoteToString(maxNote)}. ${
                     maxNote - minNote < 12
-                        ? `The minimum range required for this study is 1 octave and your range is ${
-                              11 - (maxNote - minNote)
-                          } semitones too small. If the following exercises are too challenging, you may withdraw from the study.`
+                        ? `The minimum range required for this study is 1 octave and your range is ${pluralize(
+                              11 - (maxNote - minNote),
+                              'semitone'
+                          )} too small. If the following exercises are too challenging, you may withdraw from the study.`
                         : ''
                 }`,
                 onComplete: next

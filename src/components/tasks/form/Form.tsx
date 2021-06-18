@@ -19,8 +19,10 @@ export interface FormProps {
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
-        padding: '2rem',
-        width: 'calc(min(90%, 50rem) - 2rem)'
+        padding: theme.spacing(2, 0),
+        width: '90%',
+        maxWidth: '50rem'
+        // width: 'calc(min(90%, 50rem) - 2rem)'
     },
     buttons: {
         width: '100%',

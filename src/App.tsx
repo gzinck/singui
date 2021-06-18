@@ -15,7 +15,8 @@ import {
     DASHBOARD_ROUTE,
     STUDY_ROUTE,
     AUDIO_TEST_ROUTE,
-    AUDIO_TEST_PHONE_ROUTE
+    AUDIO_TEST_PHONE_ROUTE,
+    HOME_ROUTE
 } from './routes';
 import Tuner from './components/tasks/tuner/Tuner';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
@@ -32,6 +33,7 @@ import RecordPage from './components/tasks/record/RecordPage';
 import Calibration from './components/tasks/calibration/Calibration';
 import SinePage from './components/audioTest/sineMaker/SinePage';
 import AudioTestPage from './components/audioTest/AudioTestPage';
+import HomePage from './components/home/HomePage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -75,7 +77,8 @@ function App() {
                             <RecordPage />
                         </Route>
                         <Route path={STUDY_ROUTE} component={RoutedStudy} />
-                        <Redirect to={SIGNIN_ROUTE} />
+                        <Route exact path={HOME_ROUTE} component={HomePage} />
+                        <Redirect to={HOME_ROUTE} />
                     </Switch>
                 </Router>
             </ThemeProvider>

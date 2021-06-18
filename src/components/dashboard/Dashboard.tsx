@@ -5,19 +5,20 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import StudyCard, { StudyStatus } from './StudyCard';
 import { StudyProps } from '../study/Study';
-import { currUser$ } from '../auth/observableUser';
+import { currUser$, getFirst } from '../auth/observableUser';
 import { mergeMap, timeout } from 'rxjs/operators';
 import { collection, getDocs, getFirestore, QueryDocumentSnapshot } from 'firebase/firestore';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { generatePath, useHistory } from 'react-router-dom';
-import { SIGNIN_ROUTE, STUDY_ROUTE } from '../../routes';
+import { HOME_ROUTE, SIGNIN_ROUTE, STUDY_ROUTE } from '../../routes';
 import { allStudies } from '../study/studyProps/allStudies';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         margin: theme.spacing(5, 0),
         width: '90%',
-        maxWidth: '40rem'
+        maxWidth: '50rem'
     },
     desc: {
         marginBottom: theme.spacing(5)
@@ -41,6 +42,7 @@ const Dashboard = (): React.ReactElement => {
         const db = getFirestore();
         const sub = currUser$
             .pipe(
+                getFirst(),
                 timeout(1000),
                 mergeMap((user) => getDocs(collection(db, 'users', user.uid, 'studies')))
             )
@@ -86,8 +88,10 @@ const Dashboard = (): React.ReactElement => {
     const lockedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.LOCKED);
     const completedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.COMPLETED);
 
+    const signOutButton = <Button onClick={() => history.push(HOME_ROUTE)}>Sign Out</Button>;
+
     return (
-        <Page header="Dashboard">
+        <Page header="Dashboard" buttons={signOutButton}>
             <div className={classes.root}>
                 <Typography variant="h3" gutterBottom>
                     Dashboard

@@ -6,6 +6,7 @@ import TopBar from './TopBar';
 interface TaskPageProps {
     children?: React.ReactNode;
     header: string;
+    buttons?: React.ReactNode;
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
@@ -36,7 +37,7 @@ const Page = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
 
     return (
         <div className={classes.root}>
-            <TopBar header={props.header} />
+            <TopBar header={props.header}>{props.buttons}</TopBar>
             <div className={classes.main}>{props.children}</div>
         </div>
     );

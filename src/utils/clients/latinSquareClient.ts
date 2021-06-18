@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { currUser$ } from '../../components/auth/observableUser';
+import { currUser$, getFirst } from '../../components/auth/observableUser';
 import { mergeMap, timeout } from 'rxjs/operators';
 import { doc, getFirestore, runTransaction } from 'firebase/firestore';
 
@@ -8,6 +8,7 @@ const latinSquareVersion = 'v1';
 export const getLatinSquare = (): Observable<number> => {
     const db = getFirestore();
     return currUser$.pipe(
+        getFirst(),
         timeout(1000),
         mergeMap((user) =>
             runTransaction(db, (transaction) => {

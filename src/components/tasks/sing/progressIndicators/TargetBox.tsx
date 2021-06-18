@@ -17,7 +17,7 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
         marginBottom: theme.spacing(2),
         padding: theme.spacing(3),
         position: 'relative',
-        maxWidth: '30rem'
+        maxWidth: '50rem'
     },
     success: {
         backgroundColor: theme.palette.success.dark
@@ -26,7 +26,7 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
         backgroundColor: theme.palette.error.dark
     },
     content: ({ height }) => ({
-        height,
+        minHeight: height,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

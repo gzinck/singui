@@ -11,3 +11,4 @@ export const DASHBOARD_ROUTE = '/dashboard';
 export const STUDY_ROUTE = '/study/:studyId';
 export const AUDIO_TEST_ROUTE = '/audio-test';
 export const AUDIO_TEST_PHONE_ROUTE = '/audio-test-phone';
+export const HOME_ROUTE = '/';

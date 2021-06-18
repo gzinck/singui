@@ -1,7 +1,7 @@
 import { StudyTaskType } from '../../components/study/studyTasks';
 import { Observable } from 'rxjs';
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
-import { currUser$ } from '../../components/auth/observableUser';
+import { currUser$, getFirst } from '../../components/auth/observableUser';
 import { map, mergeMap, timeout } from 'rxjs/operators';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
@@ -21,6 +21,7 @@ interface StudyData {
 export const getStudyData = (studyID: string): Observable<StudyData | null> => {
     const db = getFirestore();
     return currUser$.pipe(
+        getFirst(),
         timeout(1000),
         mergeMap((user) => getDoc(doc(db, 'users', user.uid, 'studies', studyID))),
         map((doc) => {
@@ -33,6 +34,7 @@ export const getStudyData = (studyID: string): Observable<StudyData | null> => {
 export const setStudyData = (studyID: string, data: StudyData): Observable<void> => {
     const db = getFirestore();
     return currUser$.pipe(
+        getFirst(),
         timeout(1000),
         mergeMap((user) => setDoc(doc(db, 'users', user.uid, 'studies', studyID), data))
     );
@@ -41,6 +43,7 @@ export const setStudyData = (studyID: string, data: StudyData): Observable<void>
 export const saveAudioFile = (studyID: string, taskID: string, blob: Blob) => {
     const storage = getStorage();
     return currUser$.pipe(
+        getFirst(),
         timeout(1000),
         mergeMap((user) => {
             const path = `users/${user.uid}/study-${studyID}/${taskID}.mp3`;

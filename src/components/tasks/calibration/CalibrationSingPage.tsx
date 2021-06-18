@@ -5,10 +5,14 @@ import TargetBox from '../sing/progressIndicators/TargetBox';
 import { SingingProps, useSinging } from '../sing/useSinging';
 import PitchIndicatorFromState from '../sing/progressIndicators/PitchIndicatorFromState';
 import React from 'react';
+import { Alert } from '@material-ui/lab';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '../../theme';
 
 export interface CalibrationSingProps {
     header: string;
     startMessage: string;
+    error?: string;
     onComplete: (startNote: number) => void;
 }
 
@@ -19,7 +23,14 @@ const singingProps: SingingProps = {
     maxAttempts: 1
 };
 
-const CalibrationSingPage = ({ onComplete, header, startMessage }: CalibrationSingProps) => {
+const useStyles = makeStyles<Theme>((theme) => ({
+    alert: {
+        margin: theme.spacing(1, 0, 2)
+    }
+}));
+
+const CalibrationSingPage = ({ onComplete, header, startMessage, error }: CalibrationSingProps) => {
+    const classes = useStyles();
     const { state } = useSinging(singingProps);
     const [message, setMessage] = React.useState(startMessage);
 
@@ -38,6 +49,11 @@ const CalibrationSingPage = ({ onComplete, header, startMessage }: CalibrationSi
         <Page header={header}>
             <TargetBox height="7rem">
                 <h2>{message}</h2>
+                {error && state.type === TaskType.PITCH && state.progress === 0 && (
+                    <Alert className={classes.alert} severity="warning">
+                        {error}
+                    </Alert>
+                )}
             </TargetBox>
             <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} />
         </Page>
