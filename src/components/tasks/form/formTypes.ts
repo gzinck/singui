@@ -27,7 +27,7 @@ interface FormRadioItem extends FormOptionItem {
     variant?: 'horizontal' | '';
 }
 
-interface FormCheckboxItem extends FormOptionItem {
+export interface FormCheckboxItem extends FormOptionItem {
     type: FormTypes.CHECKBOX;
 }
 

@@ -16,7 +16,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
         width: '90%',
         maxWidth: '50rem',
         '& p': {
-            margin: theme.spacing(3, 0)
+            margin: theme.spacing(4, 0)
         }
     },
     highlightBox: {

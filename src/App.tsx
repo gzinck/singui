@@ -34,6 +34,7 @@ import Calibration from './components/tasks/calibration/Calibration';
 import SinePage from './components/audioTest/sineMaker/SinePage';
 import AudioTestPage from './components/audioTest/AudioTestPage';
 import HomePage from './components/home/HomePage';
+import SignUpPage from './components/signup/SignUpPage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -65,10 +66,10 @@ function App() {
                             <Form header="Test form" form={testForm} />
                         </Route>
                         <Route path={SIGNUP_ROUTE}>
-                            <LoginPage />
+                            <SignUpPage />
                         </Route>
                         <Route path={SIGNIN_ROUTE}>
-                            <LoginPage />
+                            <LoginPage userExists={true} hasOppositeButton={true} />
                         </Route>
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />

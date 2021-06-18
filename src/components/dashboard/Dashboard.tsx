@@ -13,6 +13,7 @@ import { generatePath, useHistory } from 'react-router-dom';
 import { HOME_ROUTE, SIGNIN_ROUTE, STUDY_ROUTE } from '../../routes';
 import { allStudies } from '../study/studyProps/allStudies';
 import Button from '@material-ui/core/Button';
+import { getAuth } from 'firebase/auth';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     root: {
@@ -88,7 +89,16 @@ const Dashboard = (): React.ReactElement => {
     const lockedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.LOCKED);
     const completedStudies = allStudies.filter((s) => status[s.id] === StudyStatus.COMPLETED);
 
-    const signOutButton = <Button onClick={() => history.push(HOME_ROUTE)}>Sign Out</Button>;
+    const signOutButton = (
+        <Button
+            onClick={() => {
+                getAuth().signOut();
+                history.push(HOME_ROUTE);
+            }}
+        >
+            Sign Out
+        </Button>
+    );
 
     return (
         <Page header="Dashboard" buttons={signOutButton}>

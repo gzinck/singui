@@ -20,16 +20,16 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
     },
     header: ({ error }) => ({
         paddingRight: error ? theme.spacing(2) : 0,
-        color: error ? theme.palette.error.light : theme.palette.text.primary
+        color: theme.palette.text.primary
     }),
     errorIcon: {
-        color: theme.palette.error.light,
+        color: theme.palette.error.main,
         position: 'absolute',
         top: '0.15rem',
         right: '0.25rem'
     },
     text: ({ error }) => ({
-        color: error ? theme.palette.error.light : theme.palette.text.primary,
+        color: theme.palette.text.primary,
         marginTop: theme.spacing(1.5)
     }),
     children: {

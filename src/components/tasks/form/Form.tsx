@@ -13,6 +13,7 @@ import { Alert } from '@material-ui/lab';
 export interface FormProps {
     header: string;
     form: FormItem[];
+    children?: React.ReactNode;
     onCancel?: () => void;
     onComplete?: (responses: Record<string, string | string[]>) => void;
 }
@@ -22,7 +23,6 @@ const useStyles = makeStyles<Theme>((theme) => ({
         padding: theme.spacing(2, 0),
         width: '90%',
         maxWidth: '50rem'
-        // width: 'calc(min(90%, 50rem) - 2rem)'
     },
     buttons: {
         width: '100%',
@@ -61,6 +61,7 @@ const Form = (props: FormProps): React.ReactElement<FormProps> => {
     return (
         <Page header={props.header}>
             <div className={classes.root}>
+                {props.children}
                 {props.form.map((item) => {
                     switch (item.type) {
                         case FormTypes.TEXT:

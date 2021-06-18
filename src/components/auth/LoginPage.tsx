@@ -11,6 +11,12 @@ import { useHistory } from 'react-router-dom';
 import { DASHBOARD_ROUTE, SIGNIN_ROUTE, SIGNUP_ROUTE } from '../../routes';
 import Typography from '@material-ui/core/Typography';
 
+interface Props {
+    userExists: boolean;
+    hasOppositeButton?: boolean; // Show/hide the Sign In button when you're signing up (and vice versa)
+    onComplete?: () => void; // Called once user is authenticated
+}
+
 const useStyles = makeStyles<Theme>((theme) => ({
     textField: {
         marginBottom: theme.spacing(2),
@@ -24,15 +30,17 @@ const useStyles = makeStyles<Theme>((theme) => ({
         maxWidth: '90%',
         width: '20rem',
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'center',
+        '& > *:nth-child(2)': {
+            marginLeft: theme.spacing(1)
+        }
     }
 }));
 
-const LoginPage = (): React.ReactElement => {
+const LoginPage = ({ userExists, hasOppositeButton, onComplete }: Props): React.ReactElement => {
     const classes = useStyles();
     const history = useHistory();
     const query = new URLSearchParams(history.location.search);
-    const userExists = history.location.pathname === SIGNIN_ROUTE;
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [password2, setPassword2] = React.useState('');
@@ -65,13 +73,13 @@ const LoginPage = (): React.ReactElement => {
 
             setError(undefined);
             from<Promise<UserCredential>>(createUserWithEmailAndPassword(auth, email, password)).subscribe({
-                next: () => history.push(query.get('next') || DASHBOARD_ROUTE),
+                next: () => (onComplete ? onComplete() : history.push(query.get('next') || DASHBOARD_ROUTE)),
                 error: (err: Error) => setError(err.message)
             });
         } else {
             setError(undefined);
             from<Promise<UserCredential>>(signInWithEmailAndPassword(auth, email, password)).subscribe({
-                next: () => history.push(query.get('next') || DASHBOARD_ROUTE),
+                next: () => (onComplete ? onComplete() : history.push(query.get('next') || DASHBOARD_ROUTE)),
                 error: (err: Error) => setError(err.message)
             });
         }
@@ -113,9 +121,11 @@ const LoginPage = (): React.ReactElement => {
                 </Alert>
             )}
             <div className={classes.buttonBox}>
-                <Button onClick={() => history.push(`${userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE}${history.location.search}`)}>
-                    {oppositeAction}
-                </Button>
+                {hasOppositeButton && (
+                    <Button onClick={() => history.push(`${userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE}${history.location.search}`)}>
+                        {oppositeAction}
+                    </Button>
+                )}
                 <Button variant="contained" color="primary" onClick={onConfirm}>
                     {action}
                 </Button>

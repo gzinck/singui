@@ -17,7 +17,7 @@ import { AUDIO_TEST_PHONE_ROUTE } from '../../routes';
 import QRCode from './QRCode';
 
 interface Props {
-    onComplete: () => void;
+    onComplete: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
 const targets = notesToTestAudio.map<PitchTaskTarget>((value) => ({ type: TaskType.PITCH, value }));
@@ -64,11 +64,13 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
 
     const [showError, setShowError] = React.useState(false);
     React.useEffect(() => {
+        if (status !== Status.IN_PROGRESS) return;
+
         // If state does not change for X seconds, show error
         setShowError(false);
         const sub = timer(10000).subscribe(() => setShowError(true));
         return () => sub.unsubscribe();
-    }, [state.results.length, state.isCorrect]);
+    }, [state.results.length, state.isCorrect, status]);
 
     const resetTest = () => {
         setStatus(Status.IN_PROGRESS);
@@ -83,7 +85,13 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
                     <h2>Before you begin</h2>
                     <p>Make sure you are in a quiet environment.</p>
                     <p>Wear headphones. Make sure they are connected to your computer and not your phone.</p>
-                    <p>On your phone, go to https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE} by scanning the QR Code below.</p>
+                    <p>
+                        On your phone, go to{' '}
+                        <a href={`https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}`}>
+                            https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}
+                        </a>{' '}
+                        by scanning the QR Code below.
+                    </p>
                     <QRCode />
                     <p>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</p>
                 </>
@@ -111,7 +119,7 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
         case Status.SUCCESS:
             contents = <h2>Test successful</h2>;
             button = (
-                <Button variant="contained" color="primary" onClick={onComplete}>
+                <Button variant="contained" color="primary" onClick={() => onComplete(state.results)}>
                     Next
                 </Button>
             );

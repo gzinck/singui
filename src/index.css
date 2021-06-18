@@ -21,5 +21,15 @@ p {
 }
 
 hr {
-    margin: 2rem 0;
+    margin: 3rem 0;
+}
+
+a {
+    color: #17b7fe;
+}
+
+a:hover,
+a:focus,
+a:active {
+    color: #45c5ff;
 }
