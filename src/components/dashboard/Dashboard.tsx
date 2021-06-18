@@ -106,7 +106,7 @@ const Dashboard = (): React.ReactElement => {
                 <Typography variant="h3" gutterBottom>
                     Dashboard
                 </Typography>
-                <Typography className={classes.desc}>Pick a study to continue.</Typography>
+                <Typography className={classes.desc}>Continue the study with the tasks below.</Typography>
                 {loading ? (
                     <>
                         <Typography variant="h5" gutterBottom>
@@ -127,7 +127,10 @@ const Dashboard = (): React.ReactElement => {
                                 {renderStudies(availableStudies)}
                             </>
                         ) : (
-                            <Typography className={classes.desc}>Woohoo! You have completed all the studies you have access to.</Typography>
+                            <Typography className={classes.desc}>
+                                Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within one
+                                week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your remuneration.
+                            </Typography>
                         )}
                         {lockedStudies.length > 0 && (
                             <>

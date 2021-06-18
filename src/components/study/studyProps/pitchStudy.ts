@@ -32,7 +32,7 @@ const radioButtonValidator = (val: any) => (typeof val === 'string' ? undefined 
 
 export const pitchStudyProps: StudyProps = {
     id: studyId.PITCH_STUDY,
-    dependencies: [studyId.SETUP_STUDY],
+    dependencies: [], //[studyId.SETUP_STUDY],
     name: 'Pitch study',
     description: 'Sing individual pitches to control your computer',
     time: 10,
@@ -85,11 +85,23 @@ export const pitchStudyProps: StudyProps = {
             latinSquare
         ),
         {
-            id: 'performance-pre-evaluation',
-            for: 'pre-evaluation',
+            id: 'performance-pre-evaluation-without-music',
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
-                multiAttempt: false
+                header: 'Results without music',
+                multiAttempt: false,
+                studyID: studyId.PITCH_STUDY,
+                taskID: 'pre-evaluation-without-music'
+            }
+        },
+        {
+            id: 'performance-pre-evaluation-with-music',
+            type: StudyTaskType.PERFORMANCE_MESSAGE,
+            props: {
+                header: 'Results with music',
+                multiAttempt: false,
+                studyID: studyId.PITCH_STUDY,
+                taskID: 'pre-evaluation-with-music'
             }
         },
         {

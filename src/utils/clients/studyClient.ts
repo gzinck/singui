@@ -13,12 +13,11 @@ export interface StudyResult {
 }
 
 interface StudyData {
-    results: StudyResult[];
     nextIdx: number;
     isDone: boolean;
 }
 
-export const getStudyData = (studyID: string): Observable<StudyData | null> => {
+export const getStudyStatus = (studyID: string): Observable<StudyData | null> => {
     const db = getFirestore();
     return currUser$.pipe(
         getFirst(),
@@ -30,11 +29,31 @@ export const getStudyData = (studyID: string): Observable<StudyData | null> => {
     );
 };
 
-export const setStudyData = (studyID: string, data: StudyData): Observable<void> => {
+export const setStudyStatus = (studyID: string, data: StudyData): Observable<void> => {
     const db = getFirestore();
     return currUser$.pipe(
         getFirst(),
         mergeMap((user) => setDoc(doc(db, 'users', user.uid, 'studies', studyID), data))
+    );
+};
+
+export const getStudyTaskResults = (studyID: string, taskID: string): Observable<StudyResult | null> => {
+    const db = getFirestore();
+    return currUser$.pipe(
+        getFirst(),
+        mergeMap((user) => getDoc(doc(db, 'users', user.uid, 'studies', studyID, 'tasks', taskID))),
+        map((doc) => {
+            if (doc.exists()) return doc.data() as StudyResult;
+            else return null;
+        })
+    );
+};
+
+export const setStudyTaskResults = (studyID: string, taskID: string, data: StudyResult): Observable<void> => {
+    const db = getFirestore();
+    return currUser$.pipe(
+        getFirst(),
+        mergeMap((user) => setDoc(doc(db, 'users', user.uid, 'studies', studyID, 'tasks', taskID), data))
     );
 };
 

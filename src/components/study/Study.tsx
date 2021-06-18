@@ -15,7 +15,7 @@ import VideoPage from '../tasks/video/VideoPage';
 import RecordPage from '../tasks/record/RecordPage';
 import PerformanceMessagePage from '../tasks/message/PerformanceMessagePage';
 import { getLatinSquare } from '../../utils/clients/latinSquareClient';
-import { getStudyData, saveAudioFile, setStudyData, StudyResult } from '../../utils/clients/studyClient';
+import { getStudyStatus, saveAudioFile, setStudyStatus, setStudyTaskResults, StudyResult } from '../../utils/clients/studyClient';
 
 export interface StudyProps {
     getTasks: (latinSquare: number) => StudyTask[];
@@ -30,27 +30,29 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     const history = useHistory();
     const [tasks, setTasks] = React.useState<StudyTask[]>([]);
     const [taskIdx, setTaskIdx] = React.useState(-1);
-    const [results, setResults] = React.useState<StudyResult[]>([]);
     const [progress, setProgress] = React.useState(0);
 
     const onComplete = React.useCallback(
         (details: any) => {
             // Send results to database
-            const newResults: StudyResult[] = [...results, { type: tasks[taskIdx].type, id, details, doneAt: new Date() }];
-            setStudyData(id, {
+            const results: StudyResult = { type: tasks[taskIdx].type, id, details, doneAt: new Date() };
+            setStudyStatus(id, {
                 isDone: taskIdx === tasks.length - 1,
-                nextIdx: taskIdx + 1,
-                results: newResults
+                nextIdx: taskIdx + 1
             }).subscribe({
-                error: (err) => console.error('Critical error saving to database:', err)
+                error: (err) => console.error('Critical error saving study status to database:', err)
             });
 
-            // Move to next task
-            setProgress(((taskIdx + 2) / (tasks.length + 1)) * 100);
-            setTaskIdx(taskIdx + 1);
-            setResults(newResults);
+            setStudyTaskResults(id, tasks[taskIdx].id, results).subscribe({
+                complete: () => {
+                    // Move to next task
+                    setProgress(((taskIdx + 2) / (tasks.length + 1)) * 100);
+                    setTaskIdx(taskIdx + 1);
+                },
+                error: (err) => console.error('Critical error saving study task results to database:', err)
+            });
         },
-        [id, results, taskIdx, tasks]
+        [id, taskIdx, tasks]
     );
 
     const recordOnComplete = React.useCallback(
@@ -98,14 +100,12 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     // Get the study progress
     React.useEffect(() => {
         setTaskIdx(-1);
-        setResults([]);
         setIsLoading(true);
 
-        const sub = getStudyData(id).subscribe({
+        const sub = getStudyStatus(id).subscribe({
             next: (data) => {
                 setIsLoading(false);
                 if (data) {
-                    setResults(data.results);
                     setStartIdx(data.nextIdx);
                 }
             },
@@ -163,14 +163,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
                 page = <HeadphoneMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.PERFORMANCE_MESSAGE:
-                const taskIdx = tasks.findIndex((tsk) => tsk.id === task.for);
-                page = (
-                    <PerformanceMessagePage
-                        {...task.props}
-                        results={results[taskIdx].details as SingTaskResult<any>[]}
-                        onComplete={() => onComplete('confirmed')}
-                    />
-                );
+                page = <PerformanceMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.VIDEO:
                 page = <VideoPage {...task.props} onComplete={() => onComplete('confirmed')} />;

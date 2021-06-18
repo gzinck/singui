@@ -1,22 +1,22 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './components/theme';
-import { BrowserRouter as Router, Switch, Redirect, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import {
+    AUDIO_TEST_PHONE_ROUTE,
+    AUDIO_TEST_ROUTE,
     CALIBRATE_ROUTE,
+    DASHBOARD_ROUTE,
+    HOME_ROUTE,
     INTERVAL_TASKS_ROUTE,
-    SIGNIN_ROUTE,
     MELODY_TASKS_ROUTE,
     RELATIVE_PITCH_TASKS_ROUTE,
+    SIGNIN_ROUTE,
     SIGNUP_ROUTE,
+    STUDY_ROUTE,
     TEST_FORM_ROUTE,
     TUNER_ROUTE,
-    UNIVERSAL_TASKS_ROUTE,
-    DASHBOARD_ROUTE,
-    STUDY_ROUTE,
-    AUDIO_TEST_ROUTE,
-    AUDIO_TEST_PHONE_ROUTE,
-    HOME_ROUTE
+    UNIVERSAL_TASKS_ROUTE
 } from './routes';
 import Tuner from './components/tasks/tuner/Tuner';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
@@ -35,6 +35,8 @@ import SinePage from './components/audioTest/sineMaker/SinePage';
 import AudioTestPage from './components/audioTest/AudioTestPage';
 import HomePage from './components/home/HomePage';
 import SignUpPage from './components/signup/SignUpPage';
+import PerformanceMessagePage from './components/tasks/message/PerformanceMessagePage';
+import { studyId } from './components/study/studyProps/studyId';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -70,6 +72,9 @@ function App() {
                         </Route>
                         <Route path={SIGNIN_ROUTE}>
                             <LoginPage userExists={true} hasOppositeButton={true} />
+                        </Route>
+                        <Route path="/perf">
+                            <PerformanceMessagePage studyID={studyId.PITCH_STUDY} taskID="pre-evaluation" />
                         </Route>
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />

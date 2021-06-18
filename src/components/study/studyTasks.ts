@@ -46,8 +46,7 @@ interface StudyHeadphoneMessageTask extends TaskBase {
 
 interface StudyPerformanceMessageTask extends TaskBase {
     type: StudyTaskType.PERFORMANCE_MESSAGE;
-    for: string; // id of the task to show performance for
-    props: Partial<PerformanceMessageProps>;
+    props: PerformanceMessageProps;
 }
 
 interface StudyVideoTask extends TaskBase {

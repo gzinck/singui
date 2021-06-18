@@ -17,14 +17,9 @@ export interface MessageProps {
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
-    root: {
-        position: 'relative',
-        height: 'calc(100vh - 8rem)',
-        width: '100%'
-    },
     messageBox: {
-        margin: '0 max(1rem, calc(50% - 15rem))',
-        maxWidth: '30rem',
+        width: '90%',
+        maxWidth: '50rem',
         padding: theme.spacing(3),
         marginBottom: theme.spacing(2),
         display: 'flex',
@@ -50,26 +45,24 @@ const MessagePage = ({ header, text, children, onComplete, isLoading, buttons }:
     const classes = useStyles();
     return (
         <Page header={header}>
-            <div className={classes.root}>
-                <Card className={classes.messageBox}>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        {header}
+            <Card className={classes.messageBox}>
+                <Typography variant="h4" align="left" gutterBottom>
+                    {header}
+                </Typography>
+                {text && (
+                    <Typography align="center" gutterBottom>
+                        {text}
                     </Typography>
-                    {text && (
-                        <Typography align="center" gutterBottom>
-                            {text}
-                        </Typography>
-                    )}
-                    {children}
-                    <div className={classes.buttonBox}>
-                        {buttons}
-                        <Button onClick={onComplete} variant="contained" color="primary" disabled={isLoading}>
-                            {isLoading && <CircularProgress className={classes.loading} size="1rem" />}
-                            Next
-                        </Button>
-                    </div>
-                </Card>
-            </div>
+                )}
+                {children}
+                <div className={classes.buttonBox}>
+                    {buttons}
+                    <Button onClick={onComplete} variant="contained" color="primary" disabled={isLoading}>
+                        {isLoading && <CircularProgress className={classes.loading} size="1rem" />}
+                        Next
+                    </Button>
+                </div>
+            </Card>
         </Page>
     );
 };
