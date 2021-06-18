@@ -7,7 +7,7 @@ import { Theme } from '../../theme';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     icon: {
-        fontSize: '14rem',
+        fontSize: '12rem',
         margin: theme.spacing(2)
     }
 }));

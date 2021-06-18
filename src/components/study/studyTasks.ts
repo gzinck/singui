@@ -56,7 +56,7 @@ interface StudyVideoTask extends TaskBase {
 
 interface StudyRecordTask extends TaskBase {
     type: StudyTaskType.RECORD;
-    props: RecordProps;
+    props: Partial<RecordProps>;
 }
 
 export type StudyTask =

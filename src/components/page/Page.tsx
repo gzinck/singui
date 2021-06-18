@@ -2,10 +2,12 @@ import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import TopBar from './TopBar';
+import Typography from '@material-ui/core/Typography';
 
 interface TaskPageProps {
     children?: React.ReactNode;
-    header: string;
+    header: string; // Shown in the menu bar
+    title?: string; // Shown in the main area
     buttons?: React.ReactNode;
 }
 
@@ -14,20 +16,25 @@ const useStyles = makeStyles<Theme>((theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         overflow: 'hidden',
-        marginTop: '1rem',
         position: 'relative',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center'
     },
     main: {
-        marginTop: '4rem',
+        marginTop: '7rem',
+        marginBottom: '7rem',
         width: '100%',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    centered: {
+        width: '90%',
+        maxWidth: '50rem',
+        position: 'relative'
     }
 }));
 
@@ -38,7 +45,16 @@ const Page = (props: TaskPageProps): React.ReactElement<TaskPageProps> => {
     return (
         <div className={classes.root}>
             <TopBar header={props.header}>{props.buttons}</TopBar>
-            <div className={classes.main}>{props.children}</div>
+            <div className={classes.main}>
+                <div className={classes.centered}>
+                    {props.title && (
+                        <Typography variant="h3" gutterBottom>
+                            {props.title}
+                        </Typography>
+                    )}
+                    {props.children}
+                </div>
+            </div>
         </div>
     );
 };

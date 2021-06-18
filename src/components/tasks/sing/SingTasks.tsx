@@ -9,9 +9,11 @@ import { useSinging } from './useSinging';
 import { getLetterStringForTarget, getNumberStringForTarget } from '../../../utils/targetConverter';
 import PitchIndicatorFromState from './progressIndicators/PitchIndicatorFromState';
 import useTonic from '../../audio/useTonic';
+import Centered from '../../common/Centered';
 
 interface Props {
     header: string;
+    title?: string;
     targets: TaskTarget[];
     recognizers: RecognizerMap;
     withPrompts?: boolean;
@@ -28,13 +30,15 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
     const [tonic] = useTonic();
 
     return (
-        <Page header={props.header}>
+        <Page header={props.header} title={props.title || props.header}>
             <TargetBox height="7rem">
                 <h2>
                     {props.numberLabels ? getNumberStringForTarget(state.nextTarget) : getLetterStringForTarget(state.nextTarget, tonic)}
                 </h2>
             </TargetBox>
-            <PitchIndicatorFromState state={state} hideable={true} numberLabels={props.numberLabels} />
+            <Centered>
+                <PitchIndicatorFromState state={state} hideable={true} numberLabels={props.numberLabels} />
+            </Centered>
             {!props.hideFeedback && <SuccessBar items={feedback} />}
         </Page>
     );

@@ -84,7 +84,7 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                                     toFadeOut: index % 2 === 0 ? loopGain1 : loopGain2,
                                     toFadeIn: index % 2 === 0 ? loopGain2 : loopGain1,
                                     buffer: loopAudio,
-                                    atTime: ctx.audioContext.currentTime,
+                                    atTime: ctx.audioContext.currentTime, // Make sure it's a bit later in case there are race conditions
                                     overlapTime,
                                     context: ctx.audioContext
                                 });

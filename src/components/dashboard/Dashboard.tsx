@@ -16,11 +16,6 @@ import Button from '@material-ui/core/Button';
 import { getAuth } from 'firebase/auth';
 
 const useStyles = makeStyles<Theme>((theme) => ({
-    root: {
-        margin: theme.spacing(5, 0),
-        width: '90%',
-        maxWidth: '50rem'
-    },
     desc: {
         marginBottom: theme.spacing(5)
     },
@@ -101,56 +96,51 @@ const Dashboard = (): React.ReactElement => {
     );
 
     return (
-        <Page header="Dashboard" buttons={signOutButton}>
-            <div className={classes.root}>
-                <Typography variant="h3" gutterBottom>
-                    Dashboard
-                </Typography>
-                <Typography className={classes.desc}>Continue the study with the tasks below.</Typography>
-                {loading ? (
-                    <>
-                        <Typography variant="h5" gutterBottom>
-                            Loading...
+        <Page header="Dashboard" buttons={signOutButton} title="Dashboard">
+            <Typography className={classes.desc}>Continue the study with the tasks below.</Typography>
+            {loading ? (
+                <>
+                    <Typography variant="h5" gutterBottom>
+                        Loading...
+                    </Typography>
+                    {allStudies.map((study) => (
+                        <Skeleton key={study.id} variant="rect" className={classes.skeleton} />
+                    ))}
+                </>
+            ) : (
+                <>
+                    <Typography variant="h5" gutterBottom>
+                        Up next
+                    </Typography>
+                    {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
+                        <>
+                            {renderStudies(inProgressStudies)}
+                            {renderStudies(availableStudies)}
+                        </>
+                    ) : (
+                        <Typography className={classes.desc}>
+                            Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within one
+                            week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your remuneration.
                         </Typography>
-                        {allStudies.map((study) => (
-                            <Skeleton key={study.id} variant="rect" className={classes.skeleton} />
-                        ))}
-                    </>
-                ) : (
-                    <>
-                        <Typography variant="h5" gutterBottom>
-                            Up next
-                        </Typography>
-                        {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
-                            <>
-                                {renderStudies(inProgressStudies)}
-                                {renderStudies(availableStudies)}
-                            </>
-                        ) : (
-                            <Typography className={classes.desc}>
-                                Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within one
-                                week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your remuneration.
+                    )}
+                    {lockedStudies.length > 0 && (
+                        <>
+                            <Typography variant="h5" gutterBottom>
+                                Locked
                             </Typography>
-                        )}
-                        {lockedStudies.length > 0 && (
-                            <>
-                                <Typography variant="h5" gutterBottom>
-                                    Locked
-                                </Typography>
-                                {renderStudies(lockedStudies)}
-                            </>
-                        )}
-                        {completedStudies.length > 0 && (
-                            <>
-                                <Typography variant="h5" gutterBottom>
-                                    Completed
-                                </Typography>
-                                {renderStudies(completedStudies)}
-                            </>
-                        )}
-                    </>
-                )}
-            </div>
+                            {renderStudies(lockedStudies)}
+                        </>
+                    )}
+                    {completedStudies.length > 0 && (
+                        <>
+                            <Typography variant="h5" gutterBottom>
+                                Completed
+                            </Typography>
+                            {renderStudies(completedStudies)}
+                        </>
+                    )}
+                </>
+            )}
         </Page>
     );
 };
