@@ -10,6 +10,7 @@ import { from } from 'rxjs';
 import { useHistory } from 'react-router-dom';
 import { DASHBOARD_ROUTE, SIGNIN_ROUTE, SIGNUP_ROUTE } from '../../routes';
 import Typography from '@material-ui/core/Typography';
+import Centered from '../common/Centered';
 
 interface Props {
     userExists: boolean;
@@ -19,16 +20,16 @@ interface Props {
 
 const useStyles = makeStyles<Theme>((theme) => ({
     textField: {
-        marginBottom: theme.spacing(2),
-        maxWidth: '90%',
-        width: '20rem'
+        margin: theme.spacing(1, 0, 2),
+        width: '100%',
+        maxWidth: '40rem'
     },
     alert: {
         marginBottom: theme.spacing(2)
     },
     buttonBox: {
-        maxWidth: '90%',
-        width: '20rem',
+        width: '100%',
+        maxWidth: '20rem',
         display: 'flex',
         justifyContent: 'center',
         '& > *:nth-child(2)': {
@@ -90,46 +91,48 @@ const LoginPage = ({ userExists, hasOppositeButton, onComplete }: Props): React.
             <Typography variant="h3" gutterBottom>
                 {action}
             </Typography>
-            <TextField
-                className={classes.textField}
-                label="Email"
-                variant="outlined"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-                className={classes.textField}
-                label="Password"
-                type="password"
-                variant="outlined"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            {!userExists && (
+            <Centered>
                 <TextField
                     className={classes.textField}
-                    label="Confirm password"
+                    label="Email"
+                    variant="outlined"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                    className={classes.textField}
+                    label="Password"
                     type="password"
                     variant="outlined"
-                    value={password2}
-                    onChange={(e) => setPassword2(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
-            )}
-            {error && (
-                <Alert className={classes.alert} severity="error">
-                    {error}
-                </Alert>
-            )}
-            <div className={classes.buttonBox}>
-                {hasOppositeButton && (
-                    <Button onClick={() => history.push(`${userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE}${history.location.search}`)}>
-                        {oppositeAction}
-                    </Button>
+                {!userExists && (
+                    <TextField
+                        className={classes.textField}
+                        label="Confirm password"
+                        type="password"
+                        variant="outlined"
+                        value={password2}
+                        onChange={(e) => setPassword2(e.target.value)}
+                    />
                 )}
-                <Button variant="contained" color="primary" onClick={onConfirm}>
-                    {action}
-                </Button>
-            </div>
+                {error && (
+                    <Alert className={classes.alert} severity="error">
+                        {error}
+                    </Alert>
+                )}
+                <div className={classes.buttonBox}>
+                    {hasOppositeButton && (
+                        <Button onClick={() => history.push(`${userExists ? SIGNUP_ROUTE : SIGNIN_ROUTE}${history.location.search}`)}>
+                            {oppositeAction}
+                        </Button>
+                    )}
+                    <Button variant="contained" color="primary" onClick={onConfirm}>
+                        {action}
+                    </Button>
+                </div>
+            </Centered>
         </Page>
     );
 };
