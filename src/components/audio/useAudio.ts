@@ -1,7 +1,7 @@
 import { audioContext } from './audioContext';
 import React from 'react';
 import { combineLatest, concat, interval, of, Subscription, timer } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { concatMap, delay, scan } from 'rxjs/operators';
 import { IAudioContext, IAudioNode, IGainNode } from 'standardized-audio-context';
 import { getCachedAudio } from './getCachedAudio';
 
@@ -12,29 +12,14 @@ const overlapTime = 0.5;
 const gainUpCurve: Float32Array = new Float32Array([0, 1]);
 const gainDownCurve: Float32Array = new Float32Array([1, 0]);
 
-interface CrossfadeProps {
-    toFadeIn: IGainNode<IAudioContext>;
-    toFadeOut?: IGainNode<IAudioContext>;
-    buffer: AudioBuffer;
-    atTime: number;
-    overlapTime: number;
-    context: IAudioContext;
-}
-
-const crossfade = ({ toFadeOut, toFadeIn, buffer, atTime, overlapTime, context }: CrossfadeProps) => {
-    const audioNode = context.createBufferSource();
-    audioNode.buffer = buffer;
-    audioNode.connect(toFadeIn);
-    audioNode.start(atTime);
-
-    // Do the appropriate fades
-    toFadeIn.gain.setValueCurveAtTime(gainUpCurve, atTime, overlapTime);
-    if (toFadeOut) toFadeOut.gain.setValueCurveAtTime(gainDownCurve, atTime, overlapTime);
-};
-
 interface Props {
     keyNumber: number;
     hasBackground?: boolean;
+}
+
+interface Gains {
+    gainOut: IGainNode<IAudioContext>;
+    toDisconnect?: IGainNode<IAudioContext>;
 }
 
 const useAudio = ({ keyNumber, hasBackground }: Props) => {
@@ -52,20 +37,12 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                 ]).subscribe(([startAudio, loopAudio]) => {
                     const startSource = ctx.audioContext.createBufferSource();
                     startSource.buffer = startAudio;
+
+                    // Create a gain node
                     const startGain = ctx.audioContext.createGain();
                     startSource.connect(startGain);
                     startGain.connect(ctx.backgroundGain.node());
-
-                    // Make two gain controls for the loop audio
-                    const loopGain1 = ctx.audioContext.createGain();
-                    loopGain1.gain.setValueAtTime(0, 0);
-                    loopGain1.connect(ctx.backgroundGain.node());
-                    const loopGain2 = ctx.audioContext.createGain();
-                    loopGain2.gain.setValueAtTime(0, 0);
-                    loopGain2.connect(ctx.backgroundGain.node());
-
-                    // Hold onto the sources to do cleanup later
-                    sources.push(startSource, loopGain1, loopGain2);
+                    sources.push(startGain);
 
                     // Start the sound
                     startSource.start(ctx.audioContext.currentTime);
@@ -74,20 +51,37 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                     subscriptions.push(
                         timer((startSource.buffer.duration - overlapTime) * 1000)
                             .pipe(
-                                concatMap(() => concat(of(0), interval((loopAudio.duration - overlapTime) * 1000).pipe(map((i) => i + 1))))
+                                concatMap(() =>
+                                    concat(of(0), interval((loopAudio.duration - overlapTime) * 1000)).pipe(
+                                        scan<any, Gains>(
+                                            ({ gainOut }) => {
+                                                const loopSource = ctx.audioContext.createBufferSource();
+                                                loopSource.buffer = loopAudio;
+
+                                                // Create a gain node
+                                                const gainIn = ctx.audioContext.createGain();
+                                                gainIn.gain.setValueAtTime(0, ctx.audioContext.currentTime);
+                                                sources.push(gainIn);
+
+                                                // Connect the loop to the gain and start it
+                                                loopSource.connect(gainIn);
+                                                gainIn.connect(ctx.backgroundGain.node());
+                                                loopSource.start(ctx.audioContext.currentTime);
+
+                                                gainIn.gain.setValueCurveAtTime(gainUpCurve, ctx.audioContext.currentTime, overlapTime);
+                                                gainOut.gain.setValueCurveAtTime(gainDownCurve, ctx.audioContext.currentTime, overlapTime);
+
+                                                return { gainOut: gainIn, toDisconnect: gainOut };
+                                            },
+                                            { gainOut: startGain }
+                                        )
+                                    )
+                                ),
+                                // Wait until the loop is over, then remove the old source node to clean things up
+                                delay(2000 * overlapTime)
                             )
-                            .subscribe((index: number) => {
-                                if (startGain.gain.value > 0) {
-                                    startGain.gain.setValueCurveAtTime(gainDownCurve, ctx.audioContext.currentTime, overlapTime);
-                                }
-                                crossfade({
-                                    toFadeOut: index % 2 === 0 ? loopGain1 : loopGain2,
-                                    toFadeIn: index % 2 === 0 ? loopGain2 : loopGain1,
-                                    buffer: loopAudio,
-                                    atTime: ctx.audioContext.currentTime, // Make sure it's a bit later in case there are race conditions
-                                    overlapTime,
-                                    context: ctx.audioContext
-                                });
+                            .subscribe(() => {
+                                sources.shift()?.disconnect();
                             })
                     );
                 })
