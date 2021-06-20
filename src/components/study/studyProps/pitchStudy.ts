@@ -123,7 +123,7 @@ export const pitchStudyProps: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task training I',
-                targets: toTargets([7, 5, 2, 4, 2, 0, 11, 0, 5, 9, 11, 7, 9, 4]),
+                targets: toTargets(reorderLatinSquare([7, 5, 2, 4, 2, 0, 11, 0, 5, 9, 11, 7, 9, 4], latinSquare)),
                 recognizers,
                 withPrompts: true,
                 maxAttempts: 10
@@ -147,50 +147,55 @@ export const pitchStudyProps: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task training II',
-                targets: toTargets([
-                    0,
-                    9,
-                    2,
-                    9,
-                    11,
-                    2,
-                    7,
-                    9,
-                    4,
-                    7,
-                    2,
-                    0,
-                    4,
-                    0,
-                    9,
-                    5,
-                    9,
-                    7,
-                    5,
-                    2,
-                    5,
-                    11,
-                    7,
-                    9,
-                    11,
-                    0,
-                    5,
-                    0,
-                    11,
-                    4,
-                    11,
-                    4,
-                    7,
-                    2,
-                    4,
-                    5,
-                    11,
-                    5,
-                    2,
-                    7,
-                    0,
-                    4
-                ]),
+                targets: toTargets(
+                    reorderLatinSquare(
+                        [
+                            0,
+                            9,
+                            2,
+                            9,
+                            11,
+                            2,
+                            7,
+                            9,
+                            4,
+                            7,
+                            2,
+                            0,
+                            4,
+                            0,
+                            9,
+                            5,
+                            9,
+                            7,
+                            5,
+                            2,
+                            5,
+                            11,
+                            7,
+                            9,
+                            11,
+                            0,
+                            5,
+                            0,
+                            11,
+                            4,
+                            11,
+                            4,
+                            7,
+                            2,
+                            4,
+                            5,
+                            11,
+                            5,
+                            2,
+                            7,
+                            0,
+                            4
+                        ],
+                        latinSquare
+                    )
+                ),
                 recognizers,
                 withPrompts: false,
                 maxAttempts: 10
@@ -209,17 +214,21 @@ export const pitchStudyProps: StudyProps = {
                 text: 'The final block of tasks evaluates your performance with no audio prompts and no repeats.'
             }
         },
-        {
-            id: 'post-evaluation',
-            type: StudyTaskType.SING,
-            props: {
-                header: 'Pitch task post-evaluation',
-                targets: toTargets([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0]),
-                recognizers,
-                withPrompts: false,
-                maxAttempts: 1
-            }
-        },
+        // Rearrangeable section for when there is(n't) background music
+        ...reorderLatinSquare(
+            varyBackgroundMusic({
+                id: 'post-evaluation',
+                type: StudyTaskType.SING,
+                props: {
+                    header: 'Pitch task post-evaluation',
+                    targets: toTargets(reorderLatinSquare([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0], latinSquare)),
+                    recognizers,
+                    withPrompts: false,
+                    maxAttempts: 1
+                }
+            }),
+            latinSquare
+        ),
         {
             id: 'msg-participant-rating',
             type: StudyTaskType.MESSAGE,

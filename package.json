@@ -35,7 +35,8 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "prettier --write .",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "firestore:rules": "firebase deploy --only firestore:rules"
     },
     "eslintConfig": {
         "extends": [
@@ -44,6 +45,9 @@
         ]
     },
     "lint-staged": {
+        "src/**/*test.{ts,tsx}": [
+            "react-scripts test --watchAll=false"
+        ],
         "src/**/*.{ts,tsx}": [
             "prettier --write",
             "git add"
