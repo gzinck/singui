@@ -4,7 +4,8 @@ service cloud.firestore {
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && (request.auth.uid == userId || request.auth.uid == 'u97lD1MOqea5U8C9supbxJuXSfn1');
     }
-    match /latinSquare/{document=**} {
+    match /participants/{document=**} {
+      allow get: if true;
       allow get, create, update: if request.auth != null;
     }
   }

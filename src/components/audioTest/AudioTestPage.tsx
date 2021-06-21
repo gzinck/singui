@@ -20,6 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import Centered from '../common/Centered';
 
 interface Props {
+    header: string;
     onComplete: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
@@ -48,7 +49,7 @@ enum Status {
     FAIL
 }
 
-const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
+const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
     const [status, setStatus] = React.useState(Status.PENDING);
     const onSing = React.useCallback((results: SingTaskResult<any>[]) => {
         if (!results[results.length - 1].success) setStatus((s) => (s === Status.IN_PROGRESS ? Status.FAIL : s));
@@ -86,8 +87,8 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
         case Status.PENDING:
             contents = (
                 <>
-                    <Typography variant="h3" gutterBottom>
-                        Before you begin
+                    <Typography variant="h4" gutterBottom>
+                        Before you begin...
                     </Typography>
                     <Typography>Make sure you are in a quiet environment.</Typography>
                     <Typography>Wear headphones. Make sure they are connected to your computer and not your phone.</Typography>
@@ -140,7 +141,7 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
     }
 
     return (
-        <Page header="Audio Test">
+        <Page header={header} title="Audio Test">
             <TargetBox>{contents}</TargetBox>
             {status === Status.IN_PROGRESS && (
                 <Centered>
@@ -151,6 +152,10 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
             {status === Status.IN_PROGRESS && <SuccessBar items={feedback} />}
         </Page>
     );
+};
+
+AudioTestPage.defaultProps = {
+    header: 'Audio Test'
 };
 
 export default AudioTestPage;

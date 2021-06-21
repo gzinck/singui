@@ -1,8 +1,8 @@
 import { StudyTaskType } from '../../components/study/studyTasks';
 import { Observable } from 'rxjs';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { currUser$, getFirst } from '../../components/auth/observableUser';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, timeout } from 'rxjs/operators';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export interface StudyResult {
@@ -16,6 +16,26 @@ interface StudyData {
     nextIdx: number;
     isDone: boolean;
 }
+
+interface StudyDataWithId extends StudyData {
+    studyId: string;
+}
+
+export const getAllStudies = (): Observable<StudyDataWithId[]> => {
+    const db = getFirestore();
+    return currUser$.pipe(
+        getFirst(),
+        timeout(1000),
+        mergeMap((user) => getDocs(collection(db, 'users', user.uid, 'studies'))),
+        map((docs) => {
+            const result: StudyDataWithId[] = [];
+            docs.forEach((doc) => {
+                result.push({ ...(doc.data() as StudyData), studyId: doc.id });
+            });
+            return result;
+        })
+    );
+};
 
 export const getStudyStatus = (studyID: string): Observable<StudyData | null> => {
     const db = getFirestore();

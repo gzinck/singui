@@ -5,15 +5,16 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
 import StudyCard, { StudyStatus } from './StudyCard';
 import { StudyProps } from '../study/Study';
-import { currUser$, getFirst } from '../auth/observableUser';
-import { mergeMap, timeout } from 'rxjs/operators';
-import { collection, getDocs, getFirestore, QueryDocumentSnapshot } from 'firebase/firestore';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { generatePath, useHistory } from 'react-router-dom';
 import { HOME_ROUTE, SIGNIN_ROUTE, STUDY_ROUTE } from '../../routes';
 import { allStudies } from '../study/studyProps/allStudies';
 import Button from '@material-ui/core/Button';
 import { getAuth } from 'firebase/auth';
+import { getAllStudies } from '../../utils/clients/studyClient';
+import { combineLatest } from 'rxjs';
+import { getParticipant } from '../../utils/clients/participantsClient';
+import { numMusicalParticipants, numNonmusicalParticipants } from '../study/eligibility';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     desc: {
@@ -26,27 +27,30 @@ const useStyles = makeStyles<Theme>((theme) => ({
     }
 }));
 
-const defaultStatus = allStudies.reduce((acc, study) => ({ ...acc, [study.id]: StudyStatus.AVAILABLE }), {});
+const defaultStatus = (status: StudyStatus): Record<string, StudyStatus> =>
+    allStudies.reduce((acc, study) => ({ ...acc, [study.id]: status }), {});
 
 const Dashboard = (): React.ReactElement => {
     const classes = useStyles();
     const history = useHistory();
     const [loading, setLoading] = React.useState(true);
-    const [status, setStatus] = React.useState<Record<string, StudyStatus>>(defaultStatus);
+    const [isEligible, setIsEligible] = React.useState(true);
+    const [status, setStatus] = React.useState<Record<string, StudyStatus>>(defaultStatus(StudyStatus.LOCKED));
 
     React.useEffect(() => {
-        const db = getFirestore();
-        const sub = currUser$
-            .pipe(
-                getFirst(),
-                timeout(1000),
-                mergeMap((user) => getDocs(collection(db, 'users', user.uid, 'studies')))
-            )
-            .subscribe({
-                next: (results) => {
-                    const newStatus: Record<string, StudyStatus> = { ...defaultStatus };
-                    results.forEach((doc: QueryDocumentSnapshot<unknown>) => {
-                        newStatus[doc.id] = (doc.data() as { isDone: boolean }).isDone ? StudyStatus.COMPLETED : StudyStatus.IN_PROGRESS;
+        const sub = combineLatest([getParticipant(), getAllStudies()]).subscribe({
+            next: ([participant, studies]) => {
+                if (
+                    (participant.isMusical && participant.idx >= numMusicalParticipants) ||
+                    (!participant.isMusical && participant.idx >= numNonmusicalParticipants)
+                ) {
+                    setIsEligible(false);
+                    setStatus(defaultStatus(StudyStatus.LOCKED));
+                } else {
+                    setIsEligible(true);
+                    const newStatus = defaultStatus(StudyStatus.AVAILABLE);
+                    studies.forEach((study) => {
+                        newStatus[study.studyId] = study.isDone ? StudyStatus.COMPLETED : StudyStatus.IN_PROGRESS;
                     });
 
                     // Deal with dependencies. We assume allStudies has already been top-sorted.
@@ -58,15 +62,16 @@ const Dashboard = (): React.ReactElement => {
                             }
                         });
                     });
-
                     setStatus(newStatus);
-                    setLoading(false);
-                },
-                error: (err) => {
-                    if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
-                    else console.error('Critical error retrieving data from database:', err);
                 }
-            });
+
+                setLoading(false);
+            },
+            error: (err) => {
+                if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
+                else console.error('Critical error retrieving data from database:', err);
+            }
+        });
 
         return () => sub.unsubscribe();
     }, [history]);
@@ -109,19 +114,34 @@ const Dashboard = (): React.ReactElement => {
                 </>
             ) : (
                 <>
-                    <Typography variant="h5" gutterBottom>
-                        Up next
-                    </Typography>
-                    {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
+                    {!isEligible ? (
                         <>
-                            {renderStudies(inProgressStudies)}
-                            {renderStudies(availableStudies)}
+                            <Typography variant="h5" gutterBottom>
+                                Sorry!
+                            </Typography>
+                            <Typography className={classes.desc}>
+                                As mentioned when you signed up, we are not recruiting participants in your demographic right now. You'll
+                                receive an email when you are eligible.
+                            </Typography>
                         </>
                     ) : (
-                        <Typography className={classes.desc}>
-                            Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within one
-                            week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your remuneration.
-                        </Typography>
+                        <>
+                            <Typography variant="h5" gutterBottom>
+                                Up next
+                            </Typography>
+                            {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
+                                <>
+                                    {renderStudies(inProgressStudies)}
+                                    {renderStudies(availableStudies)}
+                                </>
+                            ) : (
+                                <Typography className={classes.desc}>
+                                    Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within
+                                    one week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your
+                                    remuneration.
+                                </Typography>
+                            )}
+                        </>
                     )}
                     {lockedStudies.length > 0 && (
                         <>

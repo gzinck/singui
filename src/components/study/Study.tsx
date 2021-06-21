@@ -14,7 +14,7 @@ import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 import VideoPage from '../tasks/video/VideoPage';
 import RecordPage from '../tasks/record/RecordPage';
 import PerformanceMessagePage from '../tasks/message/PerformanceMessagePage';
-import { getLatinSquare } from '../../utils/clients/latinSquareClient';
+import { getParticipant } from '../../utils/clients/participantsClient';
 import { getStudyStatus, saveAudioFile, setStudyStatus, setStudyTaskResults, StudyResult } from '../../utils/clients/studyClient';
 
 export interface StudyProps {
@@ -85,8 +85,8 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     // Get the latin square so we can get the ordered tasks
     React.useEffect(() => {
         setTasks([]);
-        const sub = getLatinSquare().subscribe({
-            next: (idx) => setTasks(getTasks(idx)),
+        const sub = getParticipant().subscribe({
+            next: (participant) => setTasks(getTasks(participant.idx)),
             error: onError
         });
 

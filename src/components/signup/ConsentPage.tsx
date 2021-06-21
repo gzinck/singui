@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Form from '../tasks/form/Form';
 
 interface Props {
+    header: string;
     onComplete?: (responses: Record<string, string | string[]>) => void;
 }
 
@@ -27,11 +28,11 @@ const consentForm: FormCheckboxItem[] = [
     }
 ];
 
-const ConsentPage = ({ onComplete }: Props): React.ReactElement => {
+const ConsentPage = ({ header, onComplete }: Props): React.ReactElement => {
     const classes = useStyles();
 
     return (
-        <Form header="Consent Form" form={consentForm} onComplete={onComplete}>
+        <Form header={header} title="Consent Form" form={consentForm} onComplete={onComplete}>
             <Typography>Please read the consent form below and check the box at the end of the page.</Typography>
             <embed className={classes.embed} src="/consent.pdf" />
         </Form>

@@ -8,6 +8,8 @@ import { mergeMap } from 'rxjs/operators';
 interface SetupData {
     audioTest: SingTaskResult<TaskTarget>[];
     consent: Record<string, string | string[]>;
+    musicality: Record<string, string | string[]>;
+    isMusical: boolean;
 }
 
 export const setSetupData = (data: SetupData): Observable<void> => {
