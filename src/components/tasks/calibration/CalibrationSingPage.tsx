@@ -8,6 +8,7 @@ import React from 'react';
 import { Alert } from '@material-ui/lab';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
+import { defaultSustainLength } from '../../detector/shared';
 
 export interface CalibrationSingProps {
     header: string;
@@ -20,7 +21,8 @@ const singingProps: SingingProps = {
     recognizers: pitchTaskProps.recognizers,
     targets: [{ type: TaskType.PITCH, value: 0 }],
     hasBackground: false,
-    maxAttempts: 1
+    maxAttempts: 1,
+    sustainLength: defaultSustainLength
 };
 
 const useStyles = makeStyles<Theme>((theme) => ({
@@ -55,7 +57,7 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
                     </Alert>
                 )}
             </TargetBox>
-            <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} />
+            <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} sustainLength={defaultSustainLength} />
         </Page>
     );
 };

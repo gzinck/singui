@@ -6,7 +6,6 @@ import { RecognizerMap, universalRecognizer, UniversalRecognizerState } from '..
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../../utils/rxjs/universalTaskProgress';
 import { audioContext } from '../../audio/audioContext';
 import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
-import { sustainLength$ } from '../../detector/shared';
 import { useAudioCache } from '../../audio/useAudioCache';
 import useAudio from '../../audio/useAudio';
 import useTonic from '../../audio/useTonic';
@@ -18,6 +17,7 @@ export interface SingingProps {
     withPrompts?: boolean;
     hasBackground: boolean;
     maxAttempts: number;
+    sustainLength: number; // Number of steps before a target is recognized
     onComplete?: (results: SingTaskResult<TaskTarget>[]) => void;
 }
 
@@ -28,6 +28,7 @@ export const useSinging = ({
     withPrompts,
     hasBackground,
     maxAttempts,
+    sustainLength,
     onComplete
 }: SingingProps) => {
     const [tonic] = useTonic();
@@ -59,7 +60,7 @@ export const useSinging = ({
             .getState()
             .pipe(
                 smoothPitch(),
-                universalRecognizer({ sustainLength$, recognizers, keyNumber }),
+                universalRecognizer({ sustainLength, recognizers, keyNumber }),
                 universalTaskProgress({ targets, octaveDependent, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
             )
             .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
@@ -82,7 +83,8 @@ export const useSinging = ({
         ctx.audioContext,
         play,
         maxAttempts,
-        onComplete
+        onComplete,
+        sustainLength
     ]);
 
     // Note that tonic, octave, and keyNumber pertain to the user's tonic/octave/keyNumber set for the experiment.

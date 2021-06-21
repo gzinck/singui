@@ -132,7 +132,7 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
                 minNote,
                 maxNote,
                 onComplete: (start) => {
-                    tonic$.next(start);
+                    tonic$.next(start); // Set the tonic on this device
                     setStartNote(start);
                     onComplete ? onComplete({ minNote, maxNote, startNote }) : next();
                 },

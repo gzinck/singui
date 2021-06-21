@@ -3,7 +3,6 @@ import { TaskTarget } from '../../target';
 import { TaskProgressState } from '../../../../../utils/rxjs/taskProgress';
 import React from 'react';
 import { getCurrentStringForState } from '../../../../../utils/targetConverter';
-import useSustainLength from '../../../../audio/useSustainLength';
 import useTonic from '../../../../audio/useTonic';
 import Hideable from '../../../../common/Hideable';
 import SimpleCircularPitchMeter, { noteNamesFrom } from './SimpleCircularPitchMeter';
@@ -11,10 +10,10 @@ import SimpleCircularPitchMeter, { noteNamesFrom } from './SimpleCircularPitchMe
 interface Props {
     state: TaskProgressState<TaskTarget, UniversalRecognizerState>;
     hideable: boolean;
+    sustainLength: number;
 }
 
-const SimplePitchIndicatorFromState = ({ state, hideable }: Props): React.ReactElement => {
-    const [sustainLength] = useSustainLength();
+const SimplePitchIndicatorFromState = ({ state, hideable, sustainLength }: Props): React.ReactElement => {
     const [tonic] = useTonic();
     const keyNumber = tonic % 12;
     const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);

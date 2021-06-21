@@ -34,6 +34,8 @@ export interface SingTaskProps {
     withPrompts?: boolean;
     hideFeedback?: boolean;
     hasBackground?: boolean;
+    numberLabels?: boolean;
+    sustainLength?: number;
 }
 
 export const allTasksProps: SingTaskProps = {
@@ -111,8 +113,7 @@ const tonicMelodies: Melody[] = [
     [0, 7, 12],
     [0, 2, 4],
     [0, 5, 0],
-    [0, 7, 0],
-    [0, 12, 7]
+    [0, 7, 0]
 ].map((intervals, id) => ({ intervals, id: `${id}` }));
 
 export const melodyTaskProps: SingTaskProps = {

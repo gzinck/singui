@@ -9,7 +9,7 @@ import { ReadableVocalState } from '../../pitchConverter';
 interface Props {
     recognizers: RecognizerMap;
     keyNumber: number;
-    sustainLength$: Observable<number>;
+    sustainLength: number;
 }
 
 interface Recognizer {
@@ -47,7 +47,7 @@ interface Mode {
 
 const initialMode: Mode = { type: TaskType.PITCH, noteAbs: 0, note: 0, error: 0 };
 
-export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: Props) => (
+export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: Props) => (
     source$: Observable<ReadableVocalState>
 ): Observable<UniversalRecognizerState> => {
     const mode$ = new Subject<Mode>();
@@ -61,7 +61,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
             switch (type) {
                 case TaskType.PITCH:
                     return sourceWithReplay$.pipe(
-                        pitchRecognizer({ sustainLength$, keyNumber }),
+                        pitchRecognizer({ sustainLength, keyNumber }),
                         map<PitchRecognizerState, PitchState>((state) => ({
                             ...state,
                             type: TaskType.PITCH,
@@ -81,7 +81,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                     );
                 case TaskType.INTERVAL:
                     return source$.pipe(
-                        pitchRecognizer({ sustainLength$, keyNumber }),
+                        pitchRecognizer({ sustainLength, keyNumber }),
                         intervalRecognizer({ startNote: noteAbs, startNoteIdx: note, startError: error }),
                         map<IntervalRecognizerState, IntervalState>((state) => ({
                             ...state,
@@ -93,7 +93,7 @@ export const universalRecognizer = ({ sustainLength$, recognizers, keyNumber }: 
                     );
                 case TaskType.MELODY:
                     return source$.pipe(
-                        pitchRecognizer({ sustainLength$, keyNumber }),
+                        pitchRecognizer({ sustainLength, keyNumber }),
                         melodyRecognizer({ startNote: noteAbs, startNoteIdx: note, melodies: (recognizer as MelodyRecognizer).melodies }),
                         map<MelodyRecognizerState, MelodyState>((state) => ({
                             ...state,

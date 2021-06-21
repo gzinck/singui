@@ -15,6 +15,7 @@ import { convertNoteToString } from '../../utils/pitchConverter';
 import { timer } from 'rxjs';
 import { AUDIO_TEST_PHONE_ROUTE } from '../../routes';
 import QRCode from './QRCode';
+import { defaultSustainLength } from '../detector/shared';
 
 interface Props {
     onComplete: (results: SingTaskResult<TaskTarget>[]) => void;
@@ -59,6 +60,7 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
         withPrompts: false,
         hasBackground: false,
         maxAttempts: 1,
+        sustainLength: defaultSustainLength,
         onComplete: onSing
     });
 
@@ -136,7 +138,7 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
     return (
         <Page header="Audio Test">
             <TargetBox>{contents}</TargetBox>
-            {status === Status.IN_PROGRESS && <PitchIndicatorFromState state={state} />}
+            {status === Status.IN_PROGRESS && <PitchIndicatorFromState state={state} sustainLength={defaultSustainLength} />}
             {button && <ButtonBox>{button}</ButtonBox>}
             {status === Status.IN_PROGRESS && <SuccessBar items={feedback} />}
         </Page>

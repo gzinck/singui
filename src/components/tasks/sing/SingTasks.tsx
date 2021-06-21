@@ -10,12 +10,14 @@ import { getLetterStringForTarget, getNumberStringForTarget } from '../../../uti
 import PitchIndicatorFromState from './progressIndicators/PitchIndicatorFromState';
 import useTonic from '../../audio/useTonic';
 import Centered from '../../common/Centered';
+import { defaultSustainLength } from '../../detector/shared';
 
 interface Props {
     header: string;
     title?: string;
     targets: TaskTarget[];
     recognizers: RecognizerMap;
+    sustainLength: number;
     withPrompts?: boolean;
     maxAttempts: number;
     hideFeedback?: boolean;
@@ -37,7 +39,12 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
                 </h2>
             </TargetBox>
             <Centered>
-                <PitchIndicatorFromState state={state} hideable={true} numberLabels={props.numberLabels} />
+                <PitchIndicatorFromState
+                    state={state}
+                    hideable={true}
+                    numberLabels={props.numberLabels}
+                    sustainLength={props.sustainLength}
+                />
             </Centered>
             {!props.hideFeedback && <SuccessBar items={feedback} />}
         </Page>
@@ -46,6 +53,7 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
 
 SingTasks.defaultProps = {
     maxAttempts: 1,
+    sustainLength: defaultSustainLength,
     withPrompts: false,
     hasBackground: true,
     numberLabels: true

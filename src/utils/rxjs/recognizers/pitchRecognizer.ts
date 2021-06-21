@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
 import { ReadableVocalState } from '../../pitchConverter';
-import { scan, withLatestFrom } from 'rxjs/operators';
+import { scan } from 'rxjs/operators';
 import { mod12 } from '../../math';
 
 interface Props {
-    sustainLength$: Observable<number>;
+    sustainLength: number;
     keyNumber: number;
 }
 
@@ -26,12 +26,11 @@ export const pitchRecognizerInitialState: PitchRecognizerState = {
     isValid: false
 };
 
-export const pitchRecognizer = ({ sustainLength$, keyNumber }: Props) => (
+export const pitchRecognizer = ({ sustainLength, keyNumber }: Props) => (
     source: Observable<ReadableVocalState>
 ): Observable<PitchRecognizerState> => {
     return source.pipe(
-        withLatestFrom(sustainLength$),
-        scan<[ReadableVocalState, number], PitchRecognizerState>((state, [curr, sustainLength]) => {
+        scan<ReadableVocalState, PitchRecognizerState>((state, curr) => {
             const progress = state.noteAbs === curr.noteNum ? state.progress + 1 : 0;
             return {
                 error: curr.error,

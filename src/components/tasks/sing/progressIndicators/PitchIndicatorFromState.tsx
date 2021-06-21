@@ -3,7 +3,6 @@ import { TaskTarget } from '../target';
 import { TaskProgressState } from '../../../../utils/rxjs/taskProgress';
 import React from 'react';
 import CircularPitchMeter, { noteNamesFrom } from './CircularPitchMeter';
-import useSustainLength from '../../../audio/useSustainLength';
 import useTonic from '../../../audio/useTonic';
 import Hideable from '../../../common/Hideable';
 import { convertNumericNoteToString } from '../../../../utils/pitchConverter';
@@ -12,6 +11,7 @@ interface Props {
     state: TaskProgressState<TaskTarget, UniversalRecognizerState>;
     hideable: boolean;
     numberLabels: boolean;
+    sustainLength: number;
 }
 
 const noteNumberLabels1 = new Array(12).fill(0).map((_, idx) => convertNumericNoteToString(idx) || '-');
@@ -28,8 +28,7 @@ const getRecognizedFromState = (state: TaskProgressState<TaskTarget, UniversalRe
     }
 };
 
-const PitchIndicatorFromState = ({ state, hideable, numberLabels }: Props): React.ReactElement => {
-    const [sustainLength] = useSustainLength();
+const PitchIndicatorFromState = ({ state, hideable, numberLabels, sustainLength }: Props): React.ReactElement => {
     const [tonic] = useTonic();
     const keyNumber = tonic % 12;
     const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);
