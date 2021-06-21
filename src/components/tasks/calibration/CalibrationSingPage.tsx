@@ -9,6 +9,7 @@ import { Alert } from '@material-ui/lab';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../theme';
 import { defaultSustainLength } from '../../detector/shared';
+import Centered from '../../common/Centered';
 
 export interface CalibrationSingProps {
     header: string;
@@ -57,7 +58,9 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
                     </Alert>
                 )}
             </TargetBox>
-            <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} sustainLength={defaultSustainLength} />
+            <Centered>
+                <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} sustainLength={defaultSustainLength} />
+            </Centered>
         </Page>
     );
 };

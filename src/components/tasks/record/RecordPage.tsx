@@ -18,25 +18,6 @@ export interface RecordProps {
 const recordTime = 5000;
 
 const useStyles = makeStyles<Theme>((theme) => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        width: '90%',
-        maxWidth: '40rem',
-        margin: theme.spacing(2)
-    },
-    buttonBox: {
-        margin: theme.spacing(2, 0, 0),
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        '& > *': {
-            margin: theme.spacing(0, 2)
-        }
-    },
     progress: {
         width: '100%',
         margin: theme.spacing(2, 0)
@@ -116,14 +97,13 @@ const RecordPage = ({ header, title, onComplete }: RecordProps): React.ReactElem
                 In this step, we need to record {recordTime / 1000} seconds of audio to ensure there is minimal background noise.
             </Typography>
             <LinearProgress className={classes.progress} variant="determinate" value={progress} />
-            <div className={classes.buttonBox}></div>
         </MessagePage>
     );
 };
 
 RecordPage.defaultProps = {
-    header: 'Audio quality test',
-    title: 'Audio quality test'
+    header: 'Audio Recording',
+    title: 'Audio Recording'
 };
 
 export default RecordPage;

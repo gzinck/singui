@@ -16,6 +16,8 @@ import { timer } from 'rxjs';
 import { AUDIO_TEST_PHONE_ROUTE } from '../../routes';
 import QRCode from './QRCode';
 import { defaultSustainLength } from '../detector/shared';
+import Typography from '@material-ui/core/Typography';
+import Centered from '../common/Centered';
 
 interface Props {
     onComplete: (results: SingTaskResult<TaskTarget>[]) => void;
@@ -84,18 +86,20 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
         case Status.PENDING:
             contents = (
                 <>
-                    <h2>Before you begin</h2>
-                    <p>Make sure you are in a quiet environment.</p>
-                    <p>Wear headphones. Make sure they are connected to your computer and not your phone.</p>
-                    <p>
+                    <Typography variant="h3" gutterBottom>
+                        Before you begin
+                    </Typography>
+                    <Typography>Make sure you are in a quiet environment.</Typography>
+                    <Typography>Wear headphones. Make sure they are connected to your computer and not your phone.</Typography>
+                    <Typography>
                         On your phone, go to{' '}
                         <a href={`https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}`}>
                             https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}
                         </a>{' '}
                         by scanning the QR Code below.
-                    </p>
+                    </Typography>
                     <QRCode />
-                    <p>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</p>
+                    <Typography>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</Typography>
                 </>
             );
             button = (
@@ -138,7 +142,11 @@ const AudioTestPage = ({ onComplete }: Props): React.ReactElement => {
     return (
         <Page header="Audio Test">
             <TargetBox>{contents}</TargetBox>
-            {status === Status.IN_PROGRESS && <PitchIndicatorFromState state={state} sustainLength={defaultSustainLength} />}
+            {status === Status.IN_PROGRESS && (
+                <Centered>
+                    <PitchIndicatorFromState state={state} sustainLength={defaultSustainLength} />
+                </Centered>
+            )}
             {button && <ButtonBox>{button}</ButtonBox>}
             {status === Status.IN_PROGRESS && <SuccessBar items={feedback} />}
         </Page>

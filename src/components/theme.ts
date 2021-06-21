@@ -13,5 +13,10 @@ export const theme = createMuiTheme({
             main: '#17b7ff',
             contrastText: '#FFF'
         }
+    },
+    typography: {
+        body1: {
+            margin: '0.25em 0.25em'
+        }
     }
 });

@@ -13,6 +13,7 @@ import { TaskTarget } from '../../sing/target';
 import { TaskType } from '../../../../utils/rxjs/recognizers/universalRecognizer';
 import Button from '@material-ui/core/Button';
 import ConfirmDialog from './ConfirmDialog';
+import Typography from '@material-ui/core/Typography';
 
 export interface RangeSelectionProps {
     header: string;
@@ -95,8 +96,8 @@ const RangeSelectionPage = ({ header, minNote, maxNote, onComplete, restart }: R
 
     return (
         <MessagePage header={header} onComplete={() => onComplete(note)} isLoading={loading} buttons={button}>
-            <p className={classes.text}>To select your range, drag the slider ends left or right.</p>
-            <p className={classes.text}>Listen to the notes played and sing them to make sure the range is comfortable.</p>
+            <Typography align="center">To select your range, drag the slider ends left or right.</Typography>
+            <Typography align="center">Listen to the notes played and sing them to make sure the range is comfortable.</Typography>
             <CalibrationBar minNote={minNoteNum} maxNote={maxNoteNum} status={status} />
             <RangeSelector minNote={minNoteNum} maxNote={maxNoteNum} note={note} setNote={moveSlider} />
             {rangeInsufficient && (

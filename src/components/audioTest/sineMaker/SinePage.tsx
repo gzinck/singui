@@ -16,8 +16,8 @@ const useStyles = makeStyles<Theme>(() => ({
         justifyContent: 'center'
     },
     button: {
-        width: '50vw',
-        height: 'calc(50vh - 3rem)',
+        width: '50%',
+        height: 'calc(50vh - 7rem)',
         borderRadius: 0,
         fontSize: '2rem',
         border: '1px #555 solid'

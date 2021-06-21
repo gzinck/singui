@@ -32,10 +32,7 @@ const ConsentPage = ({ onComplete }: Props): React.ReactElement => {
 
     return (
         <Form header="Consent Form" form={consentForm} onComplete={onComplete}>
-            <Typography variant="h3" gutterBottom>
-                Consent Form
-            </Typography>
-            <p>Please read the consent form below and check the box at the end of the page.</p>
+            <Typography>Please read the consent form below and check the box at the end of the page.</Typography>
             <embed className={classes.embed} src="/consent.pdf" />
         </Form>
     );

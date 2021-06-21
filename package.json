@@ -46,7 +46,7 @@
     },
     "lint-staged": {
         "src/**/*.{ts,tsx}": [
-            "react-scripts test --watchAll=false",
+            "react-scripts --watchAll=false --findRelatedTests",
             "prettier --write",
             "git add"
         ],
