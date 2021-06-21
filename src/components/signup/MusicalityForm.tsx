@@ -16,34 +16,14 @@ const options = [
     'Strongly agree'
 ];
 
-const ids = {
-    singRightNotes: 'sing-right-notes',
-    singInTune: 'sing-in-tune',
-    notMusician: 'not-musician'
-};
+const questionId = 'good-singer';
 
 const form: FormItem[] = [
     {
-        id: ids.singRightNotes,
+        id: questionId,
         type: FormTypes.RADIO,
         variant: 'horizontal',
-        header: 'I am able to hit the right notes when I sing along with a recording.',
-        text: 'Rate your agreement with the statement.',
-        options
-    },
-    {
-        id: ids.singInTune,
-        type: FormTypes.RADIO,
-        variant: 'horizontal',
-        header: 'When I sing, I have no idea whether I am in tune or not.',
-        text: 'Rate your agreement with the statement.',
-        options
-    },
-    {
-        id: ids.notMusician,
-        type: FormTypes.RADIO,
-        variant: 'horizontal',
-        header: 'I would not consider myself a musician.',
+        header: 'I consider myself a good singer.',
         text: 'Rate your agreement with the statement.',
         options
     }
@@ -56,13 +36,7 @@ const MusicalityForm = ({ onComplete, header }: Props) => {
             title="Musicality"
             form={form}
             onComplete={(results) => {
-                let isMusical = true;
-                if (
-                    options.indexOf(results[ids.singRightNotes] as string) < 5 || // Must be agree or better
-                    options.indexOf(results[ids.singInTune] as string) > 2 || // Must disagree
-                    options.indexOf(results[ids.notMusician] as string) > 3 // Must disagree or neutral
-                )
-                    isMusical = false;
+                const isMusical = options.indexOf(results[questionId] as string) > 3; // better than neutral
                 onComplete(isMusical, results);
             }}
         />
