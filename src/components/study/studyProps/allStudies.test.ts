@@ -75,9 +75,11 @@ describe.each(allStudies.map((study) => [study.id, study] as [string, StudyProps
             if (t0.type === StudyTaskType.SING) {
                 if (t1.type !== StudyTaskType.SING)
                     throw new Error(`task ${i} with id ${t0.id} was not a sing task with latin square 1, but it was for latin square 0`);
+                const t0Targets = t0.props.targets.map((t) => t.value);
+                const t1Targets = t1.props.targets.map((t) => t.value);
+                const isIdentical = t0Targets.every((val, idx) => t1Targets[idx] === val);
 
-                if (t1.props.targets[0].value === t0.props.targets[0].value)
-                    throw new Error(`task ${i} with id ${t0.id} had the same first target for both latin squares 0 and 1`);
+                if (isIdentical) throw new Error(`task ${i} with id ${t0.id} had an identical targets for both latin squares 0 and 1`);
             }
         }
     });

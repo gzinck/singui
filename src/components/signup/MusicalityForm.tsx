@@ -25,7 +25,8 @@ const form: FormItem[] = [
         variant: 'horizontal',
         header: 'I consider myself a good singer.',
         text: 'Rate your agreement with the statement.',
-        options
+        options,
+        getError: (val: any) => (typeof val === 'string' ? undefined : 'Select a radio button')
     }
 ];
 

@@ -4,7 +4,7 @@ import { PitchTaskTarget } from '../../tasks/sing/target';
 import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import { FormTypes } from '../../tasks/form/formTypes';
 import { studyId } from './studyId';
-import { reorderLatinSquare } from './variations/reorder';
+import { reorderLatinSquare, reorderRandom } from './variations/reorder';
 import { varyBackgroundMusic } from './variations/backgroundMusic';
 
 const recognizers: RecognizerMap = {
@@ -75,7 +75,7 @@ export const pitchStudyProps: StudyProps = {
                 props: {
                     header: 'Pitch task pre-evaluation',
                     // Should generate this randomly using the scripts/gen_pitches.py script
-                    targets: toTargets(reorderLatinSquare([9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5], latinSquare)),
+                    targets: toTargets(reorderRandom([9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5])),
                     recognizers,
                     withPrompts: false,
                     hideFeedback: true,
@@ -123,7 +123,7 @@ export const pitchStudyProps: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 header: 'Pitch task training I',
-                targets: toTargets(reorderLatinSquare([7, 5, 2, 4, 2, 0, 11, 0, 5, 9, 11, 7, 9, 4], latinSquare)),
+                targets: toTargets(reorderRandom([7, 5, 2, 4, 2, 0, 11, 0, 5, 9, 11, 7, 9, 4])),
                 recognizers,
                 withPrompts: true,
                 maxAttempts: 10
@@ -148,53 +148,50 @@ export const pitchStudyProps: StudyProps = {
             props: {
                 header: 'Pitch task training II',
                 targets: toTargets(
-                    reorderLatinSquare(
-                        [
-                            0,
-                            9,
-                            2,
-                            9,
-                            11,
-                            2,
-                            7,
-                            9,
-                            4,
-                            7,
-                            2,
-                            0,
-                            4,
-                            0,
-                            9,
-                            5,
-                            9,
-                            7,
-                            5,
-                            2,
-                            5,
-                            11,
-                            7,
-                            9,
-                            11,
-                            0,
-                            5,
-                            0,
-                            11,
-                            4,
-                            11,
-                            4,
-                            7,
-                            2,
-                            4,
-                            5,
-                            11,
-                            5,
-                            2,
-                            7,
-                            0,
-                            4
-                        ],
-                        latinSquare
-                    )
+                    reorderRandom([
+                        0,
+                        9,
+                        2,
+                        9,
+                        11,
+                        2,
+                        7,
+                        9,
+                        4,
+                        7,
+                        2,
+                        0,
+                        4,
+                        0,
+                        9,
+                        5,
+                        9,
+                        7,
+                        5,
+                        2,
+                        5,
+                        11,
+                        7,
+                        9,
+                        11,
+                        0,
+                        5,
+                        0,
+                        11,
+                        4,
+                        11,
+                        4,
+                        7,
+                        2,
+                        4,
+                        5,
+                        11,
+                        5,
+                        2,
+                        7,
+                        0,
+                        4
+                    ])
                 ),
                 recognizers,
                 withPrompts: false,
@@ -221,7 +218,7 @@ export const pitchStudyProps: StudyProps = {
                 type: StudyTaskType.SING,
                 props: {
                     header: 'Pitch task post-evaluation',
-                    targets: toTargets(reorderLatinSquare([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0], latinSquare)),
+                    targets: toTargets(reorderRandom([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0])),
                     recognizers,
                     withPrompts: false,
                     maxAttempts: 1
