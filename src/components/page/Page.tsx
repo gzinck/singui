@@ -15,7 +15,6 @@ const useStyles = makeStyles<Theme>((theme) => ({
     root: {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
-        overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         flexDirection: 'row',

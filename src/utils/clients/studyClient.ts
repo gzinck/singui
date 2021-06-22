@@ -1,9 +1,10 @@
 import { StudyTaskType } from '../../components/study/studyTasks';
-import { Observable } from 'rxjs';
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
+import { from, Observable } from 'rxjs';
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc, QuerySnapshot } from 'firebase/firestore';
 import { currUser$, getFirst } from '../../components/auth/observableUser';
-import { map, mergeMap, timeout } from 'rxjs/operators';
+import { map, mergeMap, scan, timeout } from 'rxjs/operators';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { listParticipants } from './participantsClient';
 
 export interface StudyResult {
     type: StudyTaskType;
@@ -21,19 +22,49 @@ interface StudyDataWithId extends StudyData {
     studyId: string;
 }
 
-export const getAllStudies = (): Observable<StudyDataWithId[]> => {
+export interface UserData {
+    uid: string;
+    idx: number;
+    isMusical: boolean;
+    data: Record<string, StudyDataWithId>; // data for each study ID completed
+}
+
+const convertStudies = (docs: QuerySnapshot<unknown>): Record<string, StudyDataWithId> => {
+    const result: Record<string, StudyDataWithId> = {};
+    docs.forEach((doc) => {
+        result[doc.id] = { ...(doc.data() as StudyData), studyId: doc.id };
+    });
+    return result;
+};
+
+export const getAllStudies = (): Observable<Record<string, StudyDataWithId>> => {
     const db = getFirestore();
     return currUser$.pipe(
         getFirst(),
         timeout(1000),
         mergeMap((user) => getDocs(collection(db, 'users', user.uid, 'studies'))),
-        map((docs) => {
-            const result: StudyDataWithId[] = [];
-            docs.forEach((doc) => {
-                result.push({ ...(doc.data() as StudyData), studyId: doc.id });
-            });
-            return result;
-        })
+        map(convertStudies)
+    );
+};
+
+const toUserData = (arr: string[], isMusical: boolean): UserData[] => arr.map((uid, idx) => ({ uid, idx, isMusical, data: {} }));
+
+export const getAllStudiesForAllUsers = (): Observable<UserData[]> => {
+    const db = getFirestore();
+    return listParticipants().pipe(
+        // Get each participant individually
+        mergeMap((participants) => {
+            return from([...toUserData(participants.musical, true), ...toUserData(participants.nonmusical, false)]);
+        }),
+        // Retrieve the study info for each participant
+        mergeMap((user) => {
+            return from(getDocs(collection(db, 'users', user.uid, 'studies'))).pipe(
+                map(convertStudies),
+                map((data) => ({ ...user, data }))
+            );
+        }),
+        // Throw into an unordered array
+        scan((acc: UserData[], user) => [...acc, user], [])
     );
 };
 

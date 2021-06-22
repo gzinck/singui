@@ -48,14 +48,15 @@ const Dashboard = (): React.ReactElement => {
                     setStatus(defaultStatus(StudyStatus.LOCKED));
                 } else {
                     setIsEligible(true);
+
+                    // Set completed according to the results
                     const newStatus = defaultStatus(StudyStatus.AVAILABLE);
-                    studies.forEach((study) => {
-                        newStatus[study.studyId] = study.isDone ? StudyStatus.COMPLETED : StudyStatus.IN_PROGRESS;
+                    Object.values(studies).forEach((study) => {
+                        newStatus[study.studyId] = studies[study.studyId].isDone ? StudyStatus.COMPLETED : StudyStatus.IN_PROGRESS;
                     });
 
                     // Deal with dependencies. We assume allStudies has already been top-sorted.
                     allStudies.forEach((study) => {
-                        if (newStatus[study.id] === StudyStatus.COMPLETED) return;
                         study.dependencies.forEach((depId) => {
                             if (newStatus[depId] !== StudyStatus.COMPLETED) {
                                 newStatus[study.id] = StudyStatus.LOCKED;

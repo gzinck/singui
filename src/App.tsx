@@ -3,6 +3,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './components/theme';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import {
+    ADMIN_ROUTE,
     AUDIO_TEST_PHONE_ROUTE,
     AUDIO_TEST_ROUTE,
     CALIBRATE_ROUTE,
@@ -37,6 +38,7 @@ import HomePage from './components/home/HomePage';
 import SignUpPage from './components/signup/SignUpPage';
 import PerformanceMessagePage from './components/tasks/message/PerformanceMessagePage';
 import { studyId } from './components/study/studyProps/studyId';
+import AdminPage from './components/admin/AdminPage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
 
@@ -82,6 +84,7 @@ function App() {
                         <Route path="/record">
                             <RecordPage />
                         </Route>
+                        <Route path={ADMIN_ROUTE} component={AdminPage} />
                         <Route path={STUDY_ROUTE} component={RoutedStudy} />
                         <Route exact path={HOME_ROUTE} component={HomePage} />
                         <Redirect to={HOME_ROUTE} />
