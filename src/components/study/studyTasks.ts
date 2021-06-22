@@ -22,12 +22,12 @@ interface TaskBase {
 
 export interface StudySingTask extends TaskBase {
     type: StudyTaskType.SING;
-    props: SingTaskProps;
+    props: Omit<SingTaskProps, 'header'>;
 }
 
 interface StudyFormTask extends TaskBase {
     type: StudyTaskType.FORM;
-    props: FormProps;
+    props: Omit<FormProps, 'header'>;
 }
 
 interface StudyCalibrateTask extends TaskBase {
@@ -36,22 +36,22 @@ interface StudyCalibrateTask extends TaskBase {
 
 interface StudyMessageTask extends TaskBase {
     type: StudyTaskType.MESSAGE;
-    props: MessageProps;
+    props: Omit<MessageProps, 'header'>;
 }
 
 interface StudyHeadphoneMessageTask extends TaskBase {
     type: StudyTaskType.HEADPHONE_MESSAGE;
-    props: MessageProps;
+    props: Omit<MessageProps, 'header'>;
 }
 
 interface StudyPerformanceMessageTask extends TaskBase {
     type: StudyTaskType.PERFORMANCE_MESSAGE;
-    props: PerformanceMessageProps;
+    props: Omit<PerformanceMessageProps, 'header'>;
 }
 
 interface StudyVideoTask extends TaskBase {
     type: StudyTaskType.VIDEO;
-    props: VideoProps;
+    props: Omit<VideoProps, 'header'>;
 }
 
 interface StudyRecordTask extends TaskBase {

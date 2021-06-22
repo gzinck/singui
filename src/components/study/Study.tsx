@@ -138,8 +138,9 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     } else if (taskIdx >= tasks.length) {
         page = (
             <MessagePage
-                header="All done!"
-                text={`You've completed the study! Click "Next" to return to the dashboard`}
+                header={name}
+                title="All done!"
+                text={`You have completed the study! Click "Next" to return to the dashboard`}
                 isLoading={isLoading}
                 onComplete={() => history.push(DASHBOARD_ROUTE)}
             />
@@ -148,28 +149,28 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
         const task = tasks[taskIdx];
         switch (task.type) {
             case StudyTaskType.SING:
-                page = <SingTasks {...task.props} onComplete={singOnComplete} />;
+                page = <SingTasks {...task.props} header={name} onComplete={singOnComplete} />;
                 break;
             case StudyTaskType.CALIBRATE:
-                page = <Calibration onComplete={onComplete} />;
+                page = <Calibration header={name} onComplete={onComplete} />;
                 break;
             case StudyTaskType.FORM:
-                page = <Form {...task.props} onComplete={onComplete} />;
+                page = <Form {...task.props} header={name} onComplete={onComplete} />;
                 break;
             case StudyTaskType.MESSAGE:
-                page = <MessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                page = <MessagePage {...task.props} header={name} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.HEADPHONE_MESSAGE:
-                page = <HeadphoneMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                page = <HeadphoneMessagePage {...task.props} header={name} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.PERFORMANCE_MESSAGE:
-                page = <PerformanceMessagePage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                page = <PerformanceMessagePage {...task.props} header={name} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.VIDEO:
-                page = <VideoPage {...task.props} onComplete={() => onComplete('confirmed')} />;
+                page = <VideoPage {...task.props} header={name} onComplete={() => onComplete('confirmed')} />;
                 break;
             case StudyTaskType.RECORD:
-                page = <RecordPage {...task.props} onComplete={recordOnComplete} />;
+                page = <RecordPage {...task.props} header={name} onComplete={recordOnComplete} />;
                 break;
         }
     }

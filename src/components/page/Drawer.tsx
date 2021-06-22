@@ -59,7 +59,7 @@ const Drawer = (): React.ReactElement => {
             <SwipeableDrawer onClose={() => setMenuOpen(false)} onOpen={() => setMenuOpen(true)} open={menuOpen}>
                 <div className={classes.drawer}>
                     <div className={classes.header}>
-                        <h2>Vox Sandboxx</h2>
+                        <h2>Sing UI</h2>
                         <p>
                             An experiment by{' '}
                             <a className={classes.link} href="https://graemezinck.ca">

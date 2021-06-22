@@ -9,6 +9,7 @@ const backgroundGain = 0.3;
 const foregroundRampUpTime = 0.1;
 const foregroundRampDownTime = 1;
 const overlapTime = 0.5;
+const pauseUntil = 0.5; // Avoid race conditions by waiting 0.5 seconds after creating things before starting them
 const gainUpCurve: Float32Array = new Float32Array([0, 1]);
 const gainDownCurve: Float32Array = new Float32Array([1, 0]);
 
@@ -45,7 +46,7 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                     sources.push(startGain);
 
                     // Start the sound
-                    startSource.start(ctx.audioContext.currentTime);
+                    startSource.start(ctx.audioContext.currentTime + pauseUntil);
 
                     // Start when the start is done
                     subscriptions.push(
@@ -66,10 +67,18 @@ const useAudio = ({ keyNumber, hasBackground }: Props) => {
                                                 // Connect the loop to the gain and start it
                                                 loopSource.connect(gainIn);
                                                 gainIn.connect(ctx.backgroundGain.node());
-                                                loopSource.start(ctx.audioContext.currentTime);
+                                                loopSource.start(ctx.audioContext.currentTime + pauseUntil);
 
-                                                gainIn.gain.setValueCurveAtTime(gainUpCurve, ctx.audioContext.currentTime, overlapTime);
-                                                gainOut.gain.setValueCurveAtTime(gainDownCurve, ctx.audioContext.currentTime, overlapTime);
+                                                gainIn.gain.setValueCurveAtTime(
+                                                    gainUpCurve,
+                                                    ctx.audioContext.currentTime + pauseUntil,
+                                                    overlapTime
+                                                );
+                                                gainOut.gain.setValueCurveAtTime(
+                                                    gainDownCurve,
+                                                    ctx.audioContext.currentTime + pauseUntil,
+                                                    overlapTime
+                                                );
 
                                                 return { gainOut: gainIn, toDisconnect: gainOut };
                                             },

@@ -1,5 +1,6 @@
 import MessagePage, { MessageProps } from '../message/MessagePage';
 import YoutubeEmbed from './YoutubeEmbed';
+import React from 'react';
 
 export interface VideoProps extends MessageProps {
     embedID: string;
@@ -8,7 +9,7 @@ export interface VideoProps extends MessageProps {
 const VideoPage = (props: VideoProps): React.ReactElement<VideoProps> => {
     return (
         <MessagePage {...props}>
-            <YoutubeEmbed embedID={props.embedID} title={props.header} margin={2} />
+            <YoutubeEmbed embedID={props.embedID} title={props.title || props.header} margin={2} />
         </MessagePage>
     );
 };

@@ -1,11 +1,14 @@
 import { StudyProps } from '../Study';
-import { StudyTaskType } from '../studyTasks';
+import { StudyTask, StudyTaskType } from '../studyTasks';
 import { PitchTaskTarget } from '../../tasks/sing/target';
 import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import { FormTypes } from '../../tasks/form/formTypes';
 import { studyId } from './studyId';
 import { reorderLatinSquare, reorderRandom } from './variations/reorder';
 import { varyBackgroundMusic } from './variations/backgroundMusic';
+import { radioButtonValidator } from '../../tasks/form/formValidators';
+import { insertBetween } from './variations/insertBetween';
+import { repeatEach, repeatTask } from './variations/repeat';
 
 const recognizers: RecognizerMap = {
     0: { type: TaskType.PITCH },
@@ -21,34 +24,44 @@ const recognizers: RecognizerMap = {
     10: { type: TaskType.PITCH },
     11: { type: TaskType.PITCH }
 };
+
+const possiblePitches = [0, 2, 4, 5, 7, 9, 11];
+
 const toTargets = (arr: number[]): PitchTaskTarget[] => {
     return arr.map<PitchTaskTarget>((value) => ({
         type: TaskType.PITCH,
         value
     }));
 };
-const radioButtonValidator = (val: any) => (typeof val === 'string' ? undefined : 'Select a radio button');
-// const textFieldValidator = (val: any) => (typeof val === 'string' ? undefined : 'This field is required')
+
+const breakTask = (item: StudyTask): StudyTask => ({
+    id: `msg-${item.id}`,
+    type: StudyTaskType.MESSAGE,
+    props: {
+        title: 'Break',
+        text: 'Feel free to take a break before clicking "Next."'
+    }
+});
 
 export const pitchStudyProps: StudyProps = {
     id: studyId.PITCH_STUDY,
-    dependencies: [], //[studyId.SETUP_STUDY],
-    name: 'Pitch study',
+    dependencies: [studyId.SETUP_STUDY],
+    name: '2. Pitch tasks',
     description: 'Sing individual pitches to control your computer',
-    time: 10,
+    time: 12,
     getTasks: (latinSquare: number) => [
         {
             id: 'headphones',
             type: StudyTaskType.HEADPHONE_MESSAGE,
             props: {
-                header: 'Headphones'
+                title: 'Headphones'
             }
         },
         {
             id: 'video',
             type: StudyTaskType.VIDEO,
             props: {
-                header: 'Pitch task tutorial',
+                title: 'Pitch task tutorial',
                 text: 'Before you start performing the tasks, watch this short video demonstration.',
                 embedID: 'LFsP4o6kpE0'
             }
@@ -62,33 +75,36 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-pre-evaluation',
             type: StudyTaskType.MESSAGE,
             props: {
-                header: 'Pitch task pre-evaluation',
+                title: 'Pitch task pre-evaluation',
                 text:
-                    "To get a baseline for your performance, the first block of tasks do not have audio prompts. Don't worry, you'll have a chance to practice afterwards."
+                    'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break.'
             }
         },
         // Rearrangeable section for when there is(n't) background music
-        ...reorderLatinSquare(
-            varyBackgroundMusic({
-                id: `pre-evaluation`,
-                type: StudyTaskType.SING,
-                props: {
-                    header: 'Pitch task pre-evaluation',
-                    // Should generate this randomly using the scripts/gen_pitches.py script
-                    targets: toTargets(reorderRandom([9, 2, 0, 9, 11, 2, 5, 7, 0, 4, 7, 11, 4, 5])),
-                    recognizers,
-                    withPrompts: false,
-                    hideFeedback: true,
-                    maxAttempts: 1
-                }
-            }),
-            latinSquare
+        ...insertBetween(
+            reorderLatinSquare(
+                varyBackgroundMusic(() => ({
+                    id: `pre-evaluation`,
+                    type: StudyTaskType.SING,
+                    props: {
+                        title: 'Pitch task pre-evaluation',
+                        // Should generate this randomly using the scripts/gen_pitches.py script
+                        targets: toTargets(reorderRandom([...possiblePitches, ...possiblePitches])),
+                        recognizers,
+                        withPrompts: false,
+                        hideFeedback: true,
+                        maxAttempts: 1
+                    }
+                })),
+                latinSquare
+            ),
+            breakTask
         ),
         {
             id: 'performance-pre-evaluation-without-music',
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
-                header: 'Results without music',
+                title: 'Results without music',
                 multiAttempt: false,
                 studyID: studyId.PITCH_STUDY,
                 taskID: 'pre-evaluation-without-music'
@@ -98,14 +114,14 @@ export const pitchStudyProps: StudyProps = {
             id: 'performance-pre-evaluation-with-music',
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
-                header: 'Results with music',
+                title: 'Results with music',
                 multiAttempt: false,
                 studyID: studyId.PITCH_STUDY,
                 taskID: 'pre-evaluation-with-music'
             }
         },
         {
-            id: 'silence-training-I',
+            id: 'silence-training',
             type: StudyTaskType.RECORD,
             props: {}
         },
@@ -113,91 +129,48 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-training-I',
             type: StudyTaskType.MESSAGE,
             props: {
-                header: 'Pitch task training I',
+                title: 'Pitch task training I',
                 text:
-                    'Your baseline performance has been recorded. The next block of tasks are nearly identical, but feature audio prompts for what notes to sing. Repeats are allowed for failed tasks.'
+                    'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Feel free to take a break before clicking "Next."'
             }
         },
         {
             id: 'training-I',
             type: StudyTaskType.SING,
             props: {
-                header: 'Pitch task training I',
-                targets: toTargets(reorderRandom([7, 5, 2, 4, 2, 0, 11, 0, 5, 9, 11, 7, 9, 4])),
+                title: 'Pitch task training I',
+                targets: toTargets(repeatEach(reorderRandom(possiblePitches), 3)),
                 recognizers,
                 withPrompts: true,
-                maxAttempts: 10
+                maxAttempts: 3
             }
-        },
-        {
-            id: 'silence-training-II',
-            type: StudyTaskType.RECORD,
-            props: {}
         },
         {
             id: 'msg-training-II',
             type: StudyTaskType.MESSAGE,
             props: {
-                header: 'Pitch task training II',
-                text: 'The next block of tasks remove the audio prompts. Repeats are still allowed for failed tasks.'
+                title: 'Pitch task training II',
+                text:
+                    'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break before clicking "Next."'
             }
         },
-        {
-            id: 'training-II',
-            type: StudyTaskType.SING,
-            props: {
-                header: 'Pitch task training II',
-                targets: toTargets(
-                    reorderRandom([
-                        0,
-                        9,
-                        2,
-                        9,
-                        11,
-                        2,
-                        7,
-                        9,
-                        4,
-                        7,
-                        2,
-                        0,
-                        4,
-                        0,
-                        9,
-                        5,
-                        9,
-                        7,
-                        5,
-                        2,
-                        5,
-                        11,
-                        7,
-                        9,
-                        11,
-                        0,
-                        5,
-                        0,
-                        11,
-                        4,
-                        11,
-                        4,
-                        7,
-                        2,
-                        4,
-                        5,
-                        11,
-                        5,
-                        2,
-                        7,
-                        0,
-                        4
-                    ])
-                ),
-                recognizers,
-                withPrompts: false,
-                maxAttempts: 10
-            }
-        },
+        ...insertBetween(
+            repeatTask(
+                () => ({
+                    id: 'training-II',
+                    type: StudyTaskType.SING,
+                    props: {
+                        title: 'Pitch task training II',
+                        targets: toTargets(reorderRandom([...possiblePitches, ...possiblePitches])),
+                        recognizers,
+                        withPrompts: true,
+                        maxAttempts: 3
+                    }
+                }),
+                3
+            ),
+            breakTask
+        ),
         {
             id: 'silence-post-evaluation',
             type: StudyTaskType.RECORD,
@@ -207,30 +180,54 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-post-evaluation',
             type: StudyTaskType.MESSAGE,
             props: {
-                header: 'Pitch task post-evaluation',
-                text: 'The final block of tasks evaluates your performance with no audio prompts and no repeats.'
+                title: 'Pitch task post-evaluation',
+                text:
+                    'The next two blocks of tasks will measure your performance after the training blocks. Feel free to take a break before clicking "Next."'
             }
         },
         // Rearrangeable section for when there is(n't) background music
-        ...reorderLatinSquare(
-            varyBackgroundMusic({
-                id: 'post-evaluation',
-                type: StudyTaskType.SING,
-                props: {
-                    header: 'Pitch task post-evaluation',
-                    targets: toTargets(reorderRandom([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0])),
-                    recognizers,
-                    withPrompts: false,
-                    maxAttempts: 1
-                }
-            }),
-            latinSquare
+        ...insertBetween(
+            reorderLatinSquare(
+                varyBackgroundMusic(() => ({
+                    id: 'post-evaluation',
+                    type: StudyTaskType.SING,
+                    props: {
+                        title: 'Pitch task post-evaluation',
+                        targets: toTargets(reorderRandom([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0])),
+                        recognizers,
+                        withPrompts: false,
+                        maxAttempts: 1
+                    }
+                })),
+                latinSquare
+            ),
+            breakTask
         ),
+        {
+            id: 'performance-post-evaluation-without-music',
+            type: StudyTaskType.PERFORMANCE_MESSAGE,
+            props: {
+                title: 'Results without music',
+                multiAttempt: false,
+                studyID: studyId.PITCH_STUDY,
+                taskID: 'post-evaluation-without-music'
+            }
+        },
+        {
+            id: 'performance-post-evaluation-with-music',
+            type: StudyTaskType.PERFORMANCE_MESSAGE,
+            props: {
+                title: 'Results with music',
+                multiAttempt: false,
+                studyID: studyId.PITCH_STUDY,
+                taskID: 'post-evaluation-with-music'
+            }
+        },
         {
             id: 'msg-participant-rating',
             type: StudyTaskType.MESSAGE,
             props: {
-                header: 'Pitch task rating',
+                title: 'Pitch task rating',
                 text:
                     'Now that you have experience singing pitches to interact with your computer, we want to know what you think. Fill out the form on the next page.'
             }
@@ -239,19 +236,12 @@ export const pitchStudyProps: StudyProps = {
             id: 'participant-rating',
             type: StudyTaskType.FORM,
             props: {
-                header: 'Pitch task rating',
+                title: 'Pitch task rating',
                 form: [
-                    {
-                        type: FormTypes.TEXT,
-                        id: 'title',
-                        header: 'Pitch task rating',
-                        text:
-                            'Now that you have experience singing pitches to interact with your computer, let us know what your thoughts are.'
-                    },
                     // Technical
                     {
                         type: FormTypes.RADIO,
-                        id: 'recognizePitchEffectiveness',
+                        id: 'recognize-pitch-effectiveness',
                         header: 'How often did the application correctly recognize the pitches you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
@@ -265,7 +255,7 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'recognizePitchEffectiveness2',
+                        id: 'recognize-pitch-effectiveness-2',
                         header: 'To what extent was the application successful at recognizing the pitches you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
@@ -282,14 +272,14 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
-                        id: 'technicalProblems',
+                        id: 'technical-problems',
                         header: 'Were there any technical problems you encountered when using the application?',
                         label: 'Add any technical problems here...'
                     },
                     // Perceived task difficulty & learnability
                     {
                         type: FormTypes.RADIO,
-                        id: 'challengeBeforeTraining',
+                        id: 'challenge-before-training',
                         header: 'How challenging were the tasks before the two training stages?',
                         options: [
                             'Very challenging',
@@ -305,8 +295,8 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'challengeAfterTraining',
-                        header: 'How challenging were the tasks after the two training stages?',
+                        id: 'challenge-after-training',
+                        header: 'How challenging were the tasks after the training stage?',
                         options: [
                             'Very challenging',
                             'Challenging',
@@ -321,8 +311,8 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'satisfactionBeforeTraining',
-                        header: 'How satisfied were you with your performance before the two training stages?',
+                        id: 'satisfaction-before-training',
+                        header: 'How satisfied were you with your performance before the training stage?',
                         options: [
                             'Very unsatisfied',
                             'Unsatisfied',
@@ -337,8 +327,8 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'satisfactionAfterTraining',
-                        header: 'How satisfied were you with your performance after the two training stages?',
+                        id: 'satisfaction-after-training',
+                        header: 'How satisfied were you with your performance after the training stage?',
                         options: [
                             'Very unsatisfied',
                             'Unsatisfied',
@@ -353,9 +343,9 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'practiceTime',
+                        id: 'practice-time',
                         header:
-                            'Relative to the amount of practice time provided, how much practice time would you have needed to consistently perform the tasks successfully?',
+                            'Relative to the amount of practice time provided, how much practice time do you need to consistently perform the tasks successfully?',
                         options: ['Much less', 'Less', 'Slightly less', 'The same amount', 'Slightly more', 'More', 'Much more'],
                         variant: 'horizontal',
                         getError: radioButtonValidator
@@ -377,31 +367,13 @@ export const pitchStudyProps: StudyProps = {
                         variant: 'horizontal',
                         getError: radioButtonValidator
                     },
-                    // Use cases
-                    {
-                        type: FormTypes.CHECKBOX,
-                        id: 'useCases',
-                        header: 'For what use cases would you consider using these interactions, if any?',
-                        options: [
-                            'Switching tools in a photo or drawing application like Photoshop',
-                            'Performing shortcuts in word processors, like Microsoft Word, or text editors, like Notepad or vim',
-                            'Switching slides in a slideshow',
-                            'Other'
-                        ]
-                    },
-                    {
-                        type: FormTypes.TEXT_FIELD,
-                        id: 'useCasesOther',
-                        header: 'If you chose "other", describe your use case(s) for pitch-based interactions',
-                        label: 'Add any other use cases here...'
-                    },
                     // Extra
                     {
                         type: FormTypes.TEXT_FIELD,
                         id: 'thoughts',
-                        header: 'Anything else to say?',
+                        header: 'Is there anything else you want us to know?',
                         multiline: true,
-                        label: 'Add your thoughts on pitch-based interactions...'
+                        label: 'Your thoughts'
                     }
                 ]
             }

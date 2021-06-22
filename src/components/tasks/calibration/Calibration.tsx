@@ -8,7 +8,8 @@ import RangeSelectionPage from './rangeSelection/RangeSelectionPage';
 import { convertNoteToString } from '../../../utils/pitchConverter';
 import { tonic$ } from '../../detector/shared';
 
-interface CalibrationProps {
+export interface CalibrationProps {
+    header: string;
     onComplete?: (result: { startNote: number; minNote: number; maxNote: number }) => void;
 }
 
@@ -162,6 +163,10 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
         case CalibrationTaskType.RANGE_SELECTION:
             return <RangeSelectionPage {...currTask.props} />;
     }
+};
+
+Calibration.defaultProps = {
+    header: 'Calibration'
 };
 
 export default Calibration;

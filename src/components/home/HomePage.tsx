@@ -36,7 +36,7 @@ const HomePage = (): React.ReactElement => {
     );
 
     return (
-        <Page header="Vox Sandboxx" title="Vox Sandboxx" buttons={signInButton}>
+        <Page header="Sing UI" title="Sing UI" buttons={signInButton}>
             <p>
                 Imagine singing to control your computer. Sound interesting? We’re conducting a study to see if it’s possible for both
                 singers and non-singers. Read on for more details!
@@ -51,7 +51,7 @@ const HomePage = (): React.ReactElement => {
                 You will complete a series of simple tasks, each taking only a few seconds, where you sing or hum to interact with a
                 computer.
             </p>
-            <p>You will be paid $10 for each session you complete with an additional $10 when you complete all sessions.</p>
+            <p>You will be paid $15 via Interac e-Transfer for completing one hour-long session.</p>
             <div className={classes.highlightBox}>
                 <p>
                     You will need a working <b>microphone</b>, headphones, laptop/desktop with Google Chrome, phone, and{' '}

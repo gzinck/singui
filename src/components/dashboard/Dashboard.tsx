@@ -137,8 +137,8 @@ const Dashboard = (): React.ReactElement => {
                             ) : (
                                 <Typography className={classes.desc}>
                                     Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within
-                                    one week, email <a href="mailTo:graeme.zinck@gmail.com">graeme.zinck@gmail.com</a> to arrange your
-                                    remuneration.
+                                    one week, email <a href="mailto:graeme.zinck@gmail.com?subject = Sing UI">graeme.zinck@gmail.com</a> to
+                                    arrange your remuneration.
                                 </Typography>
                             )}
                         </>

@@ -30,6 +30,7 @@ export interface SingTaskProps {
     targets: TaskTarget[];
     recognizers: RecognizerMap;
     header: string;
+    title?: string;
     maxAttempts?: number;
     withPrompts?: boolean;
     hideFeedback?: boolean;
