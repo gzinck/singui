@@ -7,6 +7,7 @@ import MessagePage from '../message/MessagePage';
 import RangeSelectionPage from './rangeSelection/RangeSelectionPage';
 import { convertNoteToString } from '../../../utils/pitchConverter';
 import { tonic$ } from '../../detector/shared';
+import VideoPage from '../video/VideoPage';
 
 export interface CalibrationProps {
     header: string;
@@ -45,6 +46,16 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
     };
 
     const calibrationTasks: CalibrationTask[] = [
+        // Tutorial
+        {
+            type: CalibrationTaskType.VIDEO,
+            props: {
+                header: 'Calibration',
+                text: 'Before you start performing the calibration, watch this short video demonstration.',
+                embedID: 'uBwgaoFWsAE',
+                onComplete: next
+            }
+        },
         // Get bottom of range
         {
             type: CalibrationTaskType.SING,
@@ -154,6 +165,8 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
 
     const currTask = calibrationTasks[currIdx];
     switch (currTask.type) {
+        case CalibrationTaskType.VIDEO:
+            return <VideoPage {...currTask.props} />;
         case CalibrationTaskType.SING:
             return <CalibrationSingPage {...currTask.props} />;
         case CalibrationTaskType.FORM:

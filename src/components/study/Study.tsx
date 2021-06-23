@@ -13,7 +13,7 @@ import { TaskTarget } from '../tasks/sing/target';
 import HeadphoneMessagePage from '../tasks/message/HeadphoneMessagePage';
 import VideoPage from '../tasks/video/VideoPage';
 import RecordPage from '../tasks/record/RecordPage';
-import PerformanceMessagePage from '../tasks/message/PerformanceMessagePage';
+import PerformanceMessagePage from '../tasks/performance/PerformanceMessagePage';
 import { getParticipant } from '../../utils/clients/participantsClient';
 import { getStudyStatus, saveAudioFile, setStudyStatus, setStudyTaskResults, StudyResult } from '../../utils/clients/studyClient';
 
@@ -34,8 +34,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
 
     const onComplete = React.useCallback(
         (details: any) => {
-            // Send results to database
-            const results: StudyResult = { type: tasks[taskIdx].type, id, details, doneAt: new Date() };
+            // Update status of the study
             setStudyStatus(id, {
                 isDone: taskIdx === tasks.length - 1,
                 nextIdx: taskIdx + 1
@@ -43,6 +42,15 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
                 error: (err) => console.error('Critical error saving study status to database:', err)
             });
 
+            // Send results to database
+            const results: StudyResult = {
+                type: tasks[taskIdx].type,
+                studyId: id,
+                taskIdx,
+                taskId: tasks[taskIdx].id,
+                details,
+                doneAt: new Date()
+            };
             setStudyTaskResults(id, tasks[taskIdx].id, results).subscribe({
                 complete: () => {
                     // Move to next task

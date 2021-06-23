@@ -11,7 +11,6 @@ interface Props {
     state: TaskProgressState<TaskTarget, UniversalRecognizerState>;
     hideable: boolean;
     numberLabels: boolean;
-    sustainLength: number;
 }
 
 const noteNumberLabels1 = new Array(12).fill(0).map((_, idx) => convertNumericNoteToString(idx) || '-');
@@ -28,7 +27,7 @@ const getRecognizedFromState = (state: TaskProgressState<TaskTarget, UniversalRe
     }
 };
 
-const PitchIndicatorFromState = ({ state, hideable, numberLabels, sustainLength }: Props): React.ReactElement => {
+const PitchIndicatorFromState = ({ state, hideable, numberLabels }: Props): React.ReactElement => {
     const [tonic] = useTonic();
     const keyNumber = tonic % 12;
     const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);
@@ -40,7 +39,7 @@ const PitchIndicatorFromState = ({ state, hideable, numberLabels, sustainLength 
                 noteNum={state.noteAbs - keyNumber}
                 error={state.error}
                 recognized={getRecognizedFromState(state, keyNumber)}
-                progress={state.type === TaskType.PITCH ? Math.min(state.progress / sustainLength, 1) : 1}
+                progress={state.isValid || state.type !== TaskType.PITCH ? 1 : 0}
             />
         </Hideable>
     );

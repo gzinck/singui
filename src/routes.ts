@@ -10,6 +10,6 @@ export const SIGNUP_ROUTE = '/signup';
 export const DASHBOARD_ROUTE = '/dashboard';
 export const STUDY_ROUTE = '/study/:studyId';
 export const AUDIO_TEST_ROUTE = '/audio-test';
-export const AUDIO_TEST_PHONE_ROUTE = '/audio-test-phone';
+export const AUDIO_TEST_PHONE_ROUTE = '/phone';
 export const HOME_ROUTE = '/';
 export const ADMIN_ROUTE = '/admin';

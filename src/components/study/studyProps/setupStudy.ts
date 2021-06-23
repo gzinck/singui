@@ -50,7 +50,7 @@ export const setupStudyProps: StudyProps = {
                         type: FormTypes.RADIO,
                         id: 'musical-experience-private',
                         header: 'How many years of private musical lessons have you had?',
-                        text: 'These include weekly or biweekly vocal or instrument lessons with under 5 people in the class.',
+                        text: 'These include weekly or biweekly vocal or instrument lessons with at most 3 students in the class.',
                         options: ['0 years', '<1 year', '1-2 years', '2-3 years', '3-4 years', '4-5 years', '>5 years'],
                         variant: 'horizontal',
                         getError: radioButtonValidator
@@ -58,8 +58,9 @@ export const setupStudyProps: StudyProps = {
                     {
                         type: FormTypes.RADIO,
                         id: 'musical-experience-group',
-                        header: 'How many years of group musical lessons have you had, outside of K-12 education?',
-                        text: 'These include weekly or biweekly vocal or instrument lessons with 5 or more people in the class.',
+                        header: 'How many years of group musical lessons have you had?',
+                        text:
+                            'These include weekly or biweekly vocal or instrument lessons with 4 or more students in the class. These exclude mandatory grade school classes, but include extracurriculars.',
                         options: ['0 years', '<1 year', '1-2 years', '2-3 years', '3-4 years', '4-5 years', '>5 years'],
                         variant: 'horizontal',
                         getError: radioButtonValidator

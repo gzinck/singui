@@ -39,12 +39,7 @@ const SingTasks = (props: Props): React.ReactElement<Props> => {
                 </h2>
             </TargetBox>
             <Centered>
-                <PitchIndicatorFromState
-                    state={state}
-                    hideable={true}
-                    numberLabels={props.numberLabels}
-                    sustainLength={props.sustainLength}
-                />
+                <PitchIndicatorFromState state={state} hideable={true} numberLabels={props.numberLabels} />
             </Centered>
             {!props.hideFeedback && <SuccessBar items={feedback} />}
         </Page>

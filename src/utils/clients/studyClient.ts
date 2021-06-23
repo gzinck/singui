@@ -8,7 +8,9 @@ import { listParticipants } from './participantsClient';
 
 export interface StudyResult {
     type: StudyTaskType;
-    id: string;
+    studyId: string;
+    taskId: string;
+    taskIdx: number;
     details: any;
     doneAt: Date;
 }

@@ -15,7 +15,7 @@ export const smoothPitch: (options?: Options) => (source$: Observable<VocalState
     opts: Options = {}
 ) => (source) => {
     const options = {
-        pitchWeight: 0.65,
+        pitchWeight: 0.5,
         minClarity: 0.95,
         minVolume: 0,
         ...opts

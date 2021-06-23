@@ -3,7 +3,7 @@ import { FormProps } from '../tasks/form/Form';
 import { MessageProps } from '../tasks/message/MessagePage';
 import { VideoProps } from '../tasks/video/VideoPage';
 import { RecordProps } from '../tasks/record/RecordPage';
-import { PerformanceMessageProps } from '../tasks/message/PerformanceMessagePage';
+import { PerformanceMessageProps } from '../tasks/performance/PerformanceMessagePage';
 
 export enum StudyTaskType {
     SING = 'SING',

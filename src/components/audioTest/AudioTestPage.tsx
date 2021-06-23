@@ -93,11 +93,8 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
                     <Typography>Make sure you are in a quiet environment.</Typography>
                     <Typography>Wear headphones. Make sure they are connected to your computer and not your phone.</Typography>
                     <Typography>
-                        On your phone, go to{' '}
-                        <a href={`https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}`}>
-                            https://vox-sandboxx.web.app{AUDIO_TEST_PHONE_ROUTE}
-                        </a>{' '}
-                        by scanning the QR Code below.
+                        On your phone, go to <a href={`https://singui.ca{AUDIO_TEST_PHONE_ROUTE}`}>singui.ca{AUDIO_TEST_PHONE_ROUTE}</a> by
+                        scanning the QR Code below.
                     </Typography>
                     <QRCode />
                     <Typography>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</Typography>
@@ -112,9 +109,11 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
         case Status.FAIL:
             contents = (
                 <>
-                    <h2>Test failed</h2>
-                    <p>Make sure you press the right button, remain silent, and have a quiet room</p>
-                    <p>When you are ready, click the restart button</p>
+                    <Typography variant="h4" gutterBottom>
+                        Test failed
+                    </Typography>
+                    <Typography>Make sure you press the right button, remain silent, and have a quiet roo.m</Typography>
+                    <Typography>When you are ready, click the restart button.</Typography>
                 </>
             );
             button = (
@@ -124,7 +123,7 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
             );
             break;
         case Status.SUCCESS:
-            contents = <h2>Test successful</h2>;
+            contents = <Typography variant="h4">Test successful</Typography>;
             button = (
                 <Button variant="contained" color="primary" onClick={() => onComplete(state.results)}>
                     Next
@@ -134,8 +133,10 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
         default:
             contents = (
                 <>
-                    <h2>{stateToMessage(state)}</h2>
-                    {showError && suggestedFixes.map((fix) => <p key={fix}>{fix}</p>)}
+                    <Typography variant="h4" gutterBottom>
+                        {stateToMessage(state)}
+                    </Typography>
+                    {showError && suggestedFixes.map((fix) => <Typography key={fix}>{fix}</Typography>)}
                 </>
             );
     }
@@ -145,7 +146,7 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
             <TargetBox>{contents}</TargetBox>
             {status === Status.IN_PROGRESS && (
                 <Centered>
-                    <PitchIndicatorFromState state={state} sustainLength={defaultSustainLength} />
+                    <PitchIndicatorFromState state={state} numberLabels={false} />
                 </Centered>
             )}
             {button && <ButtonBox>{button}</ButtonBox>}

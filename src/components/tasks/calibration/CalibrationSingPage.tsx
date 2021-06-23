@@ -21,7 +21,7 @@ export interface CalibrationSingProps {
 const singingProps: SingingProps = {
     recognizers: pitchTaskProps.recognizers,
     targets: [{ type: TaskType.PITCH, value: 0 }],
-    hasBackground: false,
+    hasBackground: true,
     maxAttempts: 1,
     sustainLength: defaultSustainLength
 };
@@ -59,7 +59,7 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
                 )}
             </TargetBox>
             <Centered>
-                <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} sustainLength={defaultSustainLength} />
+                <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} />
             </Centered>
         </Page>
     );

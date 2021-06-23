@@ -2,12 +2,19 @@ import { MessageProps } from '../message/MessagePage';
 import { FormProps } from '../form/Form';
 import { RangeSelectionProps } from './rangeSelection/RangeSelectionPage';
 import { CalibrationSingProps } from './CalibrationSingPage';
+import { VideoProps } from '../video/VideoPage';
 
 export enum CalibrationTaskType {
+    VIDEO = 'VIDEO',
     SING = 'SING',
     FORM = 'FORM',
     MESSAGE = 'MESSAGE',
     RANGE_SELECTION = 'RANGE_SELECTION'
+}
+
+export interface CalibrationVideoTask {
+    type: CalibrationTaskType.VIDEO;
+    props: VideoProps;
 }
 
 export interface CalibrationSingTask {
@@ -30,4 +37,9 @@ export interface CalibrationRangeTask {
     props: RangeSelectionProps;
 }
 
-export type CalibrationTask = CalibrationSingTask | CalibrationMessageTask | CalibrationFormTask | CalibrationRangeTask;
+export type CalibrationTask =
+    | CalibrationVideoTask
+    | CalibrationSingTask
+    | CalibrationMessageTask
+    | CalibrationFormTask
+    | CalibrationRangeTask;

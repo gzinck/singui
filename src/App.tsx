@@ -36,8 +36,6 @@ import SinePage from './components/audioTest/sineMaker/SinePage';
 import AudioTestPage from './components/audioTest/AudioTestPage';
 import HomePage from './components/home/HomePage';
 import SignUpPage from './components/signup/SignUpPage';
-import PerformanceMessagePage from './components/tasks/message/PerformanceMessagePage';
-import { studyId } from './components/study/studyProps/studyId';
 import AdminPage from './components/admin/AdminPage';
 
 if (getApps().length === 0) initializeApp(firebaseConfig);
@@ -74,9 +72,6 @@ function App() {
                         </Route>
                         <Route path={SIGNIN_ROUTE}>
                             <LoginPage userExists={true} hasOppositeButton={true} />
-                        </Route>
-                        <Route path="/perf">
-                            <PerformanceMessagePage studyID={studyId.PITCH_STUDY} taskID="pre-evaluation" />
                         </Route>
                         <Route path={DASHBOARD_ROUTE}>
                             <Dashboard />

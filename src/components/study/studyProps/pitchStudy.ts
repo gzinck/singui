@@ -63,7 +63,7 @@ export const pitchStudyProps: StudyProps = {
             props: {
                 title: 'Pitch task tutorial',
                 text: 'Before you start performing the tasks, watch this short video demonstration.',
-                embedID: 'LFsP4o6kpE0'
+                embedID: 'IYHOSp-rmMg'
             }
         },
         {
@@ -101,23 +101,16 @@ export const pitchStudyProps: StudyProps = {
             breakTask
         ),
         {
-            id: 'performance-pre-evaluation-without-music',
+            id: 'performance-pre-evaluation',
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
-                title: 'Results without music',
+                title: 'Pre-evaluation results',
                 multiAttempt: false,
                 studyID: studyId.PITCH_STUDY,
-                taskID: 'pre-evaluation-without-music'
-            }
-        },
-        {
-            id: 'performance-pre-evaluation-with-music',
-            type: StudyTaskType.PERFORMANCE_MESSAGE,
-            props: {
-                title: 'Results with music',
-                multiAttempt: false,
-                studyID: studyId.PITCH_STUDY,
-                taskID: 'pre-evaluation-with-music'
+                tasks: [
+                    { id: 'pre-evaluation-with-music', label: 'With music' },
+                    { id: 'pre-evaluation-without-music', label: 'Without music' }
+                ]
             }
         },
         {
@@ -204,23 +197,16 @@ export const pitchStudyProps: StudyProps = {
             breakTask
         ),
         {
-            id: 'performance-post-evaluation-without-music',
+            id: 'performance-post-evaluation',
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
-                title: 'Results without music',
+                title: 'Post-evaluation results',
                 multiAttempt: false,
                 studyID: studyId.PITCH_STUDY,
-                taskID: 'post-evaluation-without-music'
-            }
-        },
-        {
-            id: 'performance-post-evaluation-with-music',
-            type: StudyTaskType.PERFORMANCE_MESSAGE,
-            props: {
-                title: 'Results with music',
-                multiAttempt: false,
-                studyID: studyId.PITCH_STUDY,
-                taskID: 'post-evaluation-with-music'
+                tasks: [
+                    { id: 'post-evaluation-with-music', label: 'With music' },
+                    { id: 'post-evaluation-without-music', label: 'Without music' }
+                ]
             }
         },
         {
