@@ -113,7 +113,9 @@ const Dashboard = (): React.ReactElement => {
 
     return (
         <Page header="Dashboard" buttons={signOutButton} title="Dashboard">
-            <Typography>Continue the study with the tasks below.</Typography>
+            {(inProgressStudies.length > 0 || availableStudies.length > 0) && (
+                <Typography>Continue the study with the tasks below.</Typography>
+            )}
             {loading ? (
                 <>
                     <Typography variant="h5" className={classes.header}>
@@ -135,28 +137,23 @@ const Dashboard = (): React.ReactElement => {
                                 receive an email when you are eligible.
                             </Typography>
                         </>
-                    ) : (
+                    ) : inProgressStudies.length > 0 || availableStudies.length > 0 ? (
                         <>
                             <Typography variant="h5" className={classes.header}>
                                 Up next
                             </Typography>
-                            {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
-                                <>
-                                    {renderStudies(inProgressStudies)}
-                                    {renderStudies(availableStudies)}
-                                    {renderStudies(lockedStudies)}
-                                </>
-                            ) : (
-                                <Card className={classes.done}>
-                                    <Typography>
-                                        Woohoo! 🎉 You have completed the study. If you have not been contacted by an experiment facilitator
-                                        within one week, email{' '}
-                                        <a href="mailto:gzinck@uwaterloo.ca?subject = Sing UI">gzinck@uwaterloo.ca</a> to arrange your
-                                        remuneration.
-                                    </Typography>
-                                </Card>
-                            )}
+                            {renderStudies(inProgressStudies)}
+                            {renderStudies(availableStudies)}
+                            {renderStudies(lockedStudies)}
                         </>
+                    ) : (
+                        <Card className={classes.done}>
+                            <Typography>
+                                Woohoo! 🎉 You have completed the study. If you have not been contacted by an experiment facilitator within
+                                one week, email <a href="mailto:gzinck@uwaterloo.ca?subject = Sing UI">gzinck@uwaterloo.ca</a> to arrange
+                                your remuneration.
+                            </Typography>
+                        </Card>
                     )}
                     {completedStudies.length > 0 && (
                         <>
