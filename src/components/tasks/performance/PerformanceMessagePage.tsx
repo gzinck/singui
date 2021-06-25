@@ -55,6 +55,7 @@ const PerformanceMessagePage = ({ studyID, tasks, header, title, multiAttempt, o
             <div className={classes.root}>
                 {tasks.map(({ label }, idx) => (
                     <TaskPerformanceRow
+                        key={label}
                         header={label}
                         multiAttempt={multiAttempt}
                         isLoading={isLoading}

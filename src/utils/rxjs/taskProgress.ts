@@ -75,13 +75,22 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                 const isCorrect = checkCorrect(curr, currTarget, currTargetIdx);
 
                 const results: SingTaskResult<Target>[] = [...state.results];
-                // Add on the current frequency
-                if (!curr.isDone) {
+
+                // Add on the current frequency IFF we're not done (because if we are done, this is just a duplicate)
+                // AND this isn't a piece of garbage data at the start of the task.
+                if (!curr.isDone && !state.isDone) {
                     // Add the frequency to the results
                     const oldResult = results[results.length - 1];
+                    // Add the frequency if it's new (otherwise, it's just a duplicate of the previous and is not
+                    // actually indicating a new sound being detected).
+                    // This edge case comes up when we finish singing, but we are redoing the trial.
+                    const frequencies =
+                        oldResult.frequencies.length > 0 && oldResult.frequencies[oldResult.frequencies.length - 1].hz === curr.hz
+                            ? oldResult.frequencies
+                            : [...oldResult.frequencies, { hz: curr.hz, time: performance.now() }];
                     results[results.length - 1] = {
                         ...oldResult,
-                        frequencies: [...oldResult.frequencies, { hz: curr.hz, time: performance.now() }]
+                        frequencies
                     };
                 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../theme';
+import { timer } from 'rxjs';
 
 interface Props {
     hidden: boolean;
@@ -20,7 +21,17 @@ const useStyles = makeStyles<Theme>(() => ({
 
 const Hideable = ({ hidden, children }: Props): React.ReactElement => {
     const classes = useStyles();
-    return <div className={clsx(classes.root, hidden && classes.hidden)}>{children}</div>;
+    const [finallyHidden, setFinallyHidden] = React.useState(hidden);
+
+    React.useEffect(() => {
+        if (hidden) {
+            const sub = timer(1500).subscribe(() => setFinallyHidden(hidden));
+            return () => sub.unsubscribe();
+        }
+        setFinallyHidden(hidden);
+    }, [hidden]);
+
+    return <div className={clsx(classes.root, finallyHidden && classes.hidden)}>{children}</div>;
 };
 
 export default Hideable;

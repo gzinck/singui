@@ -8,7 +8,7 @@ export interface PitchTaskTarget {
 export interface IntervalTaskTarget {
     type: TaskType.INTERVAL;
     value: number;
-    startNote: number;
+    startNote: number; // Start note (0 is the tonic note)
 }
 
 export interface MelodyTaskTarget {

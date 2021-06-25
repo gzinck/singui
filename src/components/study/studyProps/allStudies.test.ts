@@ -39,7 +39,7 @@ describe.each(allStudies.map((study) => [study.id, study] as [string, StudyProps
             else if (task.type === StudyTaskType.PERFORMANCE_MESSAGE) {
                 if (task.props.studyID !== id) throw new Error(`performance message references a different study ${task.props.studyID}`);
                 task.props.tasks.forEach(({ id }) => {
-                    if (!set.has(id)) throw new Error(`performance message references a non-existent or future task ${task.props.taskID}`);
+                    if (!set.has(id)) throw new Error(`performance message references a non-existent or future task ${id}`);
                 });
             }
         });

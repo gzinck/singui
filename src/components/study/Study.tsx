@@ -37,7 +37,9 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
             // Update status of the study
             setStudyStatus(id, {
                 isDone: taskIdx === tasks.length - 1,
-                nextIdx: taskIdx + 1
+                nextIdx: taskIdx + 1,
+                // Conditionally add the end time fi we reachedd the end
+                ...(taskIdx === tasks.length - 1 ? { end: new Date() } : {})
             }).subscribe({
                 error: (err) => console.error('Critical error saving study status to database:', err)
             });
@@ -140,6 +142,13 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
                 onComplete={() => {
                     setTaskIdx(startIdx);
                     setProgress(((startIdx + 1) / (tasks.length + 1)) * 100);
+                    setStudyStatus(id, {
+                        isDone: false,
+                        nextIdx: 0,
+                        start: new Date()
+                    }).subscribe({
+                        error: (err) => console.error('Critical error saving study status to database:', err)
+                    });
                 }}
             />
         );
@@ -147,8 +156,8 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
         page = (
             <MessagePage
                 header={name}
-                title="All done!"
-                text={`You have completed the study! Click "Next" to return to the dashboard`}
+                title="Tasks complete"
+                text={`Congrats! You have completed this set of tasks. Click "Next" to return to the dashboard.`}
                 isLoading={isLoading}
                 onComplete={() => history.push(DASHBOARD_ROUTE)}
             />

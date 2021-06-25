@@ -15,10 +15,20 @@ import { getAllStudies } from '../../utils/clients/studyClient';
 import { combineLatest } from 'rxjs';
 import { getParticipant } from '../../utils/clients/participantsClient';
 import { numMusicalParticipants, numNonmusicalParticipants } from '../study/eligibility';
+import { Card } from '@material-ui/core';
 
 const useStyles = makeStyles<Theme>((theme) => ({
-    desc: {
-        marginBottom: theme.spacing(5)
+    header: {
+        margin: theme.spacing(5, 0, 2)
+    },
+    done: {
+        boxSizing: 'border-box',
+        width: '100%',
+        minHeight: '9rem',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: theme.spacing(3)
     },
     skeleton: {
         width: '100%',
@@ -103,10 +113,10 @@ const Dashboard = (): React.ReactElement => {
 
     return (
         <Page header="Dashboard" buttons={signOutButton} title="Dashboard">
-            <Typography className={classes.desc}>Continue the study with the tasks below.</Typography>
+            <Typography>Continue the study with the tasks below.</Typography>
             {loading ? (
                 <>
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h5" className={classes.header}>
                         Loading...
                     </Typography>
                     {allStudies.map((study) => (
@@ -117,7 +127,7 @@ const Dashboard = (): React.ReactElement => {
                 <>
                     {!isEligible ? (
                         <>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" className={classes.header}>
                                 Sorry!
                             </Typography>
                             <Typography className={classes.desc}>
@@ -127,34 +137,30 @@ const Dashboard = (): React.ReactElement => {
                         </>
                     ) : (
                         <>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" className={classes.header}>
                                 Up next
                             </Typography>
                             {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
                                 <>
                                     {renderStudies(inProgressStudies)}
                                     {renderStudies(availableStudies)}
+                                    {renderStudies(lockedStudies)}
                                 </>
                             ) : (
-                                <Typography className={classes.desc}>
-                                    Woohoo! You have completed the study. If you have not been contacted by an experiment facilitator within
-                                    one week, email <a href="mailto:graeme.zinck@gmail.com?subject = Sing UI">graeme.zinck@gmail.com</a> to
-                                    arrange your remuneration.
-                                </Typography>
+                                <Card className={classes.done}>
+                                    <Typography>
+                                        Woohoo! 🎉 You have completed the study. If you have not been contacted by an experiment facilitator
+                                        within one week, email{' '}
+                                        <a href="mailto:gzinck@uwaterloo.ca?subject = Sing UI">gzinck@uwaterloo.ca</a> to arrange your
+                                        remuneration.
+                                    </Typography>
+                                </Card>
                             )}
-                        </>
-                    )}
-                    {lockedStudies.length > 0 && (
-                        <>
-                            <Typography variant="h5" gutterBottom>
-                                Locked
-                            </Typography>
-                            {renderStudies(lockedStudies)}
                         </>
                     )}
                     {completedStudies.length > 0 && (
                         <>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" className={classes.header}>
                                 Completed
                             </Typography>
                             {renderStudies(completedStudies)}

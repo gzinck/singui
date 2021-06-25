@@ -18,6 +18,8 @@ export interface StudyResult {
 interface StudyData {
     nextIdx: number;
     isDone: boolean;
+    start?: Date;
+    end?: Date;
 }
 
 interface StudyDataWithId extends StudyData {
@@ -84,9 +86,10 @@ export const getStudyStatus = (studyID: string): Observable<StudyData | null> =>
 
 export const setStudyStatus = (studyID: string, data: StudyData): Observable<void> => {
     const db = getFirestore();
+    // Use merge to retain start time if change later
     return currUser$.pipe(
         getFirst(),
-        mergeMap((user) => setDoc(doc(db, 'users', user.uid, 'studies', studyID), data))
+        mergeMap((user) => setDoc(doc(db, 'users', user.uid, 'studies', studyID), data, { merge: true }))
     );
 };
 

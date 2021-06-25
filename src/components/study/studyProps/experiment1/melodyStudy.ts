@@ -1,36 +1,46 @@
-import { StudyProps } from '../Study';
-import { StudyTask, StudyTaskType } from '../studyTasks';
-import { PitchTaskTarget } from '../../tasks/sing/target';
-import { RecognizerMap, TaskType } from '../../../utils/rxjs/recognizers/universalRecognizer';
-import { FormTypes } from '../../tasks/form/formTypes';
-import { studyId } from './studyId';
-import { reorderLatinSquare, reorderRandom } from './variations/reorder';
-import { varyBackgroundMusic } from './variations/backgroundMusic';
-import { radioButtonValidator } from '../../tasks/form/formValidators';
-import { insertBetween } from './variations/insertBetween';
-import { repeatEach, repeatTask } from './variations/repeat';
+import { StudyProps } from '../../Study';
+import { StudyTask, StudyTaskType } from '../../studyTasks';
+import { MelodyTaskTarget } from '../../../tasks/sing/target';
+import { RecognizerMap, TaskType } from '../../../../utils/rxjs/recognizers/universalRecognizer';
+import { FormTypes } from '../../../tasks/form/formTypes';
+import { studyId } from '../studyId';
+import { reorderLatinSquare, reorderRandom } from '../variations/reorder';
+import { varyBackgroundMusic } from '../variations/backgroundMusic';
+import { radioButtonValidator } from '../../../tasks/form/formValidators';
+import { insertBetween } from '../variations/insertBetween';
+import { repeatEach, repeatTask } from '../variations/repeat';
+import { Melody } from '../../../../utils/rxjs/recognizers/melodyRecognizer';
 
+const tonicMelodies = [
+    [0, 4, 2],
+    [0, 4, 7],
+    [0, 7, 4],
+    [0, 7, 12],
+    [0, 2, 4],
+    [0, 5, 0],
+    [0, 7, 0]
+].map((intervals, id) => ({ intervals, id: `${id}` }));
 const recognizers: RecognizerMap = {
-    0: { type: TaskType.PITCH },
-    1: { type: TaskType.PITCH },
-    2: { type: TaskType.PITCH },
-    3: { type: TaskType.PITCH },
-    4: { type: TaskType.PITCH },
-    5: { type: TaskType.PITCH },
-    6: { type: TaskType.PITCH },
-    7: { type: TaskType.PITCH },
-    8: { type: TaskType.PITCH },
-    9: { type: TaskType.PITCH },
-    10: { type: TaskType.PITCH },
-    11: { type: TaskType.PITCH }
+    0: { type: TaskType.MELODY, melodies: tonicMelodies },
+    1: { type: undefined },
+    2: { type: undefined },
+    3: { type: undefined },
+    4: { type: undefined },
+    5: { type: undefined },
+    6: { type: undefined },
+    7: { type: undefined },
+    8: { type: undefined },
+    9: { type: undefined },
+    10: { type: undefined },
+    11: { type: undefined }
 };
 
-const possiblePitches = [0, 2, 4, 5, 7, 9, 11];
-
-const toTargets = (arr: number[]): PitchTaskTarget[] => {
-    return arr.map<PitchTaskTarget>((value) => ({
-        type: TaskType.PITCH,
-        value
+const toTargets = (arr: Melody[]): MelodyTaskTarget[] => {
+    return arr.map<MelodyTaskTarget>((melody) => ({
+        type: TaskType.MELODY,
+        value: melody.intervals,
+        id: melody.id,
+        startNote: 0
     }));
 };
 
@@ -43,12 +53,12 @@ const breakTask = (item: StudyTask): StudyTask => ({
     }
 });
 
-export const pitchStudyProps: StudyProps = {
-    id: studyId.PITCH_STUDY,
-    dependencies: [studyId.SETUP_STUDY],
-    name: '2. Pitch tasks',
-    description: 'Sing individual pitches to control your computer',
-    time: 12,
+export const melodyStudyProps: StudyProps = {
+    id: studyId.MELODY_STUDY,
+    dependencies: [studyId.INTERVAL_STUDY],
+    name: '4. Melody tasks',
+    description: 'Sing sequences of three pitches to control your computer',
+    time: 19,
     getTasks: (latinSquare: number) => [
         {
             id: 'headphones',
@@ -61,9 +71,9 @@ export const pitchStudyProps: StudyProps = {
             id: 'video',
             type: StudyTaskType.VIDEO,
             props: {
-                title: 'Pitch task tutorial',
+                title: 'Melody task tutorial',
                 text: 'Before you start performing the tasks, watch this short video demonstration.',
-                embedID: 'IYHOSp-rmMg'
+                embedID: 'c_c0YwSzCOM'
             }
         },
         {
@@ -75,7 +85,7 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-pre-evaluation',
             type: StudyTaskType.MESSAGE,
             props: {
-                title: 'Pitch task pre-evaluation',
+                title: 'Melody task pre-evaluation',
                 text:
                     'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break.'
             }
@@ -87,9 +97,8 @@ export const pitchStudyProps: StudyProps = {
                     id: `pre-evaluation`,
                     type: StudyTaskType.SING,
                     props: {
-                        title: 'Pitch task pre-evaluation',
-                        // Should generate this randomly using the scripts/gen_pitches.py script
-                        targets: toTargets(reorderRandom([...possiblePitches, ...possiblePitches])),
+                        title: 'Melody task pre-evaluation',
+                        targets: toTargets(reorderRandom([...tonicMelodies, ...tonicMelodies])),
                         recognizers,
                         withPrompts: false,
                         hideFeedback: true,
@@ -106,7 +115,7 @@ export const pitchStudyProps: StudyProps = {
             props: {
                 title: 'Pre-evaluation results',
                 multiAttempt: false,
-                studyID: studyId.PITCH_STUDY,
+                studyID: studyId.MELODY_STUDY,
                 tasks: [
                     { id: 'pre-evaluation-with-music', label: 'With music' },
                     { id: 'pre-evaluation-without-music', label: 'Without music' }
@@ -122,7 +131,7 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-training-I',
             type: StudyTaskType.MESSAGE,
             props: {
-                title: 'Pitch task training I',
+                title: 'Melody task training I',
                 text:
                     'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Feel free to take a break before clicking "Next."'
             }
@@ -131,8 +140,8 @@ export const pitchStudyProps: StudyProps = {
             id: 'training-I',
             type: StudyTaskType.SING,
             props: {
-                title: 'Pitch task training I',
-                targets: toTargets(repeatEach(reorderRandom(possiblePitches), 3)),
+                title: 'Melody task training I',
+                targets: toTargets(repeatEach(reorderRandom(tonicMelodies), 3)),
                 recognizers,
                 withPrompts: true,
                 maxAttempts: 3
@@ -142,7 +151,7 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-training-II',
             type: StudyTaskType.MESSAGE,
             props: {
-                title: 'Pitch task training II',
+                title: 'Melody task training II',
                 text:
                     'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break before clicking "Next."'
             }
@@ -153,8 +162,8 @@ export const pitchStudyProps: StudyProps = {
                     id: 'training-II',
                     type: StudyTaskType.SING,
                     props: {
-                        title: 'Pitch task training II',
-                        targets: toTargets(reorderRandom([...possiblePitches, ...possiblePitches])),
+                        title: 'Melody task training II',
+                        targets: toTargets(reorderRandom([...tonicMelodies, ...tonicMelodies])),
                         recognizers,
                         withPrompts: true,
                         maxAttempts: 3
@@ -173,7 +182,7 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-post-evaluation',
             type: StudyTaskType.MESSAGE,
             props: {
-                title: 'Pitch task post-evaluation',
+                title: 'Melody task post-evaluation',
                 text:
                     'The next two blocks of tasks will measure your performance after the training blocks. Feel free to take a break before clicking "Next."'
             }
@@ -185,10 +194,11 @@ export const pitchStudyProps: StudyProps = {
                     id: 'post-evaluation',
                     type: StudyTaskType.SING,
                     props: {
-                        title: 'Pitch task post-evaluation',
-                        targets: toTargets(reorderRandom([7, 0, 4, 0, 4, 7, 5, 2, 9, 4, 2, 7, 9, 5, 11, 0, 7, 4, 11, 0])),
+                        title: 'Melody task post-evaluation',
+                        targets: toTargets(reorderRandom([...tonicMelodies, ...tonicMelodies])),
                         recognizers,
                         withPrompts: false,
+                        hideFeedback: true,
                         maxAttempts: 1
                     }
                 })),
@@ -202,7 +212,7 @@ export const pitchStudyProps: StudyProps = {
             props: {
                 title: 'Post-evaluation results',
                 multiAttempt: false,
-                studyID: studyId.PITCH_STUDY,
+                studyID: studyId.MELODY_STUDY,
                 tasks: [
                     { id: 'post-evaluation-with-music', label: 'With music' },
                     { id: 'post-evaluation-without-music', label: 'Without music' }
@@ -213,22 +223,22 @@ export const pitchStudyProps: StudyProps = {
             id: 'msg-participant-rating',
             type: StudyTaskType.MESSAGE,
             props: {
-                title: 'Pitch task rating',
+                title: 'Melody task rating',
                 text:
-                    'Now that you have experience singing pitches to interact with your computer, we want to know what you think. Fill out the form on the next page.'
+                    'Now that you have experience singing melodies to interact with your computer, we want to know what you think. Fill out the form on the next page.'
             }
         },
         {
             id: 'participant-rating',
             type: StudyTaskType.FORM,
             props: {
-                title: 'Pitch task rating',
+                title: 'Melody task rating',
                 form: [
                     // Technical
                     {
                         type: FormTypes.RADIO,
                         id: 'recognize-pitch-effectiveness',
-                        header: 'How often did the application correctly recognize the pitches you sang?',
+                        header: 'How often did the application correctly recognize the melodies you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
                             '0-20% of the time',
@@ -242,7 +252,7 @@ export const pitchStudyProps: StudyProps = {
                     {
                         type: FormTypes.RADIO,
                         id: 'recognize-pitch-effectiveness-2',
-                        header: 'To what extent was the application successful at recognizing the pitches you sang?',
+                        header: 'To what extent was the application successful at recognizing the melodies you sang?',
                         text: 'Your response should not consider your own ability to perform the tasks.',
                         options: [
                             'Very unsuccessful',
@@ -253,13 +263,13 @@ export const pitchStudyProps: StudyProps = {
                             'Successful',
                             'Very successful'
                         ],
-                        variant: 'horizontal',
                         getError: radioButtonValidator
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
                         id: 'technical-problems',
                         header: 'Were there any technical problems you encountered when using the application?',
+                        text: 'If there were no technical problems, leave this blank.',
                         label: 'Add any technical problems here...'
                     },
                     // Perceived task difficulty & learnability
@@ -336,6 +346,14 @@ export const pitchStudyProps: StudyProps = {
                         variant: 'horizontal',
                         getError: radioButtonValidator
                     },
+                    {
+                        type: FormTypes.RADIO,
+                        id: 'background-music',
+                        header: 'Did the presence of background music make the tasks easier or harder?',
+                        options: ['Much harder', 'Harder', 'Somewhat harder', 'No effect', 'Somewhat easier', 'Easier', 'Much easier'],
+                        variant: 'horizontal',
+                        getError: radioButtonValidator
+                    },
                     // Enjoyability
                     {
                         type: FormTypes.RADIO,
@@ -350,7 +368,6 @@ export const pitchStudyProps: StudyProps = {
                             'Enjoyable',
                             'Very enjoyable'
                         ],
-                        variant: 'horizontal',
                         getError: radioButtonValidator
                     },
                     // Extra
