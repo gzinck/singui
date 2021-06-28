@@ -330,15 +330,6 @@ export const pitchStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.RADIO,
-                        id: 'practice-time',
-                        header:
-                            'Relative to the amount of practice time provided, how much practice time do you need to consistently perform the tasks successfully?',
-                        options: ['Much less', 'Less', 'Slightly less', 'The same amount', 'Slightly more', 'More', 'Much more'],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
-                    },
-                    {
-                        type: FormTypes.RADIO,
                         id: 'background-music',
                         header: 'Did the presence of background music make the tasks easier or harder?',
                         options: ['Much harder', 'Harder', 'Somewhat harder', 'No effect', 'Somewhat easier', 'Easier', 'Much easier'],

@@ -32,45 +32,43 @@ export const setupStudyProps: StudyProps = {
                         getError: radioButtonValidator
                     },
                     {
-                        type: FormTypes.RADIO,
+                        type: FormTypes.TEXT_FIELD,
                         id: 'laptop-hours-per-week',
-                        header: 'How many hours per week do you use a laptop or desktop?',
-                        options: ['0 hours', '<5 hours', '5-10 hours', '10-15 hours', '15-20 hours', '>20 hours'],
+                        header: 'How many hours per day do you use a laptop or desktop?',
+                        label: 'Hours per day',
+                        getError: numberValidator
+                    },
+                    {
+                        type: FormTypes.RADIO,
+                        id: 'laptop-people-within-earshot',
+                        header: 'When using a laptop or desktop, are there typically people nearby who can hear you speaking?',
+                        options: ['Yes', 'No'],
                         variant: 'horizontal',
                         getError: radioButtonValidator
                     },
                     {
-                        type: FormTypes.CHECKBOX,
-                        id: 'laptop-people-within-earshot',
-                        header: 'How many people are typically within earshot when you use a laptop or desktop?',
-                        options: ['0', '1', '2', '3', '4', '>5'],
-                        getError: checkboxValidator
-                    },
-                    {
-                        type: FormTypes.RADIO,
+                        type: FormTypes.TEXT_FIELD,
                         id: 'musical-experience-private',
                         header: 'How many years of private musical lessons have you had?',
                         text: 'These include weekly or biweekly vocal or instrument lessons with at most 3 students in the class.',
-                        options: ['0 years', '<1 year', '1-2 years', '2-3 years', '3-4 years', '4-5 years', '>5 years'],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
+                        label: 'Years of private lessons',
+                        getError: numberValidator
                     },
                     {
-                        type: FormTypes.RADIO,
+                        type: FormTypes.TEXT_FIELD,
                         id: 'musical-experience-group',
                         header: 'How many years of group musical lessons have you had?',
                         text:
                             'These include weekly or biweekly vocal or instrument lessons with 4 or more students in the class. These exclude mandatory grade school classes, but include extracurriculars.',
-                        options: ['0 years', '<1 year', '1-2 years', '2-3 years', '3-4 years', '4-5 years', '>5 years'],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
+                        label: 'Years of group lessons',
+                        getError: numberValidator
                     },
                     {
                         type: FormTypes.RADIO,
                         id: 'singing-tendencies',
                         header: 'How often do you sing?',
                         text: 'This includes informally (while showering, cooking, etc) or formally (practicing, performing).',
-                        options: ['Never', 'Once a month', 'Biweekly', 'Weekly', 'Every other day', 'Daily', 'Multiple times a day'],
+                        options: ['Rarely', 'Monthly', 'Biweekly', 'Weekly', 'Every other day', 'Daily', 'Multiple times a day'],
                         variant: 'horizontal',
                         getError: radioButtonValidator
                     }

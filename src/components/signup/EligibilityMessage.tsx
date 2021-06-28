@@ -27,9 +27,9 @@ const EligibilityMessage = ({ isMusical, header, onComplete }: Props) => {
         ? 'Loading...'
         : isEligible
         ? 'You are eligible to participate in the study!'
-        : `We already have a number of ${
-              isMusical ? 'musical' : 'non-musical'
-          } participants for this study, so we are not actively recruiting for your demographic. However, if you continue the sign up process, we will contact you when we are looking for more participants.`;
+        : `We already have enough ${
+              isMusical ? 'singer' : 'non-singer'
+          } participants for this study, so you are not currently eligible to participate in the study. However, if you continue the sign up process, we will contact you if and when we are looking for more participants.`;
 
     return <MessagePage header={header} title="Study Eligibility" isLoading={isLoading} text={message} onComplete={onComplete} />;
 };

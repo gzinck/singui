@@ -133,8 +133,8 @@ const Dashboard = (): React.ReactElement => {
                                 Sorry!
                             </Typography>
                             <Typography className={classes.desc}>
-                                As mentioned when you signed up, we are not recruiting participants in your demographic right now. You'll
-                                receive an email when you are eligible.
+                                As mentioned when you signed up, you are not currently eligible to perform the study. You will receive an
+                                email if and when you are eligible.
                             </Typography>
                         </>
                     ) : inProgressStudies.length > 0 || availableStudies.length > 0 ? (
