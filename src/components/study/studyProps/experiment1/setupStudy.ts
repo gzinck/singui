@@ -2,7 +2,7 @@ import { StudyProps } from '../../Study';
 import { StudyTaskType } from '../../studyTasks';
 import { FormTypes } from '../../../tasks/form/formTypes';
 import { studyId } from '../studyId';
-import { checkboxValidator, numberValidator, radioButtonValidator } from '../../../tasks/form/formValidators';
+import { numberValidator, radioButtonValidator } from '../../../tasks/form/formValidators';
 
 export const setupStudyProps: StudyProps = {
     id: studyId.SETUP_STUDY,
