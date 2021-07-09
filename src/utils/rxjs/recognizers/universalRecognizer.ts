@@ -52,7 +52,7 @@ export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: P
 ): Observable<UniversalRecognizerState> => {
     const mode$ = new Subject<Mode>();
     const sourceWithReplay$ = source$.pipe(shareReplay(1));
-    // Switch
+
     const state$ = mode$.pipe(
         // Must start with something to allow the processing to occur
         startWith(initialMode),
@@ -65,6 +65,12 @@ export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: P
                         pitchRecognizer({ sustainLength, keyNumber }),
                         map<PitchRecognizerState, PitchState>((state) => ({
                             ...state,
+                            // Show nothing as being recognized, ever, if there is no corresponding recognizer.
+                            recognized: state.recognized
+                                ? recognizers[state.recognized.value].type !== undefined
+                                    ? state.recognized
+                                    : undefined
+                                : state.recognized,
                             type: TaskType.PITCH,
                             isDone: false
                         })),
