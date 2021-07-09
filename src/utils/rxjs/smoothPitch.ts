@@ -2,6 +2,7 @@ import { VocalState } from '../../components/detector/VoiceDetector';
 import { Observable } from 'rxjs';
 import { convertHzToNoteNum, convertPitchToReadable, ReadableVocalState } from '../pitchConverter';
 import { filter, map, scan } from 'rxjs/operators';
+import { delayUnlikely } from './delayUnlikely';
 
 interface Options {
     pitchWeight?: number;
@@ -23,9 +24,9 @@ const defaultState: VocalState = {
 };
 export const defaultComprehensiveVocalState: ComprehensiveVocalState = { raw: defaultState, pitch: convertPitchToReadable(defaultState) };
 
-export const smoothPitch: (options?: Options) => (source$: Observable<VocalState>) => Observable<ComprehensiveVocalState> = (
-    opts: Options = {}
-) => (source) => {
+export const smoothPitch: () => (source$: Observable<VocalState>) => Observable<ComprehensiveVocalState> = (opts: Options = {}) => (
+    source
+) => {
     const options = {
         pitchWeight: 0.5,
         minClarity: 0.95,
@@ -35,6 +36,7 @@ export const smoothPitch: (options?: Options) => (source$: Observable<VocalState
 
     return source.pipe(
         filter((state) => convertHzToNoteNum(state.pitch) >= 0 && state.clarity >= options.minClarity && state.volume >= options.minVolume),
+        delayUnlikely(),
         scan<VocalState, { smooth: VocalState; raw: VocalState }>(
             ({ smooth }, curr) => {
                 return {

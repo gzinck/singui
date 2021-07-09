@@ -59,7 +59,7 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
                 )}
             </TargetBox>
             <Centered>
-                <PitchIndicatorFromState state={state} hideable={false} numberLabels={false} />
+                <PitchIndicatorFromState state={state} numberLabels={false} />
             </Centered>
         </Page>
     );

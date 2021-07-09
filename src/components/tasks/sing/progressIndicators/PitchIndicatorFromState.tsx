@@ -4,13 +4,11 @@ import { TaskProgressState } from '../../../../utils/rxjs/taskProgress';
 import React from 'react';
 import CircularPitchMeter, { noteNamesFrom } from './CircularPitchMeter';
 import useTonic from '../../../audio/useTonic';
-import Hideable from '../../../common/Hideable';
 import { convertNumericNoteToString } from '../../../../utils/pitchConverter';
 import { mod12 } from '../../../../utils/math';
 
 interface Props {
     state: TaskProgressState<TaskTarget, UniversalRecognizerState>;
-    hideable: boolean;
     numberLabels: boolean;
 }
 
@@ -19,7 +17,7 @@ const noteNumberLabels8 = ['(8)', ...noteNumberLabels1.slice(1)];
 
 const getRecognizedFromState = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>, keyNumber: number): number[] => {
     // Deals with case where noteNum = -Infinity at start
-    if (!state.recognized) return [mod12(state.pitch.noteNum - keyNumber) || 0];
+    if (!state.recognized || state.isDone) return [mod12(state.pitch.noteNum - keyNumber) || 0];
     switch (state.recognized.type) {
         case TaskType.PITCH:
             return [state.recognized.value];
@@ -30,28 +28,25 @@ const getRecognizedFromState = (state: TaskProgressState<TaskTarget, UniversalRe
     }
 };
 
-const PitchIndicatorFromState = ({ state, hideable, numberLabels }: Props): React.ReactElement => {
+const PitchIndicatorFromState = ({ state, numberLabels }: Props): React.ReactElement => {
     const [tonic] = useTonic();
     const keyNumber = tonic % 12;
     const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);
     const noteNumberLabels =
         state.type !== TaskType.PITCH && mod12(state.pitch.noteNum - keyNumber) > 5 ? noteNumberLabels8 : noteNumberLabels1;
     return (
-        <Hideable hidden={hideable && state.type === TaskType.PITCH && state.progress === 0}>
-            <CircularPitchMeter
-                noteLabels={numberLabels ? noteNumberLabels : noteLabels}
-                // Deal with when noteNum = -Infinity at start
-                noteNum={Math.max(state.pitch.noteNum - keyNumber, 0)}
-                error={state.pitch.error || 0}
-                recognized={getRecognizedFromState(state, keyNumber)}
-                progress={state.recognized ? 1 : 0}
-            />
-        </Hideable>
+        <CircularPitchMeter
+            noteLabels={numberLabels ? noteNumberLabels : noteLabels}
+            // Deal with when noteNum = -Infinity at start
+            noteNum={Math.max(state.pitch.noteNum - keyNumber, 0)}
+            error={state.pitch.error || 0}
+            recognized={getRecognizedFromState(state, keyNumber)}
+            progress={state.recognized && !state.isDone ? 1 : 0}
+        />
     );
 };
 
 PitchIndicatorFromState.defaultProps = {
-    hideable: false,
     numberLabels: true
 };
 

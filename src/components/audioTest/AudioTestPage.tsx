@@ -34,8 +34,8 @@ const suggestedFixes = [
 ];
 
 const stateToMessage = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>): string => {
-    const currNote = convertNoteToString(state.currTarget.value as number);
-    if (state.recognized) {
+    const currNote = convertNoteToString(state.nextTarget.value as number);
+    if (state.recognized && !state.isDone) {
         if (state.isCorrect) return `Wait quietly...`;
         return `The current note is not ${currNote}`;
     }
@@ -125,7 +125,7 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
         case Status.SUCCESS:
             contents = <Typography variant="h4">Test successful</Typography>;
             button = (
-                <Button variant="contained" color="primary" onClick={() => onComplete(state.results)}>
+                <Button variant="contained" color="primary" onClick={() => onComplete && onComplete(state.results)}>
                     Next
                 </Button>
             );
