@@ -38,12 +38,12 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
     const [message, setMessage] = React.useState(startMessage);
 
     React.useEffect(() => {
-        if (state.isDone) onComplete(state.noteAbs);
-    }, [state.isDone, state.noteAbs, onComplete]);
+        if (state.isDone && state.recognized) onComplete(state.recognized.value as number);
+    }, [state.recognized, state.isDone, onComplete]);
 
     React.useEffect(() => {
         if (state.type !== TaskType.PITCH) return; // Won't happen
-        if (state.isValid) setMessage('Stop singing');
+        if (state.recognized) setMessage('Stop singing');
         else if (state.progress > 0) setMessage('Keep singing...');
         else setMessage(startMessage);
     }, [state, startMessage]);

@@ -5,7 +5,6 @@ import { TaskTarget } from './target';
 import { RecognizerMap, universalRecognizer, UniversalRecognizerState } from '../../../utils/rxjs/recognizers/universalRecognizer';
 import { getUniversalTaskProgressInitialState, universalTaskProgress } from '../../../utils/rxjs/universalTaskProgress';
 import { audioContext } from '../../audio/audioContext';
-import { smoothPitch } from '../../../utils/rxjs/smoothPitch';
 import { useAudioCache } from '../../audio/useAudioCache';
 import useAudio from '../../audio/useAudio';
 import useTonic from '../../audio/useTonic';
@@ -59,7 +58,6 @@ export const useSinging = ({
         const sub = voiceDetector
             .getState()
             .pipe(
-                smoothPitch(),
                 universalRecognizer({ sustainLength, recognizers, keyNumber }),
                 universalTaskProgress({ targets, octaveDependent, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
             )

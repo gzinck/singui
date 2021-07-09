@@ -32,9 +32,9 @@ const Tuner = (): React.ReactElement => {
             .getState()
             .pipe(smoothPitch())
             .subscribe((state) => {
-                setNote(state.note);
-                setNoteNum(state.noteNum);
-                setError(state.error);
+                setNote(state.pitch.note);
+                setNoteNum(state.pitch.noteNum);
+                setError(state.pitch.error);
             });
 
         return () => {

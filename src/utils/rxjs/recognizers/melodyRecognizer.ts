@@ -1,7 +1,10 @@
 import { Observable } from 'rxjs';
-import { PitchRecognizerState } from './pitchRecognizer';
 import { scan } from 'rxjs/operators';
 import { scoreMelodyDTW } from './melodyScoring/scoreMelodyDTW';
+import { ComprehensiveVocalState, defaultComprehensiveVocalState } from '../smoothPitch';
+import { MelodyTaskTarget } from '../../../components/tasks/sing/target';
+import { TaskType } from './universalRecognizer';
+import { mod12 } from '../../math';
 
 export interface Melody {
     intervals: number[];
@@ -14,64 +17,48 @@ export interface MelodyState extends Melody {
 
 interface Props {
     melodies: Melody[];
+    startNote: number;
+    keyNumber: number;
     // Function to score the melody with highest score for closest match (negatives allowed).
     // Defaults to DTW algorithm.
     scoreMelody?: (melodies: Melody[], intervals: number[]) => MelodyState[];
-    startNote: number;
-    startNoteIdx: number; // If startNote is 4th note in scale, it's 4.
 }
 
-export interface MelodyRecognizerState {
-    startNote: number;
-    hz: number;
-    note: number;
-    noteAbs: number;
-    error: number;
-    interval: number;
+export interface MelodyRecognizerState extends ComprehensiveVocalState {
+    recognized?: MelodyTaskTarget;
+    progress: number;
     intervals: number[];
-    isValid: boolean;
-    melodies: MelodyState[]; // ordered from highest to lowest score
 }
 
 const getMelodyRecognizerInitialState = (melodies: Melody[]): MelodyRecognizerState => ({
-    startNote: 0,
-    hz: 0,
-    note: 0,
-    noteAbs: 0,
-    interval: 0,
-    error: 0,
-    intervals: [0],
-    isValid: false,
-    melodies: melodies.map((melody) => ({
-        intervals: melody.intervals,
-        score: 0,
-        id: melody.id
-    }))
+    ...defaultComprehensiveVocalState,
+    progress: 0,
+    intervals: []
 });
 
 const sortMelodies = (melodies: MelodyState[]) => [...melodies].sort((melody1, melody2) => melody2.score - melody1.score);
 
-export const melodyRecognizer = ({ melodies, startNote, startNoteIdx, scoreMelody }: Props) => (
-    source$: Observable<PitchRecognizerState>
+export const melodyRecognizer = ({ melodies, startNote, keyNumber, scoreMelody }: Props) => (
+    source$: Observable<ComprehensiveVocalState>
 ): Observable<MelodyRecognizerState> => {
+    const startRelative = mod12(startNote - keyNumber);
     return source$.pipe(
-        scan<PitchRecognizerState, MelodyRecognizerState>((state, curr) => {
-            const interval = curr.noteAbs - startNote;
-
-            const intervals = [...state.intervals, interval];
-
+        scan<ComprehensiveVocalState, MelodyRecognizerState>((state, curr) => {
+            const progress = state.progress + 1;
+            const intervals = [...state.intervals, curr.pitch.noteNum - startNote];
             const sortedMelodies = sortMelodies((scoreMelody || scoreMelodyDTW)(melodies, intervals));
+            const recognized: MelodyTaskTarget = {
+                type: TaskType.MELODY,
+                value: sortedMelodies[0].intervals,
+                id: sortedMelodies[0].id,
+                startNote: startRelative
+            };
 
             return {
-                startNote,
-                hz: curr.hz,
-                note: interval + startNoteIdx,
-                noteAbs: curr.noteAbs,
-                error: curr.error,
-                interval,
-                intervals,
-                isValid: intervals.length > 5, // Must have sung for at least 500 ms to register
-                melodies: sortedMelodies
+                ...curr,
+                recognized,
+                progress,
+                intervals
             };
         }, getMelodyRecognizerInitialState(melodies))
     );

@@ -1,6 +1,8 @@
 import { Observable } from 'rxjs';
-import { ReadableVocalState } from '../../pitchConverter';
 import { scan } from 'rxjs/operators';
+import { ComprehensiveVocalState, defaultComprehensiveVocalState } from '../smoothPitch';
+import { PitchTaskTarget } from '../../../components/tasks/sing/target';
+import { TaskType } from './universalRecognizer';
 import { mod12 } from '../../math';
 
 interface Props {
@@ -8,36 +10,29 @@ interface Props {
     keyNumber: number;
 }
 
-export interface PitchRecognizerState {
-    error: number;
-    noteAbs: number;
-    note: number; // Note, adjusted for the key and mod 12
-    hz: number;
+export interface PitchRecognizerState extends ComprehensiveVocalState {
+    recognized?: PitchTaskTarget; // NOTE: this IS adjusted for the key and mod-12ed.
     progress: number;
-    isValid: boolean;
 }
 
 export const pitchRecognizerInitialState: PitchRecognizerState = {
-    error: 0,
-    noteAbs: 0,
-    note: 0,
-    hz: 0,
-    progress: 0,
-    isValid: false
+    ...defaultComprehensiveVocalState,
+    progress: 0
 };
 
 export const pitchRecognizer = ({ sustainLength, keyNumber }: Props) => (
-    source: Observable<ReadableVocalState>
+    source: Observable<ComprehensiveVocalState>
 ): Observable<PitchRecognizerState> => {
     return source.pipe(
-        scan<ReadableVocalState, PitchRecognizerState>((state, curr) => {
-            const progress = state.noteAbs === curr.noteNum ? state.progress + 1 : 0;
+        scan<ComprehensiveVocalState, PitchRecognizerState>((state, curr) => {
+            const progress = state.pitch.noteNum === curr.pitch.noteNum ? state.progress + 1 : 0;
+            // If we exceeded the progress threshold, recognize the pitch. Else, keep previous recognition.
+            // Change state.recognized to undefined if we want to erase the old recognition.
+            const recognized: PitchTaskTarget | undefined =
+                progress >= sustainLength ? { type: TaskType.PITCH, value: mod12(curr.pitch.noteNum - keyNumber) } : state.recognized;
             return {
-                error: curr.error,
-                noteAbs: curr.noteNum,
-                note: mod12(curr.noteNum - keyNumber),
-                hz: curr.hz,
-                isValid: progress >= sustainLength,
+                ...curr,
+                recognized,
                 progress
             };
         }, pitchRecognizerInitialState)

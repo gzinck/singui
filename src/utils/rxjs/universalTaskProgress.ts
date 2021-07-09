@@ -1,9 +1,8 @@
 import { Observable } from 'rxjs';
 import { TaskType, UniversalRecognizerState } from './recognizers/universalRecognizer';
-import { MelodyTaskTarget, TaskTarget } from '../../components/tasks/sing/target';
+import { IntervalTaskTarget, MelodyTaskTarget, TaskTarget } from '../../components/tasks/sing/target';
 import { getTaskProgressInitialState, taskProgress, TaskProgressState } from './taskProgress';
 import { pitchRecognizerInitialState } from './recognizers/pitchRecognizer';
-import { mod12 } from '../math';
 import { getAudioURL } from '../../components/audio/getAudioURL';
 
 interface Props {
@@ -14,32 +13,6 @@ interface Props {
     play?: (url: string) => void;
     maxAttempts: number;
 }
-
-const getNextNote = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>, keyNumber: number): number | undefined => {
-    if (state.type === TaskType.PITCH || state.nextTarget !== state.currTarget) {
-        // It should be the first item of the nextTarget
-        switch (state.nextTarget.type) {
-            case TaskType.PITCH:
-                return state.nextTarget.value;
-            case TaskType.INTERVAL:
-                return state.nextTarget.startNote;
-            case TaskType.MELODY:
-                return state.nextTarget.startNote;
-        }
-    }
-
-    switch (state.currTarget.type) {
-        case TaskType.PITCH:
-            return state.currTarget.value;
-        case TaskType.INTERVAL:
-            if (state.type !== TaskType.INTERVAL) return; // won't happen
-            return mod12(state.startNote - keyNumber) === state.currTarget.startNote
-                ? state.currTarget.startNote + state.currTarget.value
-                : undefined;
-        case TaskType.MELODY:
-            return; // We can't get the next note for most algorithms
-    }
-};
 
 export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskProgressState<TaskTarget, UniversalRecognizerState> => {
     let initialTarget = 0;
@@ -76,17 +49,20 @@ export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAtt
             targets,
             checkCorrect: (state, target) => {
                 if (target.type !== state.type) return false;
+                if (!state.recognized) return false;
                 switch (state.type) {
                     case TaskType.PITCH:
-                        return octaveDependent ? target.value === state.noteAbs : target.value === state.note;
+                        return octaveDependent ? target.value === state.pitch.noteNum : target.value === state.recognized.value;
                     case TaskType.INTERVAL:
-                        return target.value === state.interval;
+                        return (
+                            target.value === state.recognized.value &&
+                            (target as IntervalTaskTarget).startNote === state.recognized.startNote
+                        );
                     case TaskType.MELODY:
-                        return (target as MelodyTaskTarget).id === state.melodies[0].id;
+                        return (target as MelodyTaskTarget).id === state.recognized.id;
                 }
             },
             initialState: getUniversalTaskProgressInitialState(targets[0]),
-            getNextNote: (state) => getNextNote(state, keyNumber),
             onComplete: (_, target, isRepeated) => {
                 // Remove isRepeated logic to play before every note
                 if (play && isRepeated) {

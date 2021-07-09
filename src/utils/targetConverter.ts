@@ -1,21 +1,7 @@
 // Gets the string representing the currently recognized interaction
-import { TaskType, UniversalRecognizerState } from './rxjs/recognizers/universalRecognizer';
+import { TaskType } from './rxjs/recognizers/universalRecognizer';
 import { convertNoteToString, convertNumericNoteToString } from './pitchConverter';
 import { TaskTarget } from '../components/tasks/sing/target';
-
-export const getCurrentStringForState = (state: UniversalRecognizerState, includeOctave = true): string => {
-    switch (state.type) {
-        case TaskType.PITCH:
-            return convertNoteToString(state.noteAbs, includeOctave);
-        case TaskType.INTERVAL:
-            return `${convertNoteToString(state.startNote, includeOctave)}–${convertNoteToString(state.noteAbs, includeOctave)}`;
-        case TaskType.MELODY:
-            return state.melodies[0].intervals.reduce((acc, next) => {
-                const note = convertNoteToString(next + state.startNote, includeOctave);
-                return acc.length > 0 ? `${acc}–${note}` : note;
-            }, '');
-    }
-};
 
 export const getNumberStringForTarget = (target: TaskTarget): string => {
     switch (target.type) {

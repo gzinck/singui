@@ -35,7 +35,7 @@ const suggestedFixes = [
 
 const stateToMessage = (state: TaskProgressState<TaskTarget, UniversalRecognizerState>): string => {
     const currNote = convertNoteToString(state.currTarget.value as number);
-    if (state.isValid) {
+    if (state.recognized) {
         if (state.isCorrect) return `Wait quietly...`;
         return `The current note is not ${currNote}`;
     }

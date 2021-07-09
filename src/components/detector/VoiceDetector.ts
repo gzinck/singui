@@ -7,6 +7,7 @@ export interface VocalState {
     pitch: number; // From 0 to 1000 (approx.)
     clarity: number; // From 0 to 1
     volume: number; // From 0 to 100
+    time: number;
 }
 
 class VoiceDetector {
@@ -17,7 +18,7 @@ class VoiceDetector {
     private readonly audioContext: IAudioContext;
     constructor(audioContext: IAudioContext) {
         this.audioContext = audioContext;
-        this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0 }), shareReplay(1));
+        this.state$ = this.events$.pipe(startWith({ pitch: 0, clarity: 0, volume: 0, time: -10000 }), shareReplay(1));
 
         if (!navigator.mediaDevices) throw new Error('Error getting media devices from browser: none are available');
 
@@ -47,7 +48,7 @@ class VoiceDetector {
 
                         analyserNode.getByteFrequencyData(freqData);
                         const volume = this.getVolume(freqData);
-                        this.events$.next({ pitch, clarity, volume });
+                        this.events$.next({ pitch, clarity, volume, time: performance.now() });
                     })
                 );
             });

@@ -9,9 +9,21 @@ interface Options {
     minVolume?: number;
 }
 
-const breakTime = 500;
+export interface ComprehensiveVocalState {
+    pitch: ReadableVocalState;
+    raw: VocalState;
+}
 
-export const smoothPitch: (options?: Options) => (source$: Observable<VocalState>) => Observable<ReadableVocalState> = (
+const breakTime = 500;
+const defaultState: VocalState = {
+    pitch: 0,
+    clarity: 0,
+    volume: 0,
+    time: -breakTime
+};
+export const defaultComprehensiveVocalState: ComprehensiveVocalState = { raw: defaultState, pitch: convertPitchToReadable(defaultState) };
+
+export const smoothPitch: (options?: Options) => (source$: Observable<VocalState>) => Observable<ComprehensiveVocalState> = (
     opts: Options = {}
 ) => (source) => {
     const options = {
@@ -23,26 +35,22 @@ export const smoothPitch: (options?: Options) => (source$: Observable<VocalState
 
     return source.pipe(
         filter((state) => convertHzToNoteNum(state.pitch) >= 0 && state.clarity >= options.minClarity && state.volume >= options.minVolume),
-        scan(
-            (state, curr) => {
-                const time = performance.now();
+        scan<VocalState, { smooth: VocalState; raw: VocalState }>(
+            ({ smooth }, curr) => {
                 return {
-                    ...curr,
-                    // If it's been 500ms since last valid sound, don't do smoothing
-                    pitch:
-                        time - state.time >= breakTime
-                            ? curr.pitch
-                            : curr.pitch * options.pitchWeight + state.pitch * (1 - options.pitchWeight),
-                    time
+                    raw: curr,
+                    smooth: {
+                        ...curr,
+                        // If it's been 500ms since last valid sound, don't do smoothing
+                        pitch:
+                            curr.time - smooth.time >= breakTime
+                                ? curr.pitch
+                                : curr.pitch * options.pitchWeight + smooth.pitch * (1 - options.pitchWeight)
+                    }
                 };
             },
-            {
-                pitch: 0,
-                clarity: 0,
-                volume: 0,
-                time: -breakTime
-            }
+            { raw: defaultState, smooth: defaultState }
         ),
-        map((state) => convertPitchToReadable(state))
+        map(({ raw, smooth }) => ({ raw, pitch: convertPitchToReadable(smooth) }))
     );
 };

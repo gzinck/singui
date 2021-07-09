@@ -1,11 +1,12 @@
 import { Observable } from 'rxjs';
-import { map, scan } from 'rxjs/operators';
+import { scan } from 'rxjs/operators';
+import { ComprehensiveVocalState } from './smoothPitch';
+import { VocalState } from '../../components/detector/VoiceDetector';
 
 interface Props<RecognizerState, Target> {
     targets: Target[];
     checkCorrect: (state: RecognizerState, target: Target, targetIdx: number) => boolean;
     initialState: TaskProgressState<Target, RecognizerState>;
-    getNextNote: (state: TaskProgressState<Target, RecognizerState>) => number | undefined;
     onComplete?: (completed: Target, next: Target, isRepeated: boolean) => void;
     maxAttempts: number;
 }
@@ -14,7 +15,7 @@ export interface SingTaskResult<Target> {
     target: Target;
     success?: boolean;
     attempts: number;
-    frequencies: { hz: number; time: number }[];
+    frequencies: VocalState[];
     start: number;
     stop?: number;
 }
@@ -27,7 +28,6 @@ export interface State<Target> {
     currTarget: Target;
     nextTargetIdx: number;
     nextTarget: Target;
-    nextNote: number | undefined;
 }
 
 export type TaskProgressState<Target, RecognizerState> = State<Target> & RecognizerState;
@@ -57,11 +57,10 @@ export function getTaskProgressInitialState<RecognizerState, Target>(
     };
 }
 
-export function taskProgress<RecognizerState extends { hz: number; isDone: boolean }, Target>({
+export function taskProgress<RecognizerState extends ComprehensiveVocalState & { isDone: boolean }, Target>({
     targets,
     checkCorrect,
     initialState,
-    getNextNote,
     onComplete,
     maxAttempts
 }: Props<RecognizerState, Target>) {
@@ -81,13 +80,7 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                 if (!curr.isDone && !state.isDone) {
                     // Add the frequency to the results
                     const oldResult = results[results.length - 1];
-                    // Add the frequency if it's new (otherwise, it's just a duplicate of the previous and is not
-                    // actually indicating a new sound being detected).
-                    // This edge case comes up when we finish singing, but we are redoing the trial.
-                    const frequencies =
-                        oldResult.frequencies.length > 0 && oldResult.frequencies[oldResult.frequencies.length - 1].hz === curr.hz
-                            ? oldResult.frequencies
-                            : [...oldResult.frequencies, { hz: curr.hz, time: performance.now() }];
+                    const frequencies = [...oldResult.frequencies, state.raw];
                     results[results.length - 1] = {
                         ...oldResult,
                         frequencies
@@ -131,14 +124,9 @@ export function taskProgress<RecognizerState extends { hz: number; isDone: boole
                     currTargetIdx,
                     currTarget,
                     nextTargetIdx,
-                    nextTarget,
-                    nextNote: 0
+                    nextTarget
                 };
-            }, initialState),
-            map((state) => ({
-                ...state,
-                nextNote: getNextNote(state)
-            }))
+            }, initialState)
         );
     };
 }
