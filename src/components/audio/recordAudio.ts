@@ -3,7 +3,7 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import { from, Observable, timer } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 
-const recorder = new MicRecorder({ bitRate: 256 });
+const recorder = new MicRecorder({ bitRate: 128 });
 
 // time should be in ms
 export const recordAudioFor = (time: number): Observable<Blob> => {

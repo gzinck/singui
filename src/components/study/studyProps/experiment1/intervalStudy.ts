@@ -78,7 +78,7 @@ export const intervalStudyProps: StudyProps = {
             props: {
                 title: 'Interval task pre-evaluation',
                 text:
-                    'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break.'
+                    'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break. Your voice will be recorded for these blocks.'
             }
         },
         // Rearrangeable section for when there is(n't) background music
@@ -107,6 +107,7 @@ export const intervalStudyProps: StudyProps = {
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
                 title: 'Pre-evaluation results',
+                text: 'Recording has finished.',
                 multiAttempt: false,
                 studyID: studyId.INTERVAL_STUDY,
                 tasks: [
@@ -177,7 +178,7 @@ export const intervalStudyProps: StudyProps = {
             props: {
                 title: 'Interval task post-evaluation',
                 text:
-                    'The next two blocks of tasks will measure your performance after the training blocks. Feel free to take a break before clicking "Next."'
+                    'The next two blocks of tasks will measure your performance after the training blocks. Your voice will be recorded for these blocks. Feel free to take a break before clicking "Next."'
             }
         },
         // Rearrangeable section for when there is(n't) background music
@@ -205,6 +206,7 @@ export const intervalStudyProps: StudyProps = {
             type: StudyTaskType.PERFORMANCE_MESSAGE,
             props: {
                 title: 'Post-evaluation results',
+                text: 'Recording has finished',
                 multiAttempt: false,
                 studyID: studyId.INTERVAL_STUDY,
                 tasks: [
