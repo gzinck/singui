@@ -102,7 +102,8 @@ export const melodyStudyProps: StudyProps = {
                         recognizers,
                         withPrompts: false,
                         hideFeedback: true,
-                        maxAttempts: 1
+                        maxAttempts: 1,
+                        isRecorded: true
                     }
                 })),
                 latinSquare
@@ -199,7 +200,8 @@ export const melodyStudyProps: StudyProps = {
                         recognizers,
                         withPrompts: false,
                         hideFeedback: true,
-                        maxAttempts: 1
+                        maxAttempts: 1,
+                        isRecorded: true
                     }
                 })),
                 latinSquare

@@ -73,15 +73,18 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     );
 
     const singOnComplete = React.useCallback(
-        (results: SingTaskResult<TaskTarget>[]) => {
+        (results: SingTaskResult<TaskTarget>[], blob?: Blob) => {
             const task = tasks[taskIdx] as StudySingTask;
-            if (results.length >= task.props.targets.length) onComplete(results);
-            else {
+            if (blob) {
+                saveAudioFile(id, tasks[taskIdx].id, blob).subscribe((result) => onComplete({ results, url: result.metadata.fullPath }));
+            } else if (results.length === task.props.targets.length) {
+                onComplete(results);
+            } else {
                 const done = results.length / task.props.targets.length;
-                setProgress(((taskIdx + 1 + done) / (tasks.length + 1)) * 100);
+                setProgress(Math.min((taskIdx + 1 + done) / (tasks.length + 1), 1) * 100);
             }
         },
-        [tasks, taskIdx, onComplete]
+        [tasks, id, taskIdx, onComplete]
     );
 
     const onError = React.useCallback(

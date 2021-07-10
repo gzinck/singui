@@ -35,6 +35,7 @@ export interface SingTaskProps {
     withPrompts?: boolean;
     hideFeedback?: boolean;
     hasBackground?: boolean;
+    isRecorded?: boolean;
     numberLabels?: boolean;
     sustainLength?: number;
 }

@@ -5,9 +5,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { CircularProgress, LinearProgress } from '@material-ui/core';
 import { interval, Subscription } from 'rxjs';
-import recordAudio from '../../audio/recordAudio';
+import { recordAudioFor } from '../../audio/recordAudio';
 import { take } from 'rxjs/operators';
 import MessagePage from '../message/MessagePage';
+import RecordingIndicator from './RecordingIndicator';
 
 export interface RecordProps {
     header: string;
@@ -62,7 +63,7 @@ const RecordPage = ({ header, title, onComplete }: RecordProps): React.ReactElem
     const onClick = () => {
         if (state === State.NOT_STARTED) {
             subscriptions.current.push(
-                recordAudio(recordTime).subscribe({
+                recordAudioFor(recordTime).subscribe({
                     next: (recording) => {
                         blob.current = recording;
                         setState(State.DONE);
@@ -93,6 +94,7 @@ const RecordPage = ({ header, title, onComplete }: RecordProps): React.ReactElem
 
     return (
         <MessagePage header={header} title={title} buttons={button}>
+            <RecordingIndicator isVisible={state === State.LOADING} />
             <Typography align="center" gutterBottom>
                 In this step, we need to record {recordTime / 1000} seconds of audio to ensure there is minimal background noise.
             </Typography>
