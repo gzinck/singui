@@ -36,7 +36,7 @@ export const smoothPitch: () => (source$: Observable<VocalState>) => Observable<
 
     return source.pipe(
         filter((state) => convertHzToNoteNum(state.pitch) >= 0 && state.clarity >= options.minClarity && state.volume >= options.minVolume),
-        delayUnlikely(),
+        delayUnlikely(3),
         scan<VocalState, { smooth: VocalState; raw: VocalState }>(
             ({ smooth }, curr) => {
                 return {
