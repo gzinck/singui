@@ -40,14 +40,20 @@ const useStyles = makeStyles<Theme, PopupPitchMeterProps>((theme) => ({
         strokeWidth: 4
     },
     arc: ({ progress }) => ({
+        fill: progress > 0 ? rgbToHex(255 - progress * (255 - 23), 255 - progress * (255 - 183), 255) : theme.palette.background.paper,
+        transition: 'fill 0.2s',
+        strokeWidth: 0
+    }),
+    currentArc: ({ progress }) => ({
         fill: rgbToHex(255 - progress * (255 - 23), 255 - progress * (255 - 183), 255),
         transition: 'fill 0.2s',
         strokeWidth: 0
     }),
-    recognized: ({ progress }) => ({
-        fill: progress > 0 ? rgbToHex(255 - progress * (255 - 69), 255 - progress * (255 - 197), 255) : theme.palette.background.paper,
-        transition: 'fill 0.2s',
-        strokeWidth: 0
+    recognized: ({ progress, noteNum, recognized }) => ({
+        fill: theme.palette.primary.light,
+        transition: 'opacity 0.2s',
+        strokeWidth: 0,
+        opacity: progress > 0 && recognized.length && recognized[recognized.length - 1] === mod12(noteNum) ? 1 : 0
     }),
     label: {
         fill: '#FFF',
@@ -106,7 +112,7 @@ const CircularPitchMeter = (props: PopupPitchMeterProps) => {
                     />
                     <circle r={radius} cx={center} cy={center} fill="#000" />
                 </mask>
-                <circle cx={center} cy={center} r={radius + strokeWidth} className={classes.arc} mask="url(#currNoteMask)" />
+                <circle cx={center} cy={center} r={radius + strokeWidth} className={classes.currentArc} mask="url(#currNoteMask)" />
 
                 {/* The intervals recognized */}
                 {intervals.map((interval, idx) => {
