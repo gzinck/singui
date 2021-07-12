@@ -119,10 +119,10 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
                 header: 'Calibration',
                 text: `Your range is from ${convertNoteToString(minNote)} to ${convertNoteToString(maxNote)}. ${
                     maxNote - minNote < 12
-                        ? `The minimum range required for this study is 1 octave and your range is ${pluralize(
+                        ? `The minimum range required for this study is 1 octave and the system has determined your range is ${pluralize(
                               12 - (maxNote - minNote),
                               'semitone'
-                          )} too small. If the following exercises are too challenging, you may withdraw from the study.`
+                          )} too small. In the following task, make sure you select a range that is comfortable for you.`
                         : ''
                 }`,
                 onComplete: next

@@ -21,7 +21,7 @@ export interface CalibrationSingProps {
 const singingProps: SingingProps = {
     recognizers: pitchTaskProps.recognizers,
     targets: [{ type: TaskType.PITCH, value: 0 }],
-    hasBackground: true,
+    hasBackground: false,
     maxAttempts: 1,
     sustainLength: defaultSustainLength
 };
@@ -38,13 +38,13 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
     const [message, setMessage] = React.useState(startMessage);
 
     React.useEffect(() => {
-        if (state.isDone && state.recognized) onComplete(state.recognized.value as number);
-    }, [state.recognized, state.isDone, onComplete]);
+        if (state.type !== TaskType.PITCH) return;
+        if (state.isDone && state.recognized) onComplete(state.recognized.noteAbs);
+    }, [state, onComplete]);
 
     React.useEffect(() => {
         if (state.type !== TaskType.PITCH) return; // Won't happen
-        if (state.recognized) setMessage('Stop singing');
-        else if (state.progress > 0) setMessage('Keep singing...');
+        if (state.recognized && !state.isDone) setMessage('Stop singing');
         else setMessage(startMessage);
     }, [state, startMessage]);
 
@@ -52,7 +52,7 @@ const CalibrationSingPage = ({ onComplete, header, startMessage, error }: Calibr
         <Page header={header}>
             <TargetBox height="7rem">
                 <h2>{message}</h2>
-                {error && state.type === TaskType.PITCH && state.progress === 0 && (
+                {error && (
                     <Alert className={classes.alert} severity="warning">
                         {error}
                     </Alert>

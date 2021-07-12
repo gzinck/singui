@@ -10,8 +10,12 @@ interface Props {
     keyNumber: number;
 }
 
+interface Recognized extends PitchTaskTarget {
+    noteAbs: number;
+}
+
 export interface PitchRecognizerState extends ComprehensiveVocalState {
-    recognized?: PitchTaskTarget; // NOTE: this IS adjusted for the key and mod-12ed.
+    recognized?: Recognized; // NOTE: this IS adjusted for the key and mod-12ed.
     progress: number;
 }
 
@@ -28,8 +32,10 @@ export const pitchRecognizer = ({ sustainLength, keyNumber }: Props) => (
             const progress = state.pitch.noteNum === curr.pitch.noteNum ? state.progress + 1 : 0;
             // If we exceeded the progress threshold, recognize the pitch. Else, keep previous recognition.
             // Change state.recognized to undefined if we want to erase the old recognition.
-            const recognized: PitchTaskTarget | undefined =
-                progress >= sustainLength ? { type: TaskType.PITCH, value: mod12(curr.pitch.noteNum - keyNumber) } : state.recognized;
+            const recognized: Recognized | undefined =
+                progress >= sustainLength
+                    ? { type: TaskType.PITCH, value: mod12(curr.pitch.noteNum - keyNumber), noteAbs: curr.pitch.noteNum }
+                    : state.recognized;
             return {
                 ...curr,
                 recognized,

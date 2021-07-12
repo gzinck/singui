@@ -24,8 +24,11 @@ export interface RangeSelectionProps {
 }
 
 const useStyles = makeStyles<Theme>((theme) => ({
-    alert: {
-        margin: theme.spacing(5, 0, 1)
+    errorBox: {
+        margin: theme.spacing(5, 0, 0),
+        '& > div': {
+            marginBottom: '1rem'
+        }
     },
     text: {
         textAlign: 'center'
@@ -43,6 +46,11 @@ const octaveTarget: TaskTarget = {
 
 const valueFor = (n: number, min: number, max: number): number => (n >= min && n <= max ? 2 : 0);
 const clamp = (num: number, min: number, max: number): number => Math.min(Math.max(num, min), max);
+const hasOverlap = (s1: number, e1: number, s2: number, e2: number): boolean => {
+    const firstEnd = s1 < s2 ? e1 : e2;
+    const secondStart = firstEnd === e1 ? s2 : s1;
+    return firstEnd >= secondStart;
+};
 
 const RangeSelectionPage = ({ header, minNote, maxNote, onComplete, restart }: RangeSelectionProps) => {
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -76,16 +84,6 @@ const RangeSelectionPage = ({ header, minNote, maxNote, onComplete, restart }: R
     React.useEffect(() => play$.current.next(currAudioURL), [currAudioURL]);
 
     const rangeInsufficient = maxNote - minNote < 12;
-    const moveSlider = (to: number) => {
-        if (rangeInsufficient) {
-            if (to > maxNote - 12) setNote(Math.min(minNote, maxNoteNum - 12, Math.max(to, minNoteNum)));
-            else setNote(Math.max(maxNote - 12, minNoteNum, to));
-        } else {
-            if (to > maxNote - 12) setNote(maxNote - 12);
-            else if (to < minNote) setNote(minNote);
-            else setNote(to);
-        }
-    };
 
     const button = (
         <>
@@ -97,22 +95,33 @@ const RangeSelectionPage = ({ header, minNote, maxNote, onComplete, restart }: R
     return (
         <MessagePage header={header} onComplete={() => onComplete(note)} isLoading={loading} buttons={button}>
             <Typography align="center">To select your range, drag the slider ends left or right.</Typography>
+            <Typography align="center">
+                For best results, keep the slider under the green rectangle, which is your estimated range.
+            </Typography>
             <Typography align="center">Listen to the notes played and sing them to make sure the range is comfortable.</Typography>
             <CalibrationBar minNote={minNoteNum} maxNote={maxNoteNum} status={status} />
-            <RangeSelector minNote={minNoteNum} maxNote={maxNoteNum} note={note} setNote={moveSlider} />
-            {rangeInsufficient && (
-                <Alert className={classes.alert} severity="warning">
-                    Your range was detected to be under 1 octave, so make sure you adjust your range using the slider to make it as
-                    comfortable as possible.
-                </Alert>
-            )}
+            <RangeSelector minNote={minNoteNum} maxNote={maxNoteNum} note={note} setNote={(to) => setNote(to)} />
+            <div className={classes.errorBox}>
+                {!hasOverlap(note, note + 12, minNote, maxNote) && (
+                    <Alert severity="error">
+                        The range selected is not under the green rectangle, which is your estimated range. For best results, try moving the
+                        slider beneath the green rectangle.
+                    </Alert>
+                )}
+                {rangeInsufficient && (
+                    <Alert severity="info">
+                        Your range was estimated as under 1 octave, so make sure you adjust your range using the slider to make it as
+                        comfortable as possible.
+                    </Alert>
+                )}
+            </div>
             <ConfirmDialog
-                header="Restart Calibration"
-                text="Are you sure you want to restart?"
+                header="Are you sure you want to restart?"
+                text="Instead of restarting, you can simply move the slider to adjust your range. Sing the pitches to make sure they are comfortable."
                 onClose={() => setModalOpen(false)}
                 open={modalOpen}
-                closeText="No"
-                confirmText="Yes"
+                closeText="Cancel"
+                confirmText="Restart"
                 onConfirm={restart || (() => null)}
             />
         </MessagePage>
