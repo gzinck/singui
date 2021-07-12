@@ -5,6 +5,8 @@ export const cookieStorage = new CookieStorage();
 
 const defaultTonic = 44;
 export const tonic$ = new BehaviorSubject<number>(defaultTonic);
+
+// Keep the cookie updated with the calibration
 const initialTonic = cookieStorage.getItem('tonic');
 if (initialTonic) tonic$.next(parseInt(initialTonic));
 tonic$.subscribe((tonic) => cookieStorage.setItem('tonic', `${tonic}`));

@@ -6,12 +6,12 @@ import { map, mergeMap, scan, timeout } from 'rxjs/operators';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import { listParticipants } from './participantsClient';
 
-export interface StudyResult {
+export interface StudyResult<Details = any> {
     type: StudyTaskType;
     studyId: string;
     taskId: string;
     taskIdx: number;
-    details: any;
+    details: Details;
     doneAt: Date;
 }
 

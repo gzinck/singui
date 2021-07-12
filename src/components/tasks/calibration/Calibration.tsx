@@ -9,9 +9,15 @@ import { convertNoteToString } from '../../../utils/pitchConverter';
 import { tonic$ } from '../../detector/shared';
 import VideoPage from '../video/VideoPage';
 
+export interface CalibrationResult {
+    startNote: number;
+    minNote: number;
+    maxNote: number;
+}
+
 export interface CalibrationProps {
     header: string;
-    onComplete?: (result: { startNote: number; minNote: number; maxNote: number }) => void;
+    onComplete?: (result: CalibrationResult) => void;
 }
 
 const getError = (val: any) => (val === undefined ? 'This question is required' : undefined);
@@ -33,7 +39,6 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
     const [prvIdx, setPrvIdx] = React.useState(-1);
     const [minNote, setMinNote] = React.useState(0);
     const [maxNote, setMaxNote] = React.useState(0);
-    const [startNote, setStartNote] = React.useState(0);
     const [error, setError] = React.useState('');
 
     const next = () => {
@@ -143,9 +148,8 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
                 header: 'Calibration',
                 minNote,
                 maxNote,
-                onComplete: (start) => {
-                    tonic$.next(start); // Set the tonic on this device
-                    setStartNote(start);
+                onComplete: (startNote) => {
+                    tonic$.next(startNote); // Set the tonic on this device
                     onComplete ? onComplete({ minNote, maxNote, startNote }) : next();
                 },
                 restart: () => {

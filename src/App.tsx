@@ -23,8 +23,6 @@ import Tuner from './components/tasks/tuner/Tuner';
 import { allTasksProps, intervalTaskProps, melodyTaskProps, pitchTaskProps } from './components/tasks/sing/possibleTasks';
 import { audioContext, defaultAudioContext } from './components/audio/audioContext';
 import Form from './components/tasks/form/Form';
-import { firebaseConfig } from './firebaseConfig';
-import { getApps, initializeApp } from 'firebase/app';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
 import { testForm } from './components/tasks/form/testForm';
@@ -37,8 +35,9 @@ import AudioTestPage from './components/audioTest/AudioTestPage';
 import HomePage from './components/home/HomePage';
 import SignUpPage from './components/signup/SignUpPage';
 import AdminPage from './components/admin/AdminPage';
+import { setupFirebase } from './setup';
 
-if (getApps().length === 0) initializeApp(firebaseConfig);
+setupFirebase();
 
 function App() {
     return (
