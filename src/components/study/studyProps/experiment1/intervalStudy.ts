@@ -35,12 +35,15 @@ const toTargets = (arr: number[]): IntervalTaskTarget[] => {
     }));
 };
 
+const embedID = '43UWPfBTEuY';
 const breakTask = (item: StudyTask): StudyTask => ({
     id: `msg-${item.id}`,
-    type: StudyTaskType.MESSAGE,
+    type: StudyTaskType.VIDEO,
     props: {
         title: 'Break',
-        text: 'Feel free to take a break before clicking "Next."'
+        text: 'Feel free to take a break before clicking "Next."',
+        embedID,
+        startHidden: true
     }
 });
 
@@ -64,7 +67,7 @@ export const intervalStudyProps: StudyProps = {
             props: {
                 title: 'Interval task tutorial',
                 text: 'Before you start performing the tasks, watch this short video demonstration.',
-                embedID: '43UWPfBTEuY'
+                embedID
             }
         },
         {
@@ -74,11 +77,13 @@ export const intervalStudyProps: StudyProps = {
         },
         {
             id: 'msg-pre-evaluation',
-            type: StudyTaskType.MESSAGE,
+            type: StudyTaskType.VIDEO,
             props: {
                 title: 'Interval task pre-evaluation',
                 text:
-                    'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break. Your voice will be recorded for these blocks.'
+                    'The next two blocks of tasks will establish a baseline for your performance. After each block, you will have an opportunity to take a break. Your voice will be recorded for these blocks.',
+                embedID,
+                startHidden: true
             }
         },
         // Rearrangeable section for when there is(n't) background music
@@ -123,11 +128,13 @@ export const intervalStudyProps: StudyProps = {
         },
         {
             id: 'msg-training-I',
-            type: StudyTaskType.MESSAGE,
+            type: StudyTaskType.VIDEO,
             props: {
                 title: 'Interval task training I',
                 text:
-                    'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Feel free to take a break before clicking "Next."'
+                    'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Feel free to take a break before clicking "Next."',
+                embedID,
+                startHidden: true
             }
         },
         {
@@ -143,11 +150,13 @@ export const intervalStudyProps: StudyProps = {
         },
         {
             id: 'msg-training-II',
-            type: StudyTaskType.MESSAGE,
+            type: StudyTaskType.VIDEO,
             props: {
                 title: 'Interval task training II',
                 text:
-                    'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break before clicking "Next."'
+                    'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break before clicking "Next."',
+                embedID,
+                startHidden: true
             }
         },
         ...insertBetween(
@@ -174,11 +183,13 @@ export const intervalStudyProps: StudyProps = {
         },
         {
             id: 'msg-post-evaluation',
-            type: StudyTaskType.MESSAGE,
+            type: StudyTaskType.VIDEO,
             props: {
                 title: 'Interval task post-evaluation',
                 text:
-                    'The next two blocks of tasks will measure your performance after the training blocks. Your voice will be recorded for these blocks. Feel free to take a break before clicking "Next."'
+                    'The next two blocks of tasks will measure your performance after the training blocks. Your voice will be recorded for these blocks. Feel free to take a break before clicking "Next."',
+                embedID,
+                startHidden: true
             }
         },
         // Rearrangeable section for when there is(n't) background music
