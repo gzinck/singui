@@ -32,8 +32,16 @@ const PitchIndicatorFromState = ({ state, numberLabels }: Props): React.ReactEle
     const [tonic] = useTonic();
     const keyNumber = tonic % 12;
     const noteLabels = React.useMemo(() => noteNamesFrom(keyNumber), [keyNumber]);
+
+    // Show the (8) number label iff we have something recognized that is not complete and we are above note 5 in either the
+    // interval or melody modes.
     const noteNumberLabels =
-        state.type !== TaskType.PITCH && mod12(state.pitch.noteNum - keyNumber) > 5 ? noteNumberLabels8 : noteNumberLabels1;
+        state.recognized &&
+        !state.isDone &&
+        ((state.type === TaskType.INTERVAL && state.recognized.value > 7) ||
+            (state.type === TaskType.MELODY && state.intervals.length > 0 && state.intervals[state.intervals.length - 1] > 7))
+            ? noteNumberLabels8
+            : noteNumberLabels1;
     return (
         <CircularPitchMeter
             noteLabels={numberLabels ? noteNumberLabels : noteLabels}
