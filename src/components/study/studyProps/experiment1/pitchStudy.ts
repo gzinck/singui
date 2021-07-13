@@ -34,7 +34,7 @@ const toTargets = (arr: number[]): PitchTaskTarget[] => {
     }));
 };
 
-const embedID = 'IYHOSp-rmMg';
+const embedID = 'vzxk4NJRurw';
 const breakTask = (item: StudyTask): StudyTask => ({
     id: `msg-${item.id}`,
     type: StudyTaskType.VIDEO,

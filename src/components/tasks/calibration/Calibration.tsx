@@ -57,7 +57,7 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
             props: {
                 header: 'Calibration',
                 text: 'Before you start performing the calibration, watch this short video demonstration.',
-                embedID: 'uBwgaoFWsAE',
+                embedID: '5SB1mcJ9nw0',
                 onComplete: next
             }
         },

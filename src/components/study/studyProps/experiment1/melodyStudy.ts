@@ -44,7 +44,7 @@ const toTargets = (arr: Melody[]): MelodyTaskTarget[] => {
     }));
 };
 
-const embedID = 'c_c0YwSzCOM';
+const embedID = 'EoyFPwVqhhI';
 const breakTask = (item: StudyTask): StudyTask => ({
     id: `msg-${item.id}`,
     type: StudyTaskType.VIDEO,

@@ -35,7 +35,7 @@ const toTargets = (arr: number[]): IntervalTaskTarget[] => {
     }));
 };
 
-const embedID = '43UWPfBTEuY';
+const embedID = '5o_75JQKqBQ';
 const breakTask = (item: StudyTask): StudyTask => ({
     id: `msg-${item.id}`,
     type: StudyTaskType.VIDEO,
