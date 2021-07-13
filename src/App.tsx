@@ -45,9 +45,14 @@ function App() {
             <ThemeProvider theme={theme}>
                 <Router>
                     <Switch>
+                        {/* Routes that do not require Chrome */}
+                        <Route path={AUDIO_TEST_PHONE_ROUTE} component={SinePage} />
+                        <Route exact path={HOME_ROUTE} component={HomePage} />
+                        {navigator.userAgent.indexOf('Chrome') === -1 && <Redirect to={HOME_ROUTE} />}
+
+                        {/* Routes that do require Chrome */}
                         <Route path={TUNER_ROUTE} component={Tuner} />
                         <Route path={AUDIO_TEST_ROUTE} component={AudioTestPage} />
-                        <Route path={AUDIO_TEST_PHONE_ROUTE} component={SinePage} />
                         <Route path={RELATIVE_PITCH_TASKS_ROUTE}>
                             <RoutedSingTasks {...pitchTaskProps} />
                         </Route>
@@ -80,7 +85,6 @@ function App() {
                         </Route>
                         <Route path={ADMIN_ROUTE} component={AdminPage} />
                         <Route path={STUDY_ROUTE} component={RoutedStudy} />
-                        <Route exact path={HOME_ROUTE} component={HomePage} />
                         <Redirect to={HOME_ROUTE} />
                     </Switch>
                 </Router>

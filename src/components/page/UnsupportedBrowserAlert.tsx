@@ -3,22 +3,16 @@ import MuiAlert from '@material-ui/lab/Alert';
 import React from 'react';
 
 const UnsupportedBrowserAlert = (): React.ReactElement => {
-    const [open, setOpen] = React.useState(false);
-    React.useEffect(() => {
-        if (navigator.userAgent.indexOf('Chrome') === -1) setOpen(true);
-    }, []);
-
     return (
         <Snackbar
-            open={open}
-            onClose={() => setOpen(false)}
+            open={navigator.userAgent.indexOf('Chrome') === -1}
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'center'
             }}
         >
-            <MuiAlert variant="filled" severity="error" elevation={6} onClose={() => setOpen(false)}>
-                Your browser is not supported. Please use Chrome or Firefox on a desktop or laptop.
+            <MuiAlert variant="filled" severity="error" elevation={6}>
+                Your browser is not supported. Please use Chrome on a laptop or desktop.
             </MuiAlert>
         </Snackbar>
     );

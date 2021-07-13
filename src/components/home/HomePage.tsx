@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 import { DASHBOARD_ROUTE, SIGNIN_ROUTE, SIGNUP_ROUTE } from '../../routes';
 import { currUser$ } from '../auth/observableUser';
 import { getAuth } from 'firebase/auth';
+import UnsupportedBrowserAlert from '../page/UnsupportedBrowserAlert';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     highlightBox: {
@@ -31,8 +32,11 @@ const HomePage = (): React.ReactElement => {
         return () => sub.unsubscribe();
     }, [setLoggedIn]);
 
+    const isUnsupported = navigator.userAgent.indexOf('Chrome') === -1;
     const signInButton = (
-        <Button onClick={() => history.push(loggedIn ? DASHBOARD_ROUTE : SIGNIN_ROUTE)}>{loggedIn ? 'Go to Dashboard' : 'Sign In'}</Button>
+        <Button disabled={isUnsupported} onClick={() => history.push(loggedIn ? DASHBOARD_ROUTE : SIGNIN_ROUTE)}>
+            {loggedIn ? 'Go to Dashboard' : 'Sign In'}
+        </Button>
     );
 
     return (
@@ -72,11 +76,13 @@ const HomePage = (): React.ReactElement => {
             ) : (
                 <div className={classes.highlightBox}>
                     <p>
-                        To sign up, you will need to perform a one-minute system test, sign a consent form, and provide your email address.
+                        {isUnsupported
+                            ? 'Your browser is not supported. Visit this page in Chrome on a laptop or desktop to sign up.'
+                            : 'To sign up, you will need to perform a one-minute system test, sign a consent form, and provide your email address.'}
                     </p>
                     <ButtonBox>
                         {signInButton}
-                        <Button variant="contained" color="primary" onClick={() => history.push(SIGNUP_ROUTE)}>
+                        <Button disabled={isUnsupported} variant="contained" color="primary" onClick={() => history.push(SIGNUP_ROUTE)}>
                             Sign Up
                         </Button>
                     </ButtonBox>
@@ -92,6 +98,7 @@ const HomePage = (): React.ReactElement => {
                 <p>Dr. Daniel Vogel, Associate Professor, 519-888-4567 ext. 33561, dvogel@uwaterloo.ca</p>
                 <p>School of Computer Science, University of Waterloo</p>
             </div>
+            <UnsupportedBrowserAlert />
         </Page>
     );
 };
