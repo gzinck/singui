@@ -16,7 +16,9 @@ const useStyles = makeStyles<Theme, Props>((theme) => ({
         height: '1rem'
     },
     thumb: ({ minNote, maxNote }) => ({
-        width: `${(13.5 / (maxNote - minNote + 1)) * 100}%`,
+        width: `${(13.5 / (maxNote - minNote + 2)) * 100}%`,
+        // Make it centered
+        marginLeft: `-${(13.5 / (2 * (maxNote - minNote + 3))) * 100}%`,
         borderRadius: 3
     })
 }));
@@ -26,11 +28,10 @@ const RangeSelector = (props: Props): React.ReactElement<Props> => {
     return (
         <div className={classes.root}>
             <Slider
-                value={props.note}
+                value={props.note + 6}
                 onChange={(e, val) => {
-                    console.log(e);
                     if (Array.isArray(val)) return;
-                    props.setNote(Math.max(props.minNote, Math.min(props.maxNote - 12, val)));
+                    props.setNote(Math.max(props.minNote, Math.min(props.maxNote - 12, val - 6)));
                 }}
                 step={1}
                 track={false}
