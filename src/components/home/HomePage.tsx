@@ -55,7 +55,10 @@ const HomePage = (): React.ReactElement => {
                 You will complete a series of simple tasks, each taking only a few seconds, where you sing or hum to interact with a
                 computer.
             </p>
-            <p>You will be paid $15 via Interac e-Transfer for completing one hour-long session.</p>
+            <p>
+                You will be remunerated $15 via Interac e-Transfer for completing the first hour-long session. If you are invited to
+                participate in follow-up sessions, you will be remunerated $10 for each half-hour follow-up session.
+            </p>
             <div className={classes.highlightBox}>
                 <p>
                     You will need a working <b>microphone</b>, headphones, laptop/desktop with Google Chrome, phone, and{' '}
