@@ -2,7 +2,7 @@ import { Observable, Subject } from 'rxjs';
 import { intervalRecognizer, IntervalRecognizerState } from './intervalRecognizer';
 import { pitchRecognizer, PitchRecognizerState } from './pitchRecognizer';
 import { Melody, melodyRecognizer, MelodyRecognizerState } from './melodyRecognizer';
-import { concatMap, debounceTime, map, shareReplay, startWith, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { concatMap, debounceTime, map, shareReplay, startWith, takeUntil } from 'rxjs/operators';
 import { finallyDone } from '../finallyDone';
 import { VocalState } from '../../../components/detector/VoiceDetector';
 import { smoothPitch } from '../smoothPitch';
@@ -46,13 +46,16 @@ interface Mode {
 }
 
 const initialMode: Mode = { type: TaskType.PITCH, noteAbs: 0 };
+const STOP_TIME = 500;
 
 export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: Props) => (
     source$: Observable<VocalState>
 ): Observable<UniversalRecognizerState> => {
+    console.log(keyNumber);
     const mode$ = new Subject<Mode>();
     const sourceWithReplay$ = source$.pipe(shareReplay(1));
 
+    // Note: nodeAbs has no meaning unless it's in a non-pitch mode.
     const state$ = mode$.pipe(
         // Must start with something to allow the processing to occur
         startWith(initialMode),
@@ -75,15 +78,15 @@ export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: P
                             isDone: false
                         })),
                         takeUntil(mode$), // Continue until mode switches
-                        // If we had a valid pitch AND we have NOT switched to a new mode AND we're supposed
-                        // to be able to recognize pitch, signal done
-                        withLatestFrom(mode$.pipe(startWith(initialMode)), (state, mode: Mode) => ({ ...state, mode })),
                         finallyDone({
                             checkDone: (state) => {
                                 return (
-                                    // To be done, we need to have recognized a pitch, be in pitch mode, and have this pitch be meant for recognizing pitches
+                                    // To be done, we need to have recognized a pitch and stopped for 500 ms and be a pitch to recognize
+                                    // NOTE: if we did not stop for 500 ms, then this is just an intermediary before another mode.
+                                    // Because of how takeUntil() works, this is the easiest way to find out if we are still in
+                                    // pitch mode.
                                     state.recognized !== undefined &&
-                                    state.mode.type === TaskType.PITCH &&
+                                    performance.now() - state.raw.time >= STOP_TIME &&
                                     recognizers[state.recognized.value].type === TaskType.PITCH
                                 );
                             }
@@ -119,7 +122,7 @@ export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: P
     );
 
     // After 500 ms, stop and switch to pitch again
-    source$.pipe(smoothPitch(), debounceTime(500)).subscribe(() => mode$.next(initialMode));
+    source$.pipe(smoothPitch(), debounceTime(STOP_TIME)).subscribe(() => mode$.next(initialMode));
 
     // If we have a valid pitch task, if this note is mapped to interval/melody, switch modes
     state$.subscribe((state: UniversalRecognizerState) => {

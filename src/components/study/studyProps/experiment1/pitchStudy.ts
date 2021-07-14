@@ -141,10 +141,10 @@ export const pitchStudyProps: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 title: 'Pitch task training I',
-                targets: toTargets(repeatEach(reorderRandom(possiblePitches), 3)),
+                targets: toTargets(repeatEach(reorderRandom(possiblePitches), 2)),
                 recognizers,
                 withPrompts: true,
-                maxAttempts: 3
+                maxAttempts: 2
             }
         },
         {
@@ -168,10 +168,10 @@ export const pitchStudyProps: StudyProps = {
                         targets: toTargets(reorderRandom([...possiblePitches, ...possiblePitches])),
                         recognizers,
                         withPrompts: true,
-                        maxAttempts: 3
+                        maxAttempts: 2
                     }
                 }),
-                3
+                2
             ),
             breakTask
         ),

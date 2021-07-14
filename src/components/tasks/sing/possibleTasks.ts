@@ -94,17 +94,17 @@ export const intervalTaskProps: SingTaskProps = {
     ]),
     recognizers: {
         0: { type: TaskType.INTERVAL },
-        1: { type: undefined },
-        2: { type: undefined },
-        3: { type: undefined },
-        4: { type: undefined },
-        5: { type: undefined },
-        6: { type: undefined },
-        7: { type: undefined },
-        8: { type: undefined },
-        9: { type: undefined },
-        10: { type: undefined },
-        11: { type: undefined }
+        1: { type: TaskType.PITCH },
+        2: { type: TaskType.PITCH },
+        3: { type: TaskType.PITCH },
+        4: { type: TaskType.PITCH },
+        5: { type: TaskType.PITCH },
+        6: { type: TaskType.PITCH },
+        7: { type: TaskType.PITCH },
+        8: { type: TaskType.PITCH },
+        9: { type: TaskType.PITCH },
+        10: { type: TaskType.PITCH },
+        11: { type: TaskType.PITCH }
     }
 };
 
@@ -130,16 +130,16 @@ export const melodyTaskProps: SingTaskProps = {
     ]),
     recognizers: {
         0: { type: TaskType.MELODY, melodies: tonicMelodies },
-        1: { type: undefined },
-        2: { type: undefined },
-        3: { type: undefined },
-        4: { type: undefined },
-        5: { type: undefined },
-        6: { type: undefined },
-        7: { type: undefined },
-        8: { type: undefined },
-        9: { type: undefined },
-        10: { type: undefined },
-        11: { type: undefined }
+        1: { type: TaskType.PITCH },
+        2: { type: TaskType.PITCH },
+        3: { type: TaskType.PITCH },
+        4: { type: TaskType.PITCH },
+        5: { type: TaskType.PITCH },
+        6: { type: TaskType.PITCH },
+        7: { type: TaskType.PITCH },
+        8: { type: TaskType.PITCH },
+        9: { type: TaskType.PITCH },
+        10: { type: TaskType.PITCH },
+        11: { type: TaskType.PITCH }
     }
 };

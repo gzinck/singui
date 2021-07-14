@@ -12,17 +12,17 @@ import { repeatEach, repeatTask } from '../variations/repeat';
 
 const recognizers: RecognizerMap = {
     0: { type: TaskType.INTERVAL },
-    1: { type: undefined },
-    2: { type: undefined },
-    3: { type: undefined },
-    4: { type: undefined },
-    5: { type: undefined },
-    6: { type: undefined },
-    7: { type: undefined },
-    8: { type: undefined },
-    9: { type: undefined },
-    10: { type: undefined },
-    11: { type: undefined }
+    1: { type: TaskType.PITCH },
+    2: { type: TaskType.PITCH },
+    3: { type: TaskType.PITCH },
+    4: { type: TaskType.PITCH },
+    5: { type: TaskType.PITCH },
+    6: { type: TaskType.PITCH },
+    7: { type: TaskType.PITCH },
+    8: { type: TaskType.PITCH },
+    9: { type: TaskType.PITCH },
+    10: { type: TaskType.PITCH },
+    11: { type: TaskType.PITCH }
 };
 
 const possibleIntervals = [2, 4, 5, 7, 9, 11, 12];
@@ -142,10 +142,10 @@ export const intervalStudyProps: StudyProps = {
             type: StudyTaskType.SING,
             props: {
                 title: 'Interval task training I',
-                targets: toTargets(repeatEach(reorderRandom(possibleIntervals), 3)),
+                targets: toTargets(repeatEach(reorderRandom(possibleIntervals), 2)),
                 recognizers,
                 withPrompts: true,
-                maxAttempts: 3
+                maxAttempts: 2
             }
         },
         {
@@ -169,10 +169,10 @@ export const intervalStudyProps: StudyProps = {
                         targets: toTargets(reorderRandom([...possibleIntervals, ...possibleIntervals])),
                         recognizers,
                         withPrompts: true,
-                        maxAttempts: 3
+                        maxAttempts: 2
                     }
                 }),
-                3
+                2
             ),
             breakTask
         ),
