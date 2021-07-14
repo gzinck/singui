@@ -8,6 +8,7 @@ import { studyId } from '../../study/studyProps/studyId';
 import { Alert } from '@material-ui/lab';
 import { combineLatest } from 'rxjs';
 import TaskPerformanceRow from './TaskPerformanceRow';
+import { SingResults } from '../../study/Study';
 
 interface Task {
     label: string;
@@ -45,7 +46,7 @@ const PerformanceMessagePage = ({ studyID, tasks, header, title, multiAttempt, o
                 );
             } else {
                 // None of the items are null because of the first part of the if
-                setResults(results.map((r) => (r as StudyResult).details as SingTaskResult<any>[]));
+                setResults(results.map((r) => ((r as StudyResult).details as SingResults).results));
             }
         });
     }, [studyID, tasks, setIsLoading, setResults, setError]);

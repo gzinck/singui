@@ -17,6 +17,11 @@ import PerformanceMessagePage from '../tasks/performance/PerformanceMessagePage'
 import { getParticipant } from '../../utils/clients/participantsClient';
 import { getStudyStatus, saveAudioFile, setStudyStatus, setStudyTaskResults, StudyResult } from '../../utils/clients/studyClient';
 
+export interface SingResults {
+    results: SingTaskResult<TaskTarget>[];
+    url: string;
+}
+
 export interface StudyProps {
     getTasks: (latinSquare: number) => StudyTask[];
     name: string;
