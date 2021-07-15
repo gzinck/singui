@@ -171,7 +171,7 @@ export const pitchStudyProps: StudyProps = {
                         maxAttempts: 2
                     }
                 }),
-                2
+                3
             ),
             breakTask
         ),

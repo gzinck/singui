@@ -172,7 +172,7 @@ export const intervalStudyProps: StudyProps = {
                         maxAttempts: 2
                     }
                 }),
-                2
+                3
             ),
             breakTask
         ),

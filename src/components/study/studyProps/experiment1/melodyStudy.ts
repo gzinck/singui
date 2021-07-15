@@ -180,7 +180,7 @@ export const melodyStudyProps: StudyProps = {
                         maxAttempts: 2
                     }
                 }),
-                2
+                3
             ),
             breakTask
         ),
