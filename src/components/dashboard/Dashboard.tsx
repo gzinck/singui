@@ -44,6 +44,7 @@ const Dashboard = (): React.ReactElement => {
     const classes = useStyles();
     const history = useHistory();
     const [loading, setLoading] = React.useState(true);
+    const [updatedSinceSignup, setUpdatedSinceSignup] = React.useState(false);
     const [isEligible, setIsEligible] = React.useState(true);
     const [status, setStatus] = React.useState<Record<string, StudyStatus>>(defaultStatus(StudyStatus.LOCKED));
 
@@ -79,8 +80,14 @@ const Dashboard = (): React.ReactElement => {
                 setLoading(false);
             },
             error: (err) => {
-                if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
-                else console.error('Critical error retrieving data from database:', err);
+                if (
+                    err.message === 'participants document does not exist' ||
+                    err.message.includes('participants document does not have a user')
+                ) {
+                    setUpdatedSinceSignup(true);
+                    setLoading(false);
+                } else if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
+                else console.error('Critical error retrieving data from database:', err.message);
             }
         });
 
@@ -125,19 +132,29 @@ const Dashboard = (): React.ReactElement => {
                         <Skeleton key={study.id} variant="rect" className={classes.skeleton} />
                     ))}
                 </>
+            ) : updatedSinceSignup ? (
+                <>
+                    <Typography variant="h5" className={classes.header}>
+                        Oops! 🙈
+                    </Typography>
+                    <Typography className={classes.desc}>
+                        It looks like the study has been updated since you signed up. For assistance, contact the experiment facilitator{' '}
+                        <a href="mailto:gzinck@uwaterloo.ca?subject = Sing UI">gzinck@uwaterloo.ca</a>
+                    </Typography>
+                </>
+            ) : !isEligible ? (
+                <>
+                    <Typography variant="h5" className={classes.header}>
+                        Sorry! 😬
+                    </Typography>
+                    <Typography className={classes.desc}>
+                        As mentioned when you signed up, you are not currently eligible to perform the study. You will receive an email if
+                        and when you are eligible.
+                    </Typography>
+                </>
             ) : (
                 <>
-                    {!isEligible ? (
-                        <>
-                            <Typography variant="h5" className={classes.header}>
-                                Sorry!
-                            </Typography>
-                            <Typography className={classes.desc}>
-                                As mentioned when you signed up, you are not currently eligible to perform the study. You will receive an
-                                email if and when you are eligible.
-                            </Typography>
-                        </>
-                    ) : inProgressStudies.length > 0 || availableStudies.length > 0 ? (
+                    {inProgressStudies.length > 0 || availableStudies.length > 0 ? (
                         <>
                             <Typography variant="h5" className={classes.header}>
                                 Up next

@@ -3,7 +3,7 @@ import { currUser$, getFirst } from '../../components/auth/observableUser';
 import { map, mergeMap, timeout } from 'rxjs/operators';
 import { doc, getDoc, getFirestore, runTransaction } from 'firebase/firestore';
 
-const participantListVersion = 'v1';
+const participantListVersion = 'v2';
 
 interface Participants {
     musical: string[];

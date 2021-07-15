@@ -51,7 +51,6 @@ const STOP_TIME = 500;
 export const universalRecognizer = ({ sustainLength, recognizers, keyNumber }: Props) => (
     source$: Observable<VocalState>
 ): Observable<UniversalRecognizerState> => {
-    console.log(keyNumber);
     const mode$ = new Subject<Mode>();
     const sourceWithReplay$ = source$.pipe(shareReplay(1));
 
