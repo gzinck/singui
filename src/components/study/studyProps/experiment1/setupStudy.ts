@@ -28,8 +28,15 @@ export const setupStudyProps: StudyProps = {
                         type: FormTypes.RADIO,
                         id: 'gender',
                         header: 'What gender do you identify with?',
-                        options: ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'],
+                        options: ['Male', 'Female', 'Non-binary', 'Prefer to self-disclose', 'Prefer not to say'],
                         getError: radioButtonValidator
+                    },
+                    {
+                        type: FormTypes.TEXT_FIELD,
+                        id: 'gender-other',
+                        header: 'If you chose "Prefer to self-disclose," please specify.',
+                        text: 'This question is optional.',
+                        label: 'Gender'
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
@@ -43,7 +50,6 @@ export const setupStudyProps: StudyProps = {
                         id: 'laptop-people-within-earshot',
                         header: 'When using a laptop or desktop, are there typically people nearby who can hear you speaking?',
                         options: ['Yes', 'No'],
-                        variant: 'horizontal',
                         getError: radioButtonValidator
                     },
                     {

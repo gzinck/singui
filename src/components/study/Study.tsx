@@ -94,7 +94,12 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
 
     const onError = React.useCallback(
         (err: any) => {
-            if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
+            if (
+                err.message === 'participants document does not exist' ||
+                err.message.includes('participants document does not have a user')
+            )
+                history.push(DASHBOARD_ROUTE);
+            else if (err.name === 'TimeoutError') history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
             else console.error('Critical error retrieving data from database:', err);
         },
         [history]
