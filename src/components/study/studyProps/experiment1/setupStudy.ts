@@ -70,6 +70,14 @@ export const setupStudyProps: StudyProps = {
                         getError: numberValidator
                     },
                     {
+                        type: FormTypes.TEXT_FIELD,
+                        id: 'musical-experience-theory',
+                        header: 'How many years of music theory training have you had?',
+                        text: 'This includes theory learned during private or group music lessons, as defined previously.',
+                        label: 'Years of music theory',
+                        getError: numberValidator
+                    },
+                    {
                         type: FormTypes.RADIO,
                         id: 'singing-tendencies',
                         header: 'How often do you sing?',

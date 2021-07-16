@@ -22,6 +22,7 @@ interface Props {
     recognizers: RecognizerMap;
     sustainLength: number;
     withPrompts?: boolean;
+    withInitialPrompts?: boolean;
     maxAttempts: number;
     hideFeedback?: boolean;
     isRecorded?: boolean;

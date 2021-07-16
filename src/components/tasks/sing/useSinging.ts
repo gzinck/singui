@@ -14,6 +14,7 @@ export interface SingingProps {
     octaveDependent?: boolean; // If false, then 0 = 12 = 24, etc. Otherwise, targets must match singing exactly.
     recognizers: RecognizerMap;
     withPrompts?: boolean;
+    withInitialPrompts?: boolean;
     hasBackground: boolean;
     maxAttempts: number;
     sustainLength: number; // Number of steps before a target is recognized
@@ -25,6 +26,7 @@ export const useSinging = ({
     octaveDependent,
     recognizers,
     withPrompts,
+    withInitialPrompts,
     hasBackground,
     maxAttempts,
     sustainLength,
@@ -59,7 +61,16 @@ export const useSinging = ({
             .getState()
             .pipe(
                 universalRecognizer({ sustainLength, recognizers, keyNumber }),
-                universalTaskProgress({ targets, octaveDependent, keyNumber, octave, play: withPrompts ? play : undefined, maxAttempts })
+                universalTaskProgress({
+                    targets,
+                    octaveDependent,
+                    keyNumber,
+                    octave,
+                    play,
+                    withPrompts,
+                    withInitialPrompts,
+                    maxAttempts
+                })
             )
             .subscribe((nextState: TaskProgressState<TaskTarget, UniversalRecognizerState>) => {
                 setState(nextState);
@@ -75,6 +86,7 @@ export const useSinging = ({
         keyNumber,
         octave,
         withPrompts,
+        withInitialPrompts,
         recognizers,
         targets,
         octaveDependent,

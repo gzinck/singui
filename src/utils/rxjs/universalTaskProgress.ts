@@ -10,7 +10,9 @@ interface Props {
     octaveDependent?: boolean; // If false, then 0 = 12 = 24, etc. Otherwise, targets must match singing exactly.
     keyNumber: number;
     octave: number;
-    play?: (url: string) => void;
+    play: (url: string) => void;
+    withPrompts?: boolean; // By default, never have prompts. Set to true to play prompt on failure
+    withInitialPrompts?: boolean; // By default, do not play the initial audio prompt
     maxAttempts: number;
 }
 
@@ -38,11 +40,18 @@ export const getUniversalTaskProgressInitialState = (target: TaskTarget): TaskPr
     );
 };
 
-export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAttempts, octaveDependent }: Props) => (
-    source$: Observable<UniversalRecognizerState>
-): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
+export const universalTaskProgress = ({
+    targets,
+    keyNumber,
+    octave,
+    play,
+    withPrompts,
+    withInitialPrompts,
+    maxAttempts,
+    octaveDependent
+}: Props) => (source$: Observable<UniversalRecognizerState>): Observable<TaskProgressState<TaskTarget, UniversalRecognizerState>> => {
     // Uncomment to play before the start of the first trial
-    // if (play) play(getAudioURL({ target: targets[0], keyNumber, octave }));
+    if (withInitialPrompts) play(getAudioURL({ target: targets[0], keyNumber, octave }));
 
     return source$.pipe(
         taskProgress<UniversalRecognizerState, TaskTarget>({
@@ -65,7 +74,7 @@ export const universalTaskProgress = ({ targets, keyNumber, octave, play, maxAtt
             initialState: getUniversalTaskProgressInitialState(targets[0]),
             onComplete: (_, target, isRepeated) => {
                 // Remove isRepeated logic to play before every note
-                if (play && isRepeated) {
+                if ((withPrompts && isRepeated) || (withInitialPrompts && !isRepeated)) {
                     play(getAudioURL({ target, keyNumber, octave }));
                 }
             },

@@ -3,7 +3,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '../../../theme';
 import { convertNoteToString } from '../../../../utils/pitchConverter';
 import clsx from 'clsx';
-import { rgbToHex } from '../../../../utils/colours';
 import { mod12 } from '../../../../utils/math';
 
 interface PopupPitchMeterProps {
@@ -40,17 +39,17 @@ const useStyles = makeStyles<Theme, PopupPitchMeterProps>((theme) => ({
         strokeWidth: 4
     },
     arc: ({ progress }) => ({
-        fill: progress > 0 ? rgbToHex(255 - progress * (255 - 23), 255 - progress * (255 - 183), 255) : theme.palette.background.paper,
+        fill: progress > 0 ? theme.palette.primary.dark : theme.palette.background.paper,
         transition: 'fill 0.2s',
         strokeWidth: 0
     }),
     currentArc: ({ progress }) => ({
-        fill: rgbToHex(255 - progress * (255 - 23), 255 - progress * (255 - 183), 255),
+        fill: progress > 0 ? theme.palette.primary.main : theme.palette.text.primary,
         transition: 'fill 0.2s',
         strokeWidth: 0
     }),
     recognized: ({ progress, noteNum, recognized }) => ({
-        fill: theme.palette.primary.light,
+        fill: theme.palette.primary.main,
         transition: 'opacity 0.2s',
         strokeWidth: 0,
         opacity: progress > 0 && recognized.length && recognized[recognized.length - 1] === mod12(noteNum) ? 1 : 0

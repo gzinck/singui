@@ -16,6 +16,7 @@ const RoutedSingTasks = (props: Props): React.ReactElement<Props> => {
     const query = new URLSearchParams(location.search);
     const maxAttempts = +(query.get('maxAttempts') || '1');
     const withPrompts = query.get('withPrompts') === 'true';
+    const withInitialPrompts = query.get('withInitialPrompts') === 'true';
     const hideFeedback = query.get('hideFeedback') === 'true';
     const hasBackground = query.get('hasBackground') !== 'false';
     const sustainLength = +(query.get('sustainLength') || `${defaultSustainLength}`);
@@ -24,6 +25,7 @@ const RoutedSingTasks = (props: Props): React.ReactElement<Props> => {
             {...props}
             maxAttempts={maxAttempts}
             withPrompts={withPrompts}
+            withInitialPrompts={withInitialPrompts}
             hideFeedback={hideFeedback}
             hasBackground={hasBackground}
             sustainLength={sustainLength}

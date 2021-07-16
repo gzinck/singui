@@ -64,6 +64,9 @@ const HomePage = (): React.ReactElement => {
                     You will need a working <b>microphone</b>, headphones, laptop/desktop with Google Chrome, phone, and{' '}
                     <b>a quiet place</b> to complete these tasks.
                 </p>
+                <p>
+                    Make sure to <b>turn off any fans</b> or air conditioners making noise before starting the experiment.
+                </p>
             </div>
             <p>This study has been reviewed and received ethics clearance through a University of Waterloo Research Ethics Board.</p>
             {loggedIn ? (

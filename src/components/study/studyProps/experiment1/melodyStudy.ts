@@ -50,7 +50,7 @@ const breakTask = (item: StudyTask): StudyTask => ({
     type: StudyTaskType.VIDEO,
     props: {
         title: 'Break',
-        text: 'Feel free to take a break before clicking "Next."',
+        text: 'Feel free to take a break and drink some water before clicking "Next."',
         embedID,
         startHidden: true
     }
@@ -140,7 +140,7 @@ export const melodyStudyProps: StudyProps = {
             props: {
                 title: 'Melody task training I',
                 text:
-                    'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Feel free to take a break before clicking "Next."',
+                    'Your baseline performance has been recorded. The next block of tasks ask you to repeatedly perform each task to improve your performance. Audio prompts will indicate the melodies to sing. Feel free to take a break and drink some water before clicking "Next."',
                 embedID,
                 startHidden: true
             }
@@ -152,6 +152,7 @@ export const melodyStudyProps: StudyProps = {
                 title: 'Melody task training I',
                 targets: toTargets(repeatEach(reorderRandom(tonicMelodies), 2)),
                 recognizers,
+                withInitialPrompts: true,
                 withPrompts: true,
                 maxAttempts: 2
             }
@@ -162,7 +163,7 @@ export const melodyStudyProps: StudyProps = {
             props: {
                 title: 'Melody task training II',
                 text:
-                    'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break before clicking "Next."',
+                    'The next three blocks of tasks are similar to the previous one except tasks are randomly ordered. Feel free to take a break and drink some water before clicking "Next."',
                 embedID,
                 startHidden: true
             }
@@ -195,7 +196,7 @@ export const melodyStudyProps: StudyProps = {
             props: {
                 title: 'Melody task post-evaluation',
                 text:
-                    'The next two blocks of tasks will measure your performance after the training blocks. Your voice will be recorded for these blocks. Feel free to take a break before clicking "Next."',
+                    'The next two blocks of tasks will measure your performance after the training blocks. Your voice will be recorded for these blocks. Feel free to take a break and drink some water before clicking "Next."',
                 embedID,
                 startHidden: true
             }
