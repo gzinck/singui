@@ -31,11 +31,16 @@ export interface StudyProps {
     time: number;
 }
 
+const getNumTasks = (tasks: StudyTask[], end?: number): number =>
+    tasks.slice(0, end).reduce((numTasks, task) => numTasks + (task.type === StudyTaskType.SING ? task.props.targets.length : 1), 0);
+
 const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProps> => {
     const history = useHistory();
     const [tasks, setTasks] = React.useState<StudyTask[]>([]);
+    const numTasks = React.useMemo(() => getNumTasks(tasks), [tasks]);
     const [taskIdx, setTaskIdx] = React.useState(-1);
     const [progress, setProgress] = React.useState(0);
+    const [singOffset, setSingOffset] = React.useState(0); // Offset the progress for sing tasks with multiple tasks
 
     const onComplete = React.useCallback(
         (details: any) => {
@@ -43,7 +48,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
             setStudyStatus(id, {
                 isDone: taskIdx === tasks.length - 1,
                 nextIdx: taskIdx + 1,
-                // Conditionally add the end time fi we reachedd the end
+                // Conditionally add the end time fi we reached the end
                 ...(taskIdx === tasks.length - 1 ? { end: new Date() } : {})
             }).subscribe({
                 error: (err) => console.error('Critical error saving study status to database:', err)
@@ -61,7 +66,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
             setStudyTaskResults(id, tasks[taskIdx].id, results).subscribe({
                 complete: () => {
                     // Move to next task
-                    setProgress(((taskIdx + 2) / (tasks.length + 1)) * 100);
+                    setProgress((p) => p + 1);
                     setTaskIdx(taskIdx + 1);
                 },
                 error: (err) => console.error('Critical error saving study task results to database:', err)
@@ -80,13 +85,16 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     const singOnComplete = React.useCallback(
         (results: SingTaskResult<TaskTarget>[], blob?: Blob) => {
             const task = tasks[taskIdx] as StudySingTask;
-            if (blob) {
-                saveAudioFile(id, tasks[taskIdx].id, blob).subscribe((result) => onComplete({ results, url: result.metadata.fullPath }));
-            } else if (results.length === task.props.targets.length) {
-                onComplete(results);
+            if (results.length === task.props.targets.length) {
+                setProgress((p) => p + task.props.targets.length - 1); // - 1 because one is added in the onComplete() function
+                setSingOffset(0);
+                if (blob) {
+                    saveAudioFile(id, tasks[taskIdx].id, blob).subscribe((result) =>
+                        onComplete({ results, url: result.metadata.fullPath })
+                    );
+                } else onComplete({ results });
             } else {
-                const done = results.length / task.props.targets.length;
-                setProgress(Math.min((taskIdx + 1 + done) / (tasks.length + 1), 1) * 100);
+                setSingOffset(results.length);
             }
         },
         [tasks, id, taskIdx, onComplete]
@@ -154,7 +162,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
                 isLoading={isLoading || tasks.length === 0}
                 onComplete={() => {
                     setTaskIdx(startIdx);
-                    setProgress(((startIdx + 1) / (tasks.length + 1)) * 100);
+                    setProgress(getNumTasks(tasks, startIdx));
                     setStudyStatus(id, {
                         isDone: false,
                         nextIdx: 0,
@@ -208,7 +216,7 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
     return (
         <>
             {page}
-            <ProgressBar progress={progress} />
+            <ProgressBar progress={((progress + singOffset) / numTasks) * 100} />
         </>
     );
 };
