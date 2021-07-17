@@ -13,7 +13,6 @@ import PitchIndicatorFromState from '../tasks/sing/progressIndicators/PitchIndic
 import SuccessBar from '../tasks/sing/progressIndicators/SuccessBar';
 import { convertNoteToString } from '../../utils/pitchConverter';
 import { timer } from 'rxjs';
-import { AUDIO_TEST_PHONE_ROUTE } from '../../routes';
 import QRCode from './QRCode';
 import { defaultSustainLength } from '../detector/shared';
 import Typography from '@material-ui/core/Typography';
@@ -93,8 +92,7 @@ const AudioTestPage = ({ header, onComplete }: Props): React.ReactElement => {
                     <Typography>Make sure you are in a quiet environment.</Typography>
                     <Typography>Wear headphones. Make sure they are connected to your computer and not your phone.</Typography>
                     <Typography>
-                        On your phone, go to <a href={`https://singui.ca{AUDIO_TEST_PHONE_ROUTE}`}>singui.ca{AUDIO_TEST_PHONE_ROUTE}</a> by
-                        scanning the QR Code below.
+                        On your phone, go to <a href="https://phone.singui.ca">phone.singui.ca</a> by scanning the QR Code below.
                     </Typography>
                     <QRCode />
                     <Typography>Position your phone's speaker close to your computer's mic and turn up the phone's volume.</Typography>
