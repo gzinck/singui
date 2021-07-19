@@ -71,10 +71,19 @@ export const setupStudyProps: StudyProps = {
                     },
                     {
                         type: FormTypes.TEXT_FIELD,
-                        id: 'musical-experience-theory',
-                        header: 'How many years of music theory training have you had?',
-                        text: 'This includes theory learned during private or group music lessons, as defined previously.',
-                        label: 'Years of music theory',
+                        id: 'musical-experience-voice',
+                        header: 'How many years of voice training have you had?',
+                        text: 'This includes private and group lessons, such as choir.',
+                        label: 'Years of voice training',
+                        getError: numberValidator
+                    },
+                    {
+                        type: FormTypes.TEXT_FIELD,
+                        id: 'musical-experience-ear-training',
+                        header: 'How many years of ear training have you had?',
+                        text:
+                            'This includes private or group training for sight-singing and recognizing pitches and intervals, as well as recognizing chords, chord progressions, and scales.',
+                        label: 'Years of ear training',
                         getError: numberValidator
                     },
                     {

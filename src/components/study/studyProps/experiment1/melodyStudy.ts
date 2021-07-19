@@ -10,6 +10,7 @@ import { radioButtonValidator } from '../../../tasks/form/formValidators';
 import { insertBetween } from '../variations/insertBetween';
 import { repeatEach, repeatTask } from '../variations/repeat';
 import { Melody } from '../../../../utils/rxjs/recognizers/melodyRecognizer';
+import { tlxQuestions } from './tlxQuestions';
 
 const tonicMelodies = [
     [0, 4, 2],
@@ -288,71 +289,8 @@ export const melodyStudyProps: StudyProps = {
                         text: 'If there were no technical problems, leave this blank.',
                         label: 'Add any technical problems here...'
                     },
-                    // Perceived task difficulty & learnability
-                    {
-                        type: FormTypes.RADIO,
-                        id: 'challenge-before-training',
-                        header: 'How challenging were the tasks before the two training stages?',
-                        options: [
-                            'Very challenging',
-                            'Challenging',
-                            'Somewhat challenging',
-                            'Neutral',
-                            'Somewhat easy',
-                            'Easy',
-                            'Very easy'
-                        ],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
-                    },
-                    {
-                        type: FormTypes.RADIO,
-                        id: 'challenge-after-training',
-                        header: 'How challenging were the tasks after the training stage?',
-                        options: [
-                            'Very challenging',
-                            'Challenging',
-                            'Somewhat challenging',
-                            'Neutral',
-                            'Somewhat easy',
-                            'Easy',
-                            'Very easy'
-                        ],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
-                    },
-                    {
-                        type: FormTypes.RADIO,
-                        id: 'satisfaction-before-training',
-                        header: 'How satisfied were you with your performance before the training stage?',
-                        options: [
-                            'Very unsatisfied',
-                            'Unsatisfied',
-                            'Somewhat unsatisfied',
-                            'Neutral',
-                            'Somewhat satisfied',
-                            'Satisfied',
-                            'Very satisfied'
-                        ],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
-                    },
-                    {
-                        type: FormTypes.RADIO,
-                        id: 'satisfaction-after-training',
-                        header: 'How satisfied were you with your performance after the training stage?',
-                        options: [
-                            'Very unsatisfied',
-                            'Unsatisfied',
-                            'Somewhat unsatisfied',
-                            'Neutral',
-                            'Somewhat satisfied',
-                            'Satisfied',
-                            'Very satisfied'
-                        ],
-                        variant: 'horizontal',
-                        getError: radioButtonValidator
-                    },
+                    // Perceived task difficulty
+                    ...tlxQuestions,
                     {
                         type: FormTypes.RADIO,
                         id: 'background-music',
