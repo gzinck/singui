@@ -56,7 +56,7 @@ const HomePage = (): React.ReactElement => {
                 computer.
             </p>
             <p>
-                You will be remunerated $15 via Interac e-Transfer for completing the first hour-long session. If you are invited to
+                You will be remunerated $20 CAD via an Amazon gift card for completing the first hour-long session. If you are invited to
                 participate in follow-up sessions, you will be remunerated $10 for each half-hour follow-up session.
             </p>
             <div className={classes.highlightBox}>
