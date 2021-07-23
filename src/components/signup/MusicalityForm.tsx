@@ -37,7 +37,7 @@ const MusicalityForm = ({ onComplete, header }: Props) => {
             title="Musicality"
             form={form}
             onComplete={(results) => {
-                const isMusical = options.indexOf(results[questionId] as string) > 3; // better than neutral
+                const isMusical = options.indexOf(results[questionId] as string) > 4; // better than slightly agree
                 onComplete(isMusical, results);
             }}
         />
