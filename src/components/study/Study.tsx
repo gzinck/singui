@@ -163,13 +163,15 @@ const Study = ({ getTasks, name, id }: StudyProps): React.ReactElement<StudyProp
                 onComplete={() => {
                     setTaskIdx(startIdx);
                     setProgress(getNumTasks(tasks, startIdx));
-                    setStudyStatus(id, {
-                        isDone: false,
-                        nextIdx: 0,
-                        start: new Date()
-                    }).subscribe({
-                        error: (err) => console.error('Critical error saving study status to database:', err)
-                    });
+                    if (startIdx === 0) {
+                        setStudyStatus(id, {
+                            isDone: false,
+                            nextIdx: 0,
+                            start: new Date()
+                        }).subscribe({
+                            error: (err) => console.error('Critical error saving study status to database:', err)
+                        });
+                    }
                 }}
             />
         );
