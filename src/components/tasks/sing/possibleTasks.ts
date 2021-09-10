@@ -41,7 +41,7 @@ export interface SingTaskProps {
 }
 
 export const allTasksProps: SingTaskProps = {
-    header: 'All tasks',
+    header: 'All techniques',
     targets: shuffleArray([
         ...mediantMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,
@@ -69,7 +69,7 @@ export const allTasksProps: SingTaskProps = {
 };
 
 export const pitchTaskProps: SingTaskProps = {
-    header: 'Pitch tasks',
+    header: 'Pitch technique',
     targets: shuffleArray([...[0, 2, 4, 5, 7, 9, 11].map<PitchTaskTarget>((value) => ({ type: TaskType.PITCH, value }))]),
     recognizers: {
         0: { type: TaskType.PITCH },
@@ -88,7 +88,7 @@ export const pitchTaskProps: SingTaskProps = {
 };
 
 export const intervalTaskProps: SingTaskProps = {
-    header: 'Interval tasks',
+    header: 'Interval technique',
     targets: shuffleArray([
         ...[2, 4, 5, 7, 9, 11, 12].map<IntervalTaskTarget>((value) => ({ type: TaskType.INTERVAL, value, startNote: 0 }))
     ]),
@@ -119,7 +119,7 @@ const tonicMelodies: Melody[] = [
 ].map((intervals, id) => ({ intervals, id: `${id}` }));
 
 export const melodyTaskProps: SingTaskProps = {
-    header: 'Melody tasks',
+    header: 'Melody technique',
     targets: shuffleArray([
         ...tonicMelodies.map<MelodyTaskTarget>((melody) => ({
             type: TaskType.MELODY,

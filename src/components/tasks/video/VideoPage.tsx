@@ -23,6 +23,7 @@ const VideoPage = (props: VideoProps): React.ReactElement<VideoProps> => {
     return (
         <MessagePage {...props} buttons={buttons}>
             {(!props.startHidden || !isHidden) && <YoutubeEmbed embedID={props.embedID} title={props.title || props.header} margin={2} />}
+            {props.children}
         </MessagePage>
     );
 };

@@ -6,6 +6,7 @@ interface Props {
     embedID: string;
     title?: string;
     margin?: number;
+    autoplay?: boolean;
 }
 
 const useStyles = makeStyles<Theme, Props>((theme) => ({
@@ -32,9 +33,11 @@ const YoutubeEmbed = (props: Props): React.ReactElement<Props> => {
         <div className={classes.root}>
             <iframe
                 className={classes.iframe}
-                src={`https://www.youtube.com/embed/${props.embedID}?autoplay=1&modestbranding=1`}
+                src={`https://www.youtube.com/embed/${props.embedID}?autoplay=${props.autoplay ? 1 : 0}&modestbranding=1`}
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow={`accelerometer; ${
+                    props.autoplay ? 'autoplay; ' : ''
+                }clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
                 allowFullScreen
                 title={props.title || 'Embedded youtube'}
             />

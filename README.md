@@ -1,9 +1,20 @@
 # Sing UI
 
-This is a platform used for Sing UI experiments, exploring how we can use
-singing and humming to control computers.
+This is an experimental platform for running experiments related to the
+paper "Evaluating Singing for Computer Input Using Pitch, Interval, and Melody".
+It explores how we can use singing and humming to control computers.
 
-This sandbox is currently under development for a paper in CHI 2022.
+Because the study has come to a close, this web app is now in "demo mode."
+See the live website at [singui.ca](https://singui.ca).
+To see and run the code for the actual experiment, switch to another git branch:
+
+```shell
+git checkout study-enabled
+```
+
+Like any React application, find the source files in the `src` folder.
+Most of the logic for processing audio uses rxjs, residing in the
+`src/utils/rxjs` folder.
 
 ## Getting started
 
@@ -11,12 +22,6 @@ Run `yarn install` to install dependencies. If you want to get pre-commit
 hooks working, run `npx mrm lint-staged` afterwards.
 
 To run a dev server, run `yarn run start`.
-
-### Running on mobile
-
-To test it out on a mobile device, after running `yarn start`, run
-`ifconfig` on Mac and find your `inet address`. On your mobile device, go
-to `http://{{INET_ADDRESS}}:3000`.
 
 ## Available Scripts
 

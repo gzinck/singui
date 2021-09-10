@@ -4,17 +4,15 @@ import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { DASHBOARD_ROUTE, SIGNIN_ROUTE, SIGNUP_ROUTE } from '../../routes';
+import { DASHBOARD_ROUTE } from '../../routes';
 import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import { getAuth } from 'firebase/auth';
 import { ListItem } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { currUser$ } from '../auth/observableUser';
+import OptionList from '../tasks/sing/routed/OptionList';
 
 const useStyles = makeStyles<Theme>((theme) => ({
     menuBtn: {},
@@ -39,12 +37,6 @@ const Drawer = (): React.ReactElement => {
     const classes = useStyles();
     const history = useHistory();
     const [menuOpen, setMenuOpen] = React.useState(false);
-    const [loggedIn, setLoggedIn] = React.useState(false);
-
-    React.useEffect(() => {
-        const sub = currUser$.subscribe((user) => setLoggedIn(!!user));
-        return () => sub.unsubscribe();
-    }, [setLoggedIn]);
 
     const routeTo = (url: string) => () => {
         setMenuOpen(false);
@@ -69,44 +61,16 @@ const Drawer = (): React.ReactElement => {
                         </p>
                     </div>
                     <Divider />
-                    {loggedIn ? (
-                        <List>
-                            <ListItem button onClick={routeTo(DASHBOARD_ROUTE)}>
-                                <ListItemIcon>
-                                    <DashboardIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Dashboard" />
-                            </ListItem>
-                            <ListItem
-                                button
-                                onClick={() => {
-                                    getAuth().signOut();
-                                    if (history.location.pathname !== '/')
-                                        history.push(`${SIGNIN_ROUTE}?next=${history.location.pathname}`);
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <AccountCircleIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Sign out" />
-                            </ListItem>
-                        </List>
-                    ) : (
-                        <List>
-                            <ListItem button onClick={routeTo(SIGNIN_ROUTE)}>
-                                <ListItemIcon>
-                                    <AccountCircleIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Sign in" />
-                            </ListItem>
-                            <ListItem button onClick={routeTo(SIGNUP_ROUTE)}>
-                                <ListItemIcon>
-                                    <AccountCircleIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Sign up" />
-                            </ListItem>
-                        </List>
-                    )}
+                    <List>
+                        <ListItem button onClick={routeTo(DASHBOARD_ROUTE)}>
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Dashboard" />
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    <OptionList />
                 </div>
             </SwipeableDrawer>
         </>

@@ -8,6 +8,8 @@ import RangeSelectionPage from './rangeSelection/RangeSelectionPage';
 import { convertNoteToString } from '../../../utils/pitchConverter';
 import { tonic$ } from '../../detector/shared';
 import VideoPage from '../video/VideoPage';
+import { useHistory } from 'react-router-dom';
+import { DASHBOARD_ROUTE } from '../../../routes';
 
 export interface CalibrationResult {
     startNote: number;
@@ -40,6 +42,7 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
     const [minNote, setMinNote] = React.useState(0);
     const [maxNote, setMaxNote] = React.useState(0);
     const [error, setError] = React.useState('');
+    const history = useHistory();
 
     const next = () => {
         setPrvIdx(currIdx);
@@ -162,7 +165,8 @@ const Calibration = ({ onComplete }: CalibrationProps): React.ReactElement<Calib
             type: CalibrationTaskType.MESSAGE,
             props: {
                 header: 'Calibration',
-                text: 'Calibration complete!'
+                text: 'Calibration complete!',
+                onComplete: () => history.push(DASHBOARD_ROUTE)
             }
         }
     ];

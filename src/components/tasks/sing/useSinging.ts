@@ -80,7 +80,10 @@ export const useSinging = ({
                 }
             });
 
-        return () => sub.unsubscribe();
+        return () => {
+            voiceDetector.cleanup();
+            sub.unsubscribe();
+        };
     }, [
         resetIndex,
         keyNumber,
