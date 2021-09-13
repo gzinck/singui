@@ -46,6 +46,7 @@ const HomePage = (): React.ReactElement => {
                 </p>
                 {isUnsupported && <p>Your browser is not supported, but you can try them anyways!</p>}
                 <ButtonBox>
+                    <Button href="/evaluating_singing_for_computer_input.pdf">Read the pre-print</Button>
                     <Button variant="contained" color="primary" onClick={() => history.push(DASHBOARD_ROUTE)}>
                         Try it out
                     </Button>
