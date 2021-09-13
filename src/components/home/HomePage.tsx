@@ -30,8 +30,11 @@ const HomePage = (): React.ReactElement => {
         <Page header="Sing UI" title="Sing UI">
             <p>
                 Imagine singing a pitch to switch tools in a drawing application or a melody to copy a block of text. Sing UI is a
-                preliminary experiment that evaluates these interactions. The paper, "Evaluating Singing for Computer Input Using Pitch,
-                Interval, and Melody" by <a href="https://graemezinck.ca">Graeme Zinck</a> and Daniel Vogel, has been submitted to CHI '22.
+                preliminary experiment that evaluates these interactions. The paper,{' '}
+                <a href="/evaluating_singing_for_computer_input.pdf">
+                    "Evaluating Singing for Computer Input Using Pitch, Interval, and Melody"
+                </a>{' '}
+                by <a href="https://graemezinck.ca">Graeme Zinck</a> and Daniel Vogel, has been submitted to CHI '22.
             </p>
             <YoutubeEmbed
                 autoplay={false}
