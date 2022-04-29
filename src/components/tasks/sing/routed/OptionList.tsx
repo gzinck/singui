@@ -25,7 +25,7 @@ const OptionList = (): React.ReactElement => {
             <ListItem>
                 <ListItemIcon>
                     <Checkbox
-                        value={prompts}
+                        checked={prompts}
                         onChange={() => {
                             setPrompts(!prompts);
                             query.set(promptsParam, (!prompts).toString());
@@ -40,7 +40,7 @@ const OptionList = (): React.ReactElement => {
             <ListItem>
                 <ListItemIcon>
                     <Checkbox
-                        value={background}
+                        checked={background}
                         onChange={() => {
                             setBackground(!background);
                             query.set(backgroundParam, (!background).toString());
