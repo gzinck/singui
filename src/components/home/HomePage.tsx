@@ -31,7 +31,7 @@ const HomePage = (): React.ReactElement => {
             <p>
                 Imagine singing a pitch to switch tools in a drawing application or a melody to copy a block of text. Sing UI is a
                 preliminary experiment that evaluates these interactions. The paper,{' '}
-                <a href="https://dl.acm.org/doi/10.1145/3491102.3517691">
+                <a href="https://dl.acm.org/doi/10.1145/3491102.3517691?cid=99660239985">
                     "Evaluating Singing for Computer Input Using Pitch, Interval, and Melody"
                 </a>{' '}
                 by <a href="https://graemezinck.ca">Graeme Zinck</a> and Daniel Vogel, is being presented at CHI '22.
@@ -49,7 +49,7 @@ const HomePage = (): React.ReactElement => {
                 </p>
                 {isUnsupported && <p>Your browser is not supported, but you can try them anyways!</p>}
                 <ButtonBox>
-                    <Button href="https://dl.acm.org/doi/10.1145/3491102.3517691">Read the paper</Button>
+                    <Button href="https://dl.acm.org/doi/10.1145/3491102.3517691?cid=99660239985">Read the paper</Button>
                     <Button variant="contained" color="primary" onClick={() => history.push(DASHBOARD_ROUTE)}>
                         Try it out
                     </Button>
